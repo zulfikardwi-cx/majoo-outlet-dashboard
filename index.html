@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Outlet — Majoo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ─── Replace this URL after deploying your Apps Script ─── */
+    /* See: APPS_SCRIPT_URL constant in the <script> below       */
+
+    :root {
+      color-scheme: light;
+      --bg: #fafaf9;
+      --surface: #ffffff;
+      --surface-2: #f5f5f4;
+      --border: #e7e5e4;
+      --border-strong: #d6d3d1;
+      --ink: #0c0a09;
+      --ink-2: #292524;
+      --muted: #78716c;
+      --muted-2: #a8a29e;
+
+      --e-bg: #eff6ff;
+      --e-bd: #bfdbfe;
+      --e-tx: #1d4ed8;
+      --e-dot: #3b82f6;
+      --p-bg: #fdf4ff;
+      --p-bd: #e9d5ff;
+      --p-tx: #7e22ce;
+      --p-dot: #a855f7;
+      --r-bg: #f0fdf4;
+      --r-bd: #bbf7d0;
+      --r-tx: #15803d;
+      --r-dot: #22c55e;
+
+      --font: 'Geist', ui-sans-serif, sans-serif;
+      --mono: 'Geist Mono', ui-monospace, monospace;
+      --rad: 10px;
+      --rad-lg: 14px;
+      --rad-sm: 6px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: -.005em;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-strong);
+      border-radius: 8px;
+      border: 2px solid var(--bg);
+    }
+
+    .shell {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 36px 0 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -.02em;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+
+    .chip.live {
+      color: var(--r-tx);
+      background: var(--r-bg);
+      border-color: var(--r-bd);
+    }
+
+    .chip.error {
+      color: #be123c;
+      background: #fff1f2;
+      border-color: #fecdd3;
+    }
+
+    .chip.loading {
+      animation: pulse 1.4s ease infinite;
+    }
+
+    .retry-btn {
+      font-size: 11px;
+      font-family: var(--font);
+      color: var(--muted);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--rad-sm);
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .retry-btn:hover {
+      background: var(--surface);
+      border-color: var(--border-strong);
+      color: var(--ink);
+    }
+
+    /* ── Stat Cards ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rad-lg);
+      padding: 16px 18px 14px;
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--ca, var(--border-strong));
+      border-radius: var(--rad-lg) var(--rad-lg) 0 0;
+      opacity: .6;
+    }
+
+    .card:hover {
+      border-color: var(--border-strong);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+    }
+
+    .card.active {
+      border-color: var(--ca, #000);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ca, #000) 12%, transparent);
+    }
+
+    .card.active::after {
+      opacity: 1;
+    }
+
+    .card[data-g="all"] {
+      --ca: #0f172a;
+    }
+
+    .card[data-g="active"] {
+      --ca: var(--r-dot);
+    }
+
+    .card[data-g="premium"] {
+      --ca: var(--p-dot);
+    }
+
+    .card[data-g="project"] {
+      --ca: var(--r-dot);
+    }
+
+    .card-label {
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+
+    .card-num {
+      font-family: var(--mono);
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: -.04em;
+      line-height: 1;
+      min-height: 30px;
+    }
+
+    .card-num.skel {
+      background: var(--surface-2);
+      border-radius: 6px;
+      width: 52px;
+      height: 30px;
+      animation: pulse 1.4s ease infinite;
+    }
+
+    .card-desc {
+      font-size: 11.5px;
+      color: var(--muted-2);
+      margin-top: 5px;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 340px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted-2);
+      pointer-events: none;
+      display: flex;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 36px;
+      padding: 0 10px 0 32px;
+      border: 1px solid var(--border);
+      border-radius: var(--rad-sm);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 13.5px;
+      font-family: var(--font);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .search-input::placeholder {
+      color: var(--muted-2);
+    }
+
+    .search-input:focus {
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 3px rgba(15, 23, 42, .06);
+    }
+
+    .sel-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .sel-wrap svg {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted-2);
+    }
+
+    .filter-sel {
+      height: 36px;
+      padding: 0 28px 0 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--rad-sm);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 13.5px;
+      font-family: var(--font);
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+      min-width: 210px;
+      transition: border-color .15s;
+    }
+
+    .filter-sel:focus {
+      border-color: var(--border-strong);
+    }
+
+    .count-chip {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px 10px;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    /* ── Table ── */
+    .tbl-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rad-lg);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      height: 34px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .065em;
+      white-space: nowrap;
+    }
+
+    th.c-no {
+      width: 48px;
+      text-align: center;
+    }
+
+    th.c-status {
+      width: 150px;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .1s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: var(--surface-2);
+    }
+
+    td {
+      padding: 0 16px;
+      height: 44px;
+      font-size: 13.5px;
+      color: var(--ink-2);
+      vertical-align: middle;
+    }
+
+    td.c-no {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--muted-2);
+    }
+
+    td.c-name {
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 20px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .be {
+      background: var(--e-bg);
+      border-color: var(--e-bd);
+      color: var(--e-tx);
+    }
+
+    .be .dot {
+      background: var(--e-dot);
+    }
+
+    .bp {
+      background: var(--p-bg);
+      border-color: var(--p-bd);
+      color: var(--p-tx);
+    }
+
+    .bp .dot {
+      background: var(--p-dot);
+    }
+
+    .br {
+      background: var(--r-bg);
+      border-color: var(--r-bd);
+      color: var(--r-tx);
+    }
+
+    .br .dot {
+      background: var(--r-dot);
+    }
+
+    .s-active {
+      color: var(--r-tx);
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .s-active .dot {
+      background: var(--r-dot);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--r-dot) 22%, transparent);
+    }
+
+    .s-idle {
+      color: var(--muted-2);
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .s-idle .dot {
+      background: var(--border-strong);
+    }
+
+    /* ── Skeleton ── */
+    .skel-row td {
+      height: 44px;
+      padding: 0 16px;
+    }
+
+    .skel-bar {
+      height: 13px;
+      border-radius: 4px;
+      background: var(--surface-2);
+      animation: pulse 1.4s ease infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .4
+      }
+    }
+
+    /* ── Empty ── */
+    .empty td {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .empty-t {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-2);
+      margin-bottom: 3px;
+    }
+
+    .empty-s {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── Error Banner ── */
+    .err-banner {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      border-radius: var(--rad);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #be123c;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .footer-l {
+      font-size: 12px;
+      color: var(--muted-2);
+    }
+
+    .footer-r {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <div class="eyebrow">Majoo · Database Outlet</div>
+        <div class="title">Dashboard Outlet Groups</div>
+        <div class="subtitle">Daftar outlet aktif berdasarkan grup layanan</div>
+      </div>
+      <div class="header-right">
+        <span class="chip" id="dateChip">—</span>
+        <span class="chip loading" id="syncChip">Memuat data…</span>
+        <button class="retry-btn" onclick="loadData()" id="retryBtn" style="display:none">↺ Coba lagi</button>
+      </div>
+    </div>
+
+    <!-- Error Banner -->
+    <div class="err-banner" id="errBanner"></div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="card active" data-g="all" onclick="setFilter('all',this)">
+        <div class="card-label">All Groups</div>
+        <div class="card-num skel" id="n-all"></div>
+        <div class="card-desc">Total seluruh outlet</div>
+      </div>
+      <div class="card" data-g="active" onclick="setFilter('active',this)">
+        <div class="card-label">Active Groups Daily</div>
+        <div class="card-num skel" id="n-active"></div>
+        <div class="card-desc">Total grup aktif hari ini</div>
+      </div>
+      <div class="card" data-g="premium" onclick="setFilter('premium',this)">
+        <div class="card-label">Premium Services</div>
+        <div class="card-num skel" id="n-premium"></div>
+        <div class="card-desc">Premium Services Groups</div>
+      </div>
+      <div class="card" data-g="project" onclick="setFilter('project',this)">
+        <div class="card-label">Project Groups</div>
+        <div class="card-num skel" id="n-project"></div>
+        <div class="card-desc">Project Groups</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7">
+            <circle cx="6.5" cy="6.5" r="5.5" />
+            <line x1="11" y1="11" x2="15" y2="15" />
+          </svg>
+        </span>
+        <input class="search-input" id="searchInput" type="text" placeholder="Cari nama outlet…" oninput="render()" />
+      </div>
+      <div class="sel-wrap">
+        <select class="filter-sel" id="groupSel" onchange="handleSel()">
+          <option value="all">All Groups</option>
+          <option value="active">Active Groups Daily</option>
+          <option value="enterprise">Enterprise Groups</option>
+          <option value="premium">Premium Services Groups</option>
+          <option value="project">Project Groups</option>
+        </select>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M2 4.5l4 4 4-4" />
+        </svg>
+      </div>
+      <span class="count-chip" id="countChip">— outlet</span>
+    </div>
+
+    <!-- Table -->
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="c-no">#</th>
+            <th class="c-name">Nama Outlet</th>
+            <th class="c-group">Group</th>
+            <th class="c-status">Status Hari Ini</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-l" id="footerL">Memuat data…</div>
+      <div class="footer-r">Majoo · Outlet Dashboard</div>
+    </div>
+
+  </div>
+  <script>
+    // ─────────────────────────────────────────────
+    //  ⚠️  GANTI URL INI setelah deploy Apps Script
+    // ─────────────────────────────────────────────
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby3N9h7VktPjeYJGjzqZLctux2D6nDnpB1CSRf27bQvjMuMbWxqxUVuXVFX2HOHeqtA/exec';
+
+    // ── State ──
+    let OUTLETS = [], curFilter = 'all';
+
+    // ── Date helpers ──
+    function localDate(d) {
+      const dt = d instanceof Date ? d : new Date(d);
+      return [dt.getFullYear(), String(dt.getMonth() + 1).padStart(2, '0'), String(dt.getDate()).padStart(2, '0')].join('-');
+    }
+    function isToday(iso) { return localDate(new Date(iso)) === localDate(new Date()); }
+
+    // ── Outlet classification ──
+    function classify(title) {
+      const t = title.toLowerCase();
+      if (t.includes('majoo premium')) return 'premium';
+      if (t.includes('majoo project')) return 'project';
+      return 'enterprise';
+    }
+    function extractName(title) {
+      let n = title;
+      n = n.replace(/^WA\s*[-–]\s*/i, '');
+      n = n.replace(/^majoo\s+premium\s+[xX]\s+/i, '');
+      n = n.replace(/^majoo\s+project\s+[xX]\s+/i, '');
+      n = n.replace(/^majoo\s+pusat\s+[xX]\s+/i, '');
+      n = n.replace(/^\d+\.\s*majoo\s+[xX]\s+/i, '');
+      n = n.replace(/^majoo\s+[xX]\s+/i, '');
+      n = n.replace(/\s+[xX]\s+majoo.*$/i, '');
+      return n.trim();
+    }
+
+    // ── Fetch ──
+    async function loadData() {
+      showSkeletons();
+      hideError();
+      document.getElementById('retryBtn').style.display = 'none';
+      setChip('loading', 'Memuat data…');
+
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycby3N9h7VktPjeYJGjzqZLctux2D6nDnpB1CSRf27bQvjMuMbWxqxUVuXVFX2HOHeqtA/exec') {
+        showError('⚠️ Belum dikonfigurasi — ganti APPS_SCRIPT_URL di dalam file index.html dengan URL Apps Script Anda.');
+        setChip('error', '✕ Belum dikonfigurasi');
+        document.getElementById('retryBtn').style.display = '';
+        return;
+      }
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        const files = data.files || [];
+        const seen = new Map();
+
+        files.forEach(f => {
+          const name = extractName(f.title);
+          const key = name.toLowerCase();
+          if (!seen.has(key) || new Date(f.modifiedTime) > new Date(seen.get(key).modified)) {
+            seen.set(key, {
+              name,
+              group: classify(f.title),
+              activeToday: isToday(f.modifiedTime),
+              modified: f.modifiedTime,
+              url: f.url,
+            });
+          }
+        });
+
+        OUTLETS = Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name, 'id'));
+
+        updateStats();
+        render();
+        setChip('live', '✓ Live · ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+        document.getElementById('footerL').textContent =
+          `Data dari Google Drive · ${OUTLETS.length} outlet · ${new Date().toLocaleString('id-ID')}`;
+
+      } catch (err) {
+        console.error(err);
+        showError('Gagal memuat data: ' + err.message + '. Pastikan Apps Script sudah di-deploy dengan akses "Anyone".');
+        setChip('error', '✕ Gagal memuat');
+        document.getElementById('retryBtn').style.display = '';
+        document.getElementById('footerL').textContent = 'Gagal memuat data dari Google Drive.';
+      }
+    }
+
+    // ── Stats ──
+    function updateStats() {
+      setNum('n-all', OUTLETS.length);
+      setNum('n-active', OUTLETS.filter(o => o.activeToday).length);
+      setNum('n-premium', OUTLETS.filter(o => o.group === 'premium').length);
+      setNum('n-project', OUTLETS.filter(o => o.group === 'project').length);
+    }
+    function setNum(id, v) {
+      const el = document.getElementById(id);
+      el.textContent = v;
+      el.classList.remove('skel');
+    }
+
+    // ── Filter ──
+    function setFilter(g, cardEl) {
+      curFilter = g;
+      document.getElementById('groupSel').value = g;
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+      if (cardEl) cardEl.classList.add('active');
+      render();
+    }
+    function handleSel() {
+      const v = document.getElementById('groupSel').value;
+      setFilter(v, document.querySelector(`.card[data-g="${v}"]`));
+    }
+
+    // ── Render table ──
+    const GM = {
+      enterprise: { label: 'Enterprise Groups', cls: 'be' },
+      premium: { label: 'Premium Services Groups', cls: 'bp' },
+      project: { label: 'Project Groups', cls: 'br' },
+    };
+    function badgeH(g) { return `<span class="badge ${GM[g].cls}"><span class="dot"></span>${GM[g].label}</span>`; }
+    function statusH(a) {
+      return a
+        ? `<span class="s-active"><span class="dot"></span>Aktif hari ini</span>`
+        : `<span class="s-idle"><span class="dot"></span>Tidak ada aktivitas</span>`;
+    }
+    function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    function render() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const tbody = document.getElementById('tbody');
+      if (!OUTLETS.length) return;
+
+      const rows = OUTLETS.filter(o => {
+        const gm =
+          curFilter === 'all' ? true :
+            curFilter === 'active' ? o.activeToday :
+              curFilter === 'enterprise' ? o.group === 'enterprise' :
+                curFilter === 'premium' ? o.group === 'premium' :
+                  curFilter === 'project' ? o.group === 'project' : true;
+        return gm && (!q || o.name.toLowerCase().includes(q));
+      });
+
+      document.getElementById('countChip').textContent = `${rows.length} outlet`;
+
+      if (!rows.length) {
+        tbody.innerHTML = `<tr class="empty"><td colspan="4">
+      <div class="empty-t">Tidak ada outlet ditemukan</div>
+      <div class="empty-s">Coba ubah kata kunci atau filter</div>
+    </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map((o, i) => `<tr>
+    <td class="c-no">${i + 1}</td>
+    <td class="c-name">${esc(o.name)}</td>
+    <td>${badgeH(o.group)}</td>
+    <td>${statusH(o.activeToday)}</td>
+  </tr>`).join('');
+
+      document.getElementById('footerL').textContent =
+        `Menampilkan ${rows.length} dari ${OUTLETS.length} outlet`;
+    }
+
+    // ── UI helpers ──
+    function showSkeletons(n = 8) {
+      document.getElementById('tbody').innerHTML = Array.from({ length: n }, (_, i) => `
+    <tr class="skel-row">
+      <td class="c-no"><div class="skel-bar" style="width:20px;margin:0 auto"></div></td>
+      <td><div class="skel-bar" style="width:${160 + (i % 4) * 50}px"></div></td>
+      <td><div class="skel-bar" style="width:130px"></div></td>
+      <td><div class="skel-bar" style="width:100px"></div></td>
+    </tr>`).join('');
+    }
+    function showError(msg) {
+      const el = document.getElementById('errBanner');
+      el.textContent = msg; el.style.display = '';
+    }
+    function hideError() { document.getElementById('errBanner').style.display = 'none'; }
+    function setChip(state, text) {
+      const el = document.getElementById('syncChip');
+      el.textContent = text;
+      el.className = 'chip' + (state === 'live' ? ' live' : state === 'error' ? ' error' : ' loading');
+    }
+
+    // ── Init ──
+    document.getElementById('dateChip').textContent =
+      new Date().toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+
+    loadData();
+  </script>
+</body>
+
+</html>
