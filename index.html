@@ -814,17 +814,14 @@
       document.getElementById('footerL').textContent = `Data dari Google Drive · ${OUTLETS.length} outlet · ${new Date().toLocaleString('id-ID')}`;
     } catch (err) {
       clearTimeout(timer); clearInterval(tickTimer);
-      console.warn('Live fetch failed, loading demo data:', err.message);
-      OUTLETS = generateDemoData();
-      selectedDateStart = addDays(todayStr(), -6);
-      selectedDateEnd   = todayStr();
-      dp.activePreset   = '7days';
-      updateTriggerUI();
-      updateStats(); render();
-      setChip('plain', 'Mode demo · contoh data');
-      document.getElementById('syncChip').classList.remove('loading');
-      document.getElementById('demoBanner').classList.add('show');
-      document.getElementById('footerL').textContent = `Mode preview · ${OUTLETS.length} outlet (data contoh)`;
+      console.warn('Live fetch failed:', err.message);
+      const isTimeout = err.name === 'AbortError';
+      setChip('error', isTimeout ? 'Timeout · coba lagi' : 'Gagal memuat');
+      showError(isTimeout
+        ? 'Data belum berhasil dimuat setelah 45 detik. Pastikan Apps Script sudah di-deploy, lalu klik "Coba lagi".'
+        : `Gagal memuat data: ${err.message}. Klik "Coba lagi" untuk mencoba kembali.`);
+      document.getElementById('retryBtn').style.display = '';
+      document.getElementById('footerL').textContent = 'Gagal memuat data dari server';
     }
   }
 
