@@ -218,6 +218,28 @@
   .g-dot.dot-r { background: var(--r-dot); --gd-glow: color-mix(in srgb,var(--r-dot) 18%,transparent); }
   .group-tab .gcount { font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 999px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); line-height: 1; }
   .group-tab.active .gcount { background: rgba(255,255,255,0.18); color: #fff; border-color: transparent; }
+
+  /* ── Per-group active color overrides ── */
+  .group-tab[data-grp="premium"].active {
+    background: var(--p-bg); border-color: var(--p-bd); color: var(--p-tx);
+    box-shadow: 0 0 0 3px color-mix(in srgb,var(--p-dot) 18%,transparent), 0 4px 14px -6px color-mix(in srgb,var(--p-dot) 35%,transparent);
+  }
+  .group-tab[data-grp="premium"].active .g-dot { display: flex; background: var(--p-dot); box-shadow: 0 0 0 3px color-mix(in srgb,var(--p-dot) 22%,transparent); }
+  .group-tab[data-grp="premium"].active .gcount { background: var(--p-dot); color: #fff; border-color: transparent; }
+
+  .group-tab[data-grp="enterprise"].active {
+    background: var(--e-bg); border-color: var(--e-bd); color: var(--e-tx);
+    box-shadow: 0 0 0 3px color-mix(in srgb,var(--e-dot) 18%,transparent), 0 4px 14px -6px color-mix(in srgb,var(--e-dot) 35%,transparent);
+  }
+  .group-tab[data-grp="enterprise"].active .g-dot { display: flex; background: var(--e-dot); box-shadow: 0 0 0 3px color-mix(in srgb,var(--e-dot) 22%,transparent); }
+  .group-tab[data-grp="enterprise"].active .gcount { background: var(--e-dot); color: #fff; border-color: transparent; }
+
+  .group-tab[data-grp="project"].active {
+    background: var(--r-bg); border-color: var(--r-bd); color: var(--r-tx);
+    box-shadow: 0 0 0 3px color-mix(in srgb,var(--r-dot) 18%,transparent), 0 4px 14px -6px color-mix(in srgb,var(--r-dot) 35%,transparent);
+  }
+  .group-tab[data-grp="project"].active .g-dot { display: flex; background: var(--r-dot); box-shadow: 0 0 0 3px color-mix(in srgb,var(--r-dot) 22%,transparent); }
+  .group-tab[data-grp="project"].active .gcount { background: var(--r-dot); color: #fff; border-color: transparent; }
   .search-wrap { position: relative; flex: 1; min-width: 220px; max-width: 320px; }
   .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted-2); pointer-events: none; display: flex; }
   .search-input { width: 100%; height: 36px; padding: 0 12px 0 36px; border: 1px solid var(--border); border-radius: var(--rad-sm); background: var(--surface); color: var(--ink); font-size: 13.5px; font-family: var(--font); outline: none; transition: border-color .15s, box-shadow .15s; }
