@@ -174,6 +174,61 @@
       color: var(--ink);
     }
 
+    /* ── Date Navigator ── */
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .date-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rad-sm);
+      width: 32px; height: 32px;
+      font-size: 15px;
+      cursor: pointer;
+      color: var(--ink-2);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .15s, background .15s;
+    }
+    .date-btn:hover { border-color: var(--border-strong); background: var(--surface-2); }
+    .date-btn:disabled { opacity: .35; cursor: default; }
+    .date-center {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rad);
+      padding: 5px 14px;
+      cursor: pointer;
+    }
+    .date-center:hover { border-color: var(--border-strong); }
+    .date-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-2);
+      white-space: nowrap;
+    }
+    #datePickerInput {
+      border: none; outline: none;
+      background: transparent;
+      font-size: 12px; color: var(--muted);
+      width: 20px; /* collapsed — expands on click */
+      cursor: pointer;
+      padding: 0;
+    }
+    #datePickerInput::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .5; }
+    .date-today-btn {
+      font-size: 11px; font-weight: 500;
+      color: var(--r-tx);
+      background: var(--r-bg);
+      border: 1px solid var(--r-bd);
+      border-radius: 20px;
+      padding: 2px 9px;
+      cursor: pointer;
+    }
+    .date-today-btn:hover { opacity: .8; }
+
     /* ── Stat Cards ── */
     .stats-row {
       display: grid;
@@ -650,6 +705,17 @@
     <!-- Error Banner -->
     <div class="err-banner" id="errBanner"></div>
 
+    <!-- Date Navigator -->
+    <div class="date-nav">
+      <button class="date-btn" onclick="shiftDate(-1)">&#8592;</button>
+      <div class="date-center">
+        <span class="date-label" id="dateNavLabel">—</span>
+        <input type="date" id="datePickerInput" onchange="pickDate(this.value)" title="Pilih tanggal" />
+        <button class="date-today-btn" id="dateTodayBtn" onclick="goToday()" style="display:none">Hari ini</button>
+      </div>
+      <button class="date-btn" id="dateNextBtn" onclick="shiftDate(1)">&#8594;</button>
+    </div>
+
     <!-- Stats -->
     <div class="stats-row">
       <div class="card active" data-g="all" onclick="setFilter('all',this)">
@@ -739,6 +805,19 @@
       return [dt.getFullYear(), String(dt.getMonth() + 1).padStart(2, '0'), String(dt.getDate()).padStart(2, '0')].join('-');
     }
     function isToday(iso) { return localDate(new Date(iso)) === localDate(new Date()); }
+    function todayStr() { return localDate(new Date()); }
+    function fmtDisplayDate(yyyy_mm_dd) {
+      const d = new Date(yyyy_mm_dd + 'T00:00:00');
+      return d.toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    function addDays(yyyy_mm_dd, n) {
+      const d = new Date(yyyy_mm_dd + 'T00:00:00');
+      d.setDate(d.getDate() + n);
+      return localDate(d);
+    }
+
+    // ── Selected date for traffic/stats (default: today) ──
+    let selectedDate = todayStr();
 
     // ── Outlet classification ──
     function classify(title) {
@@ -793,7 +872,8 @@
               modified: f.modifiedTime,
               url: f.url,
               needReply: f.needReply || false,
-              traffic: f.clientMsgCount || 0,
+              trafficByDate: f.trafficByDate || {},
+              get traffic() { return this.trafficByDate[selectedDate] || 0; },
             });
           }
         });
@@ -821,6 +901,40 @@
       setNum('n-active', OUTLETS.filter(o => o.activeToday).length);
       setNum('n-needreply', OUTLETS.filter(o => o.needReply).length);
       setNum('n-traffic', OUTLETS.reduce((s, o) => s + (o.traffic || 0), 0));
+      // Update date navigator display
+      updateDateNav();
+    }
+
+    function updateDateNav() {
+      const isT = selectedDate === todayStr();
+      document.getElementById('dateNavLabel').textContent = isT
+        ? 'Hari ini — ' + fmtDisplayDate(selectedDate)
+        : fmtDisplayDate(selectedDate);
+      document.getElementById('dateNextBtn').disabled = isT;
+      document.getElementById('dateTodayBtn').style.display = isT ? 'none' : '';
+      document.getElementById('datePickerInput').value = selectedDate;
+      document.getElementById('datePickerInput').max = todayStr();
+    }
+
+    function shiftDate(n) {
+      const next = addDays(selectedDate, n);
+      if (next > todayStr()) return;
+      selectedDate = next;
+      updateStats();
+      render();
+    }
+
+    function pickDate(val) {
+      if (!val || val > todayStr()) return;
+      selectedDate = val;
+      updateStats();
+      render();
+    }
+
+    function goToday() {
+      selectedDate = todayStr();
+      updateStats();
+      render();
     }
     function setNum(id, v) {
       const el = document.getElementById(id);
@@ -924,6 +1038,7 @@
     // ── Init ──
     document.getElementById('dateChip').textContent =
       new Date().toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+    updateDateNav();
 
     loadData();
   </script>
