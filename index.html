@@ -42,6 +42,10 @@
       --n-bd: #fed7aa;
       --n-tx: #c2410c;
       --n-dot: #f97316;
+      --t-bg: #f0fdfa;
+      --t-bd: #99f6e4;
+      --t-tx: #0f766e;
+      --t-dot: #14b8a6;
 
       --font: 'Geist', ui-sans-serif, sans-serif;
       --mono: 'Geist Mono', ui-monospace, monospace;
@@ -228,8 +232,8 @@
       --ca: var(--n-dot);
     }
 
-    .card[data-g="project"] {
-      --ca: var(--r-dot);
+    .card[data-g="traffic"] {
+      --ca: var(--t-dot);
     }
 
     .card-label {
@@ -397,7 +401,21 @@
     }
 
     th.c-reply {
-      width: 140px;
+      width: 130px;
+    }
+
+    th.c-traffic {
+      width: 80px;
+      text-align: right;
+    }
+
+    td.c-traffic-val {
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--t-tx);
+      padding-right: 20px;
     }
 
     tbody tr {
@@ -649,10 +667,10 @@
         <div class="card-num skel" id="n-needreply"></div>
         <div class="card-desc">Total grup yang perlu dibalas</div>
       </div>
-      <div class="card" data-g="project" onclick="setFilter('project',this)">
-        <div class="card-label">Project Groups</div>
-        <div class="card-num skel" id="n-project"></div>
-        <div class="card-desc">Project Groups</div>
+      <div class="card" data-g="traffic" onclick="setFilter('traffic',this)">
+        <div class="card-label">Conversation Traffic</div>
+        <div class="card-num skel" id="n-traffic"></div>
+        <div class="card-desc">Total conversation user pada groups</div>
       </div>
     </div>
 
@@ -673,7 +691,7 @@
           <option value="active">Active Groups Daily</option>
           <option value="enterprise">Enterprise Groups</option>
           <option value="needreply">Need Reply</option>
-          <option value="project">Project Groups</option>
+          <option value="traffic">Conversation Traffic</option>
         </select>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M2 4.5l4 4 4-4" />
@@ -692,6 +710,7 @@
             <th class="c-group">Group</th>
             <th class="c-status">Status Hari Ini</th>
             <th class="c-reply">Status Reply</th>
+            <th class="c-traffic">Traffic</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -774,6 +793,7 @@
               modified: f.modifiedTime,
               url: f.url,
               needReply: f.needReply || false,
+              traffic: f.clientMsgCount || 0,
             });
           }
         });
@@ -800,7 +820,7 @@
       setNum('n-all', OUTLETS.length);
       setNum('n-active', OUTLETS.filter(o => o.activeToday).length);
       setNum('n-needreply', OUTLETS.filter(o => o.needReply).length);
-      setNum('n-project', OUTLETS.filter(o => o.group === 'project').length);
+      setNum('n-traffic', OUTLETS.reduce((s, o) => s + (o.traffic || 0), 0));
     }
     function setNum(id, v) {
       const el = document.getElementById(id);
@@ -850,15 +870,15 @@
           curFilter === 'all'       ? true :
           curFilter === 'active'    ? o.activeToday :
           curFilter === 'needreply' ? o.needReply :
-          curFilter === 'enterprise'? o.group === 'enterprise' :
-          curFilter === 'project'   ? o.group === 'project' : true;
+          curFilter === 'traffic'   ? o.traffic > 0 :
+          curFilter === 'enterprise'? o.group === 'enterprise' : true;
         return gm && (!q || o.name.toLowerCase().includes(q));
-      });
+      }).sort((a, b) => curFilter === 'traffic' ? b.traffic - a.traffic : 0);
 
       document.getElementById('countChip').textContent = `${rows.length} outlet`;
 
       if (!rows.length) {
-        tbody.innerHTML = `<tr class="empty"><td colspan="5">
+        tbody.innerHTML = `<tr class="empty"><td colspan="6">
       <div class="empty-t">Tidak ada outlet ditemukan</div>
       <div class="empty-s">Coba ubah kata kunci atau filter</div>
     </td></tr>`;
@@ -871,6 +891,7 @@
     <td>${badgeH(o.group)}</td>
     <td>${statusH(o.activeToday)}</td>
     <td>${replyH(o.needReply)}</td>
+    <td class="c-traffic-val">${o.traffic > 0 ? o.traffic : '<span style="color:var(--muted-2)">—</span>'}</td>
   </tr>`).join('');
 
       document.getElementById('footerL').textContent =
@@ -886,6 +907,7 @@
       <td><div class="skel-bar" style="width:130px"></div></td>
       <td><div class="skel-bar" style="width:100px"></div></td>
       <td><div class="skel-bar" style="width:80px"></div></td>
+      <td><div class="skel-bar" style="width:40px;margin-left:auto"></div></td>
     </tr>`).join('');
     }
     function showError(msg) {
