@@ -38,6 +38,10 @@
       --r-bd: #bbf7d0;
       --r-tx: #15803d;
       --r-dot: #22c55e;
+      --n-bg: #fff7ed;
+      --n-bd: #fed7aa;
+      --n-tx: #c2410c;
+      --n-dot: #f97316;
 
       --font: 'Geist', ui-sans-serif, sans-serif;
       --mono: 'Geist Mono', ui-monospace, monospace;
@@ -220,8 +224,8 @@
       --ca: var(--r-dot);
     }
 
-    .card[data-g="premium"] {
-      --ca: var(--p-dot);
+    .card[data-g="needreply"] {
+      --ca: var(--n-dot);
     }
 
     .card[data-g="project"] {
@@ -389,7 +393,11 @@
     }
 
     th.c-status {
-      width: 150px;
+      width: 140px;
+    }
+
+    th.c-reply {
+      width: 140px;
     }
 
     tbody tr {
@@ -475,6 +483,16 @@
       background: var(--r-dot);
     }
 
+    .bn {
+      background: var(--n-bg);
+      border-color: var(--n-bd);
+      color: var(--n-tx);
+    }
+
+    .bn .dot {
+      background: var(--n-dot);
+    }
+
     .s-active {
       color: var(--r-tx);
       font-size: 12px;
@@ -499,6 +517,20 @@
 
     .s-idle .dot {
       background: var(--border-strong);
+    }
+
+    .s-needreply {
+      color: var(--n-tx);
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .s-needreply .dot {
+      background: var(--n-dot);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--n-dot) 22%, transparent);
     }
 
     /* ── Skeleton ── */
@@ -612,10 +644,10 @@
         <div class="card-num skel" id="n-active"></div>
         <div class="card-desc">Total grup aktif hari ini</div>
       </div>
-      <div class="card" data-g="premium" onclick="setFilter('premium',this)">
-        <div class="card-label">Premium Services</div>
-        <div class="card-num skel" id="n-premium"></div>
-        <div class="card-desc">Premium Services Groups</div>
+      <div class="card" data-g="needreply" onclick="setFilter('needreply',this)">
+        <div class="card-label">Need Reply</div>
+        <div class="card-num skel" id="n-needreply"></div>
+        <div class="card-desc">Total grup yang perlu dibalas</div>
       </div>
       <div class="card" data-g="project" onclick="setFilter('project',this)">
         <div class="card-label">Project Groups</div>
@@ -640,7 +672,7 @@
           <option value="all">All Groups</option>
           <option value="active">Active Groups Daily</option>
           <option value="enterprise">Enterprise Groups</option>
-          <option value="premium">Premium Services Groups</option>
+          <option value="needreply">Need Reply</option>
           <option value="project">Project Groups</option>
         </select>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -659,6 +691,7 @@
             <th class="c-name">Nama Outlet</th>
             <th class="c-group">Group</th>
             <th class="c-status">Status Hari Ini</th>
+            <th class="c-reply">Status Reply</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -740,6 +773,7 @@
               activeToday: isToday(f.modifiedTime),
               modified: f.modifiedTime,
               url: f.url,
+              needReply: f.needReply || false,
             });
           }
         });
@@ -765,7 +799,7 @@
     function updateStats() {
       setNum('n-all', OUTLETS.length);
       setNum('n-active', OUTLETS.filter(o => o.activeToday).length);
-      setNum('n-premium', OUTLETS.filter(o => o.group === 'premium').length);
+      setNum('n-needreply', OUTLETS.filter(o => o.needReply).length);
       setNum('n-project', OUTLETS.filter(o => o.group === 'project').length);
     }
     function setNum(id, v) {
@@ -799,6 +833,11 @@
         ? `<span class="s-active"><span class="dot"></span>Aktif hari ini</span>`
         : `<span class="s-idle"><span class="dot"></span>Tidak ada aktivitas</span>`;
     }
+    function replyH(r) {
+      return r
+        ? `<span class="s-needreply"><span class="dot"></span>Perlu Dibalas</span>`
+        : `<span style="color:var(--muted-2);font-size:12px">—</span>`;
+    }
     function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
     function render() {
@@ -808,18 +847,18 @@
 
       const rows = OUTLETS.filter(o => {
         const gm =
-          curFilter === 'all' ? true :
-            curFilter === 'active' ? o.activeToday :
-              curFilter === 'enterprise' ? o.group === 'enterprise' :
-                curFilter === 'premium' ? o.group === 'premium' :
-                  curFilter === 'project' ? o.group === 'project' : true;
+          curFilter === 'all'       ? true :
+          curFilter === 'active'    ? o.activeToday :
+          curFilter === 'needreply' ? o.needReply :
+          curFilter === 'enterprise'? o.group === 'enterprise' :
+          curFilter === 'project'   ? o.group === 'project' : true;
         return gm && (!q || o.name.toLowerCase().includes(q));
       });
 
       document.getElementById('countChip').textContent = `${rows.length} outlet`;
 
       if (!rows.length) {
-        tbody.innerHTML = `<tr class="empty"><td colspan="4">
+        tbody.innerHTML = `<tr class="empty"><td colspan="5">
       <div class="empty-t">Tidak ada outlet ditemukan</div>
       <div class="empty-s">Coba ubah kata kunci atau filter</div>
     </td></tr>`;
@@ -831,6 +870,7 @@
     <td class="c-name">${esc(o.name)}</td>
     <td>${badgeH(o.group)}</td>
     <td>${statusH(o.activeToday)}</td>
+    <td>${replyH(o.needReply)}</td>
   </tr>`).join('');
 
       document.getElementById('footerL').textContent =
@@ -845,6 +885,7 @@
       <td><div class="skel-bar" style="width:${160 + (i % 4) * 50}px"></div></td>
       <td><div class="skel-bar" style="width:130px"></div></td>
       <td><div class="skel-bar" style="width:100px"></div></td>
+      <td><div class="skel-bar" style="width:80px"></div></td>
     </tr>`).join('');
     }
     function showError(msg) {
