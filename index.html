@@ -2583,6 +2583,13 @@
     }
 
     async function loadData() {
+      // Ensure correct page is visible and date picker is in the right slot
+      document.getElementById('outletPage').style.display = activeDash === 'outlet' ? '' : 'none';
+      document.getElementById('teamPage').style.display   = activeDash === 'team'   ? '' : 'none';
+      const _dpEl   = document.getElementById('dpWrap');
+      const _slotEl = document.getElementById(activeDash === 'team' ? 'teamDpSlot' : 'outletDpSlot');
+      if (_dpEl && _slotEl && !_slotEl.contains(_dpEl)) _slotEl.appendChild(_dpEl);
+
       showSkeletons(); hideError();
       document.getElementById('demoBanner').classList.remove('show');
       document.getElementById('retryBtn').style.display = 'none';
