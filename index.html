@@ -1905,7 +1905,13 @@
     }
 
     /* ── Team Analytics Grid ── */
-    .team-analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:22px; }
+    .team-analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+    .week-analytics-wrap { margin-bottom:22px; }
+    .week-nav-bar { display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid var(--border); border-radius:10px; padding:10px 16px; margin-bottom:12px; }
+    .week-nav-btn { display:flex; align-items:center; gap:6px; background:none; border:none; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--muted); padding:4px 8px; border-radius:6px; transition:background .15s,color .15s; }
+    .week-nav-btn:hover { background:var(--bg-1,#f3f4f6); color:var(--text); }
+    .week-nav-btn:disabled { opacity:.35; cursor:default; }
+    .week-nav-center { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:var(--text); }
     .analytics-panel { background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
     .analytics-panel-title { font-size:14px; font-weight:600; color:var(--text); }
     .analytics-panel-sub { font-size:11.5px; color:var(--muted); margin-top:3px; }
@@ -2291,42 +2297,67 @@
       <!-- Team Date Picker Slot -->
       <div id="teamDpSlot"></div>
 
-      <!-- Analytics Grid -->
-      <div class="team-analytics-grid" id="teamAnalyticsGrid">
+      <!-- Week-based Analytics (Activity + Heatmap) -->
+      <div class="week-analytics-wrap">
 
-        <!-- Activity Over Time -->
-        <div class="analytics-panel">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
-            <div>
-              <div class="analytics-panel-title">Activity Over Time</div>
-              <div class="analytics-panel-sub">Conversations ditangani per hari · filter aktif</div>
-            </div>
-            <span class="analytics-badge" id="aot-badge">—</span>
+        <!-- Week Navigation Bar -->
+        <div class="week-nav-bar">
+          <button class="week-nav-btn" onclick="analyticsWeekOffset--; renderTeamAnalytics()">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+            Minggu Sebelumnya
+          </button>
+          <div class="week-nav-center">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="2" width="14" height="13" rx="2"/><path d="M1 6h14M5 1v3M11 1v3"/></svg>
+            <span id="weekNavLabel">—</span>
           </div>
-          <div style="position:relative;height:190px"><canvas id="activityChart"></canvas></div>
+          <button class="week-nav-btn" id="weekNavNext" onclick="analyticsWeekOffset++; renderTeamAnalytics()">
+            Minggu Berikutnya
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg>
+          </button>
         </div>
+
+        <!-- Activity + Heatmap Grid -->
+        <div class="team-analytics-grid">
+
+          <!-- Activity Over Time -->
+          <div class="analytics-panel">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+              <div>
+                <div class="analytics-panel-title">Activity Over Time</div>
+                <div class="analytics-panel-sub">Conversations ditangani per hari · minggu ini</div>
+              </div>
+              <span class="analytics-badge" id="aot-badge">—</span>
+            </div>
+            <div style="position:relative;height:190px"><canvas id="activityChart"></canvas></div>
+          </div>
+
+          <!-- Daily Activity Heatmap -->
+          <div class="analytics-panel">
+            <div class="analytics-panel-title">Daily Activity Heatmap</div>
+            <div class="analytics-panel-sub">Intensitas conversation · per hari</div>
+            <div class="heatmap-row" id="heatmapRow"></div>
+            <div class="hm-legend">
+              <span>Sepi</span>
+              <div class="hm-legend-sq" style="background:#e6f4f1"></div>
+              <div class="hm-legend-sq" style="background:#9dd9cf"></div>
+              <div class="hm-legend-sq" style="background:#53bfb3"></div>
+              <div class="hm-legend-sq" style="background:#2ba99b"></div>
+              <div class="hm-legend-sq" style="background:#1a8078"></div>
+              <span>Ramai</span>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /week-analytics-wrap -->
+
+      <!-- Period-based Analytics (Role + Top Performers) — ikut date picker -->
+      <div class="team-analytics-grid" style="margin-bottom:22px">
 
         <!-- Productivity by Role -->
         <div class="analytics-panel">
           <div class="analytics-panel-title">Productivity by Role</div>
           <div class="analytics-panel-sub" style="margin-bottom:16px">Conversations ditangani · grup peran</div>
           <div id="roleBreakdown"></div>
-        </div>
-
-        <!-- Daily Activity Heatmap -->
-        <div class="analytics-panel">
-          <div class="analytics-panel-title">Daily Activity Heatmap</div>
-          <div class="analytics-panel-sub">Intensitas conversation · per hari</div>
-          <div class="heatmap-row" id="heatmapRow"></div>
-          <div class="hm-legend">
-            <span>Sepi</span>
-            <div class="hm-legend-sq" style="background:#e6f4f1"></div>
-            <div class="hm-legend-sq" style="background:#9dd9cf"></div>
-            <div class="hm-legend-sq" style="background:#53bfb3"></div>
-            <div class="hm-legend-sq" style="background:#2ba99b"></div>
-            <div class="hm-legend-sq" style="background:#1a8078"></div>
-            <span>Ramai</span>
-          </div>
         </div>
 
         <!-- Top Performers -->
@@ -2336,7 +2367,7 @@
           <div id="topPerformersList"></div>
         </div>
 
-      </div><!-- /team-analytics-grid -->
+      </div><!-- /period-analytics-grid -->
 
       <!-- Role Filter -->
       <div class="role-filter-section">
@@ -2859,18 +2890,48 @@
       renderTeamAnalytics();
     }
     let _activityChart = null;
+    let analyticsWeekOffset = 0;
+
+    function getAnalyticsWeek() {
+      const now = new Date();
+      const dow = now.getDay(); // 0=Sun
+      const diffToMon = dow === 0 ? -6 : 1 - dow;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + diffToMon + analyticsWeekOffset * 7);
+      monday.setHours(0, 0, 0, 0);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      const fmt = d => localDate(d);
+      const fmtLabel = d => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      return {
+        start: fmt(monday),
+        end:   fmt(sunday),
+        label: `${fmtLabel(monday)} – ${fmtLabel(sunday)} ${sunday.getFullYear()}`
+      };
+    }
+
     function renderTeamAnalytics() {
       const pool = poolByRole();
+      const week = getAnalyticsWeek();
+      const today = todayStr();
 
-      // ── Build daily totals ──
+      // Update week nav label & disable "next" if already current week
+      const lbl = document.getElementById('weekNavLabel');
+      if (lbl) lbl.textContent = week.label;
+      const nextBtn = document.getElementById('weekNavNext');
+      if (nextBtn) nextBtn.disabled = analyticsWeekOffset >= 0;
+
+      // ── Build daily totals for the WEEK (Activity + Heatmap) ──
       const dailyTotals = {};
-      eachDay(selectedDateStart, selectedDateEnd, ds => { dailyTotals[ds] = 0; });
+      eachDay(week.start, week.end, ds => { dailyTotals[ds] = 0; });
       pool.forEach(a => {
         const msgs = AGENT_MSGS[a.number] || {};
         Object.entries(msgs).forEach(([d, v]) => {
           if (dailyTotals[d] !== undefined) dailyTotals[d] += v;
         });
       });
+      // Cap future days at 0 (don't show data after today)
+      Object.keys(dailyTotals).forEach(d => { if (d > today) dailyTotals[d] = 0; });
       const days = Object.keys(dailyTotals).sort();
       const values = days.map(d => dailyTotals[d]);
       const grandTotal = values.reduce((s, v) => s + v, 0);
@@ -3231,6 +3292,7 @@
     selectedDateStart = todayStr();
     selectedDateEnd = todayStr();
     dp.activePreset = 'today';
+    analyticsWeekOffset = 0;
     updateTriggerUI();
     // Place date picker in the outlet slot (its initial home)
     document.getElementById('outletDpSlot').appendChild(document.getElementById('dpWrap'));
