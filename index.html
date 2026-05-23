@@ -2707,19 +2707,8 @@
       document.getElementById('retryBtn').style.display = 'none';
       setChip('loading', 'Memuat data…');
 
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 45000);
-
-      // Show elapsed seconds so user knows it's still working
-      let elapsed = 0;
-      const tickTimer = setInterval(() => {
-        elapsed++;
-        setChip('loading', `Memuat data… ${elapsed}d`);
-      }, 1000);
-
       try {
-        const res = await fetch(APPS_SCRIPT_URL, { signal: ctrl.signal });
-        clearTimeout(timer); clearInterval(tickTimer);
+        const res = await fetch(APPS_SCRIPT_URL);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data.error) throw new Error(data.error);
@@ -2749,13 +2738,9 @@
         setChip('live', '✓ Live · ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
         document.getElementById('footerL').textContent = `Data dari Google Drive · ${OUTLETS.length} outlet · ${new Date().toLocaleString('id-ID')}`;
       } catch (err) {
-        clearTimeout(timer); clearInterval(tickTimer);
         console.warn('Live fetch failed:', err.message);
-        const isTimeout = err.name === 'AbortError';
-        setChip('error', isTimeout ? 'Timeout · coba lagi' : 'Gagal memuat');
-        showError(isTimeout
-          ? 'Data belum berhasil dimuat setelah 45 detik. Pastikan Apps Script sudah di-deploy, lalu klik "Coba lagi".'
-          : `Gagal memuat data: ${err.message}. Klik "Coba lagi" untuk mencoba kembali.`);
+        setChip('error', 'Gagal memuat · coba lagi');
+        showError(`Gagal memuat data: ${err.message}. Klik "Coba lagi" untuk mencoba kembali.`);
         document.getElementById('retryBtn').style.display = '';
         document.getElementById('footerL').textContent = 'Gagal memuat data dari server';
       }
