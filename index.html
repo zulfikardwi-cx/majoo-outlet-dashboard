@@ -1904,6 +1904,17 @@
       }
     }
 
+    /* ── Ticket Hero ── */
+    .ticket-hero { background:linear-gradient(135deg,#1a8078 0%,#2ba99b 45%,#5eca6e 100%); border-radius:14px; padding:28px 32px; margin-bottom:20px; }
+    .ticket-stat { flex:1; padding:0 24px; border-right:1px solid rgba(255,255,255,0.2); }
+    .ticket-stat-label { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; letter-spacing:.06em; color:rgba(255,255,255,0.75); margin-bottom:10px; }
+    .ticket-stat-num { font-size:52px; font-weight:800; color:#fff; line-height:1; margin-bottom:6px; }
+    .ticket-stat-sub { font-size:11.5px; color:rgba(255,255,255,0.65); }
+    /* Ticket status filter buttons */
+    .tk-status-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; border:1px solid var(--border); background:#fff; font-size:12.5px; font-weight:500; color:var(--muted); cursor:pointer; transition:all .15s; }
+    .tk-status-btn:hover { background:var(--bg-1); color:var(--text); }
+    .tk-status-btn.active { background:var(--text); color:#fff; border-color:var(--text); font-weight:600; }
+    .tk-status-btn .gcount, .tk-status-btn span:last-child { font-size:11px; opacity:.8; margin-left:2px; }
     /* ── Team Analytics Grid ── */
     .team-analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
     .week-analytics-wrap { margin-bottom:22px; }
@@ -2011,6 +2022,14 @@
           <path d="M14 12c0-1.5-1-2.5-2-3" />
         </svg>
         Team Productivity
+      </button>
+      <button class="page-nav-btn" data-dash="ticket" onclick="switchDash('ticket')">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7">
+          <path d="M2 4h12v8H2z" rx="1"/>
+          <path d="M5 4V2.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V4"/>
+          <path d="M5 8h6M5 11h4"/>
+        </svg>
+        Tickets
       </button>
     </div>
 
@@ -2419,6 +2438,106 @@
 
     </div><!-- /teamPage -->
 
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TICKET PAGE                                           -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="ticketPage" style="display:none">
+
+      <!-- Ticket Hero — dark gradient -->
+      <div class="ticket-hero">
+        <div class="hero-row hero-row-4">
+          <div class="ticket-stat">
+            <div class="ticket-stat-label">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="3" width="14" height="10" rx="2"/><path d="M5 3V1.5M11 3V1.5M1 7h14"/></svg>
+              TOTAL TIKET DIBUAT
+            </div>
+            <div class="ticket-stat-num" id="tk-total">—</div>
+            <div class="ticket-stat-sub">Tiket masuk pada periode</div>
+          </div>
+          <div class="ticket-stat">
+            <div class="ticket-stat-label">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8l2.5 2"/></svg>
+              DAILY TIKET DIBUAT
+            </div>
+            <div class="ticket-stat-num" id="tk-daily">—</div>
+            <div class="ticket-stat-sub">In Progress oleh CS / Team Leader</div>
+          </div>
+          <div class="ticket-stat">
+            <div class="ticket-stat-label">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4"/></svg>
+              TAC PENGECEKAN
+            </div>
+            <div class="ticket-stat-num" id="tk-tac">—</div>
+            <div class="ticket-stat-sub">Eskalasi teknis ke TAC</div>
+          </div>
+          <div class="ticket-stat" style="border-right:none">
+            <div class="ticket-stat-label">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 8l4 4 8-8"/></svg>
+              SELESAI &amp; CLOSED
+            </div>
+            <div class="ticket-stat-num" id="tk-closed">—</div>
+            <div class="ticket-stat-sub">62.7% dari total · Resolved + Closed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date Picker Slot -->
+      <div id="ticketDpSlot"></div>
+
+      <!-- Status Filter -->
+      <div style="margin-bottom:16px">
+        <div class="role-filter-label">FILTER BERDASARKAN STATUS</div>
+        <div class="role-tabs" id="ticketStatusTabs" style="flex-wrap:wrap;gap:8px;margin-top:8px">
+          <button class="tk-status-btn active" data-ts="all"   onclick="setTicketStatus('all')">Semua Status <span id="tks-all">—</span></button>
+          <button class="tk-status-btn" data-ts="ticket"       onclick="setTicketStatus('ticket')">
+            <span class="g-dot" style="background:#3b82f6"></span>Tiket Dibuat <span id="tks-ticket">—</span>
+          </button>
+          <button class="tk-status-btn" data-ts="tac"          onclick="setTicketStatus('tac')">
+            <span class="g-dot" style="background:#a855f7"></span>TAC Pengecekan <span id="tks-tac">—</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Role Filter (reuse same role filter pattern) -->
+      <div class="role-filter-section">
+        <div class="role-filter-label">FILTER BERDASARKAN ROLE</div>
+        <div class="role-tabs" id="ticketRoleTabs">
+          <button class="role-tab active" data-rg="all" onclick="setTicketRole('all')">All Roles <span class="gcount" id="tkrc-all">—</span></button>
+          <button class="role-tab" data-rg="leadership" onclick="setTicketRole('leadership')"><span class="g-dot dot-e"></span>Leadership <span class="gcount" id="tkrc-leadership">—</span></button>
+          <button class="role-tab" data-rg="tac"        onclick="setTicketRole('tac')"><span class="g-dot dot-t"></span>TAC <span class="gcount" id="tkrc-tac">—</span></button>
+          <button class="role-tab" data-rg="support"    onclick="setTicketRole('support')"><span class="g-dot dot-p"></span>Customer Support <span class="gcount" id="tkrc-support">—</span></button>
+          <button class="role-tab" data-rg="lifecycle"  onclick="setTicketRole('lifecycle')"><span class="g-dot dot-n"></span>Customer Lifecycle <span class="gcount" id="tkrc-lifecycle">—</span></button>
+        </div>
+      </div>
+
+      <!-- Agent Toolbar -->
+      <div class="toolbar" style="margin-bottom:14px">
+        <div class="search-wrap">
+          <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="6.5" cy="6.5" r="5.5"/><line x1="11" y1="11" x2="15" y2="15"/></svg></span>
+          <input class="search-input" id="tkSearch" type="text" placeholder="Cari nama agent…" oninput="tkPage=1;renderTickets()"/>
+        </div>
+        <span class="count-chip" id="tkCountChip">— agent</span>
+      </div>
+
+      <!-- Agent Ticket Table -->
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="c-no">#</th>
+              <th class="c-name">Nama Agent</th>
+              <th style="min-width:200px">Role</th>
+              <th class="c-traffic" style="text-align:right">Tiket Dibuat</th>
+              <th class="c-traffic" style="text-align:right">TAC Pengecekan</th>
+            </tr>
+          </thead>
+          <tbody id="tkTbody"></tbody>
+        </table>
+        <div class="pag-bar" id="tkPagBar"></div>
+      </div>
+
+    </div><!-- /ticketPage -->
+
     <!-- Footer -->
     <div class="footer">
       <div class="footer-l">
@@ -2459,6 +2578,9 @@
     let activeDash = 'outlet';
     let AGENTS = [], AGENT_MSGS = {}, RESP_SUM = {}, RESP_COUNT = {};
     let curRole = 'all', tPage = 1, tPageSize = 10;
+    // Ticket page state
+    let TICKET_BY_AGENT = {}, TAC_BY_AGENT = {}, TICKET_BY_DATE = {}, TAC_BY_DATE = {};
+    let tkRole = 'all', tkStatus = 'all', tkPage = 1, tkPageSize = 10;
 
     // ════════════════════════════════════════════
     //  DATE UTILITIES
@@ -2646,21 +2768,27 @@
     // ════════════════════════════════════════════
     function switchDash(page) {
       activeDash = page;
-      const isTeam = page === 'team';
-      document.getElementById('outletPage').style.display = isTeam ? 'none' : '';
-      document.getElementById('teamPage').style.display = isTeam ? '' : 'none';
+      document.getElementById('outletPage').style.display  = page === 'outlet' ? '' : 'none';
+      document.getElementById('teamPage').style.display    = page === 'team'   ? '' : 'none';
+      document.getElementById('ticketPage').style.display  = page === 'ticket' ? '' : 'none';
       document.querySelectorAll('.page-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.dash === page));
 
       // Move the single date-picker into the active slot
       const dpWrap = document.getElementById('dpWrap');
-      const slot = document.getElementById(isTeam ? 'teamDpSlot' : 'outletDpSlot');
+      const slotId = page === 'team' ? 'teamDpSlot' : page === 'ticket' ? 'ticketDpSlot' : 'outletDpSlot';
+      const slot = document.getElementById(slotId);
       if (dpWrap && slot && !slot.contains(dpWrap)) slot.appendChild(dpWrap);
 
       // Update header branding
-      if (isTeam) {
+      if (page === 'team') {
         document.getElementById('brandEyebrow').textContent = 'TEAM PRODUCTIVITY';
         document.getElementById('brandTitle').textContent = 'Activity & Performance';
         document.getElementById('brandSub').textContent = 'Productivity tracking per agent & role · Customer Experience';
+        document.getElementById('brandPills').style.display = 'none';
+      } else if (page === 'ticket') {
+        document.getElementById('brandEyebrow').textContent = 'TICKET MONITORING';
+        document.getElementById('brandTitle').textContent = 'Handling Kendala & Support Tickets';
+        document.getElementById('brandSub').textContent = 'Real-time monitoring tiket · alur penanganan oleh tim Customer Experience';
         document.getElementById('brandPills').style.display = 'none';
       } else {
         document.getElementById('brandEyebrow').textContent = 'DATABASE GROUPS';
@@ -2669,7 +2797,8 @@
         document.getElementById('brandPills').style.display = '';
       }
 
-      if (isTeam) { updateTeamStats(); renderTeam(); }
+      if (page === 'team')   { updateTeamStats(); renderTeam(); }
+      else if (page === 'ticket') { updateTicketStats(); renderTickets(); }
       else { updateStats(); render(); }
     }
 
@@ -2696,10 +2825,12 @@
 
     async function loadData() {
       // Ensure correct page is visible and date picker is in the right slot
-      document.getElementById('outletPage').style.display = activeDash === 'outlet' ? '' : 'none';
-      document.getElementById('teamPage').style.display   = activeDash === 'team'   ? '' : 'none';
+      document.getElementById('outletPage').style.display  = activeDash === 'outlet' ? '' : 'none';
+      document.getElementById('teamPage').style.display    = activeDash === 'team'   ? '' : 'none';
+      document.getElementById('ticketPage').style.display  = activeDash === 'ticket' ? '' : 'none';
       const _dpEl   = document.getElementById('dpWrap');
-      const _slotEl = document.getElementById(activeDash === 'team' ? 'teamDpSlot' : 'outletDpSlot');
+      const _slotId = activeDash === 'team' ? 'teamDpSlot' : activeDash === 'ticket' ? 'ticketDpSlot' : 'outletDpSlot';
+      const _slotEl = document.getElementById(_slotId);
       if (_dpEl && _slotEl && !_slotEl.contains(_dpEl)) _slotEl.appendChild(_dpEl);
 
       showSkeletons(); hideError();
@@ -2732,9 +2863,14 @@
         AGENT_MSGS = data.agentMsgsByDate || {};
         RESP_SUM = data.responseSumByDate || {};
         RESP_COUNT = data.responseCountByDate || {};
+        TICKET_BY_AGENT = data.ticketsByAgentDate || {};
+        TAC_BY_AGENT    = data.tacByAgentDate     || {};
+        TICKET_BY_DATE  = data.ticketsByDate      || {};
+        TAC_BY_DATE     = data.tacByDate          || {};
 
         updateStats(); render();
-        if (activeDash === 'team') { updateTeamStats(); renderTeam(); }
+        if (activeDash === 'team')   { updateTeamStats(); renderTeam(); }
+        if (activeDash === 'ticket') { updateTicketStats(); renderTickets(); }
         setChip('live', '✓ Live · ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
         document.getElementById('footerL').textContent = `Data dari Google Drive · ${OUTLETS.length} outlet · ${new Date().toLocaleString('id-ID')}`;
       } catch (err) {
@@ -3100,6 +3236,147 @@
         ${pages.map(p => p === '...' ? `<span class="pag-ellipsis">…</span>` : `<button class="pag-btn${p === tPage ? ' active' : ''}" onclick="tPage=${p};renderTeam()">${p}</button>`).join('')}
         <button class="pag-btn" onclick="tPage=${tPage + 1};renderTeam()" ${tPage >= totalPages ? 'disabled' : ''}>Selanjutnya →</button>
       </div>`;
+    }
+
+    // ════════════════════════════════════════════
+    //  TICKET PAGE
+    // ════════════════════════════════════════════
+    function poolByTicketRole() {
+      const aktif = AGENTS.filter(a => a.aktif);
+      return tkRole === 'all' ? aktif : aktif.filter(a => a.roleGroup === tkRole);
+    }
+
+    function setTicketRole(rg) {
+      tkRole = rg;
+      document.querySelectorAll('#ticketRoleTabs .role-tab').forEach(b =>
+        b.classList.toggle('active', b.dataset.rg === rg));
+      tkPage = 1;
+      updateTicketStats(); renderTickets();
+    }
+
+    function setTicketStatus(ts) {
+      tkStatus = ts;
+      document.querySelectorAll('#ticketStatusTabs .tk-status-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.ts === ts));
+      tkPage = 1;
+      renderTickets();
+    }
+
+    function updateTicketStats() {
+      const aktif = AGENTS.filter(a => a.aktif);
+      // Role counts
+      setText('tkrc-all',        aktif.length);
+      setText('tkrc-leadership', aktif.filter(a => a.roleGroup === 'leadership').length);
+      setText('tkrc-tac',        aktif.filter(a => a.roleGroup === 'tac').length);
+      setText('tkrc-support',    aktif.filter(a => a.roleGroup === 'support').length);
+      setText('tkrc-lifecycle',  aktif.filter(a => a.roleGroup === 'lifecycle').length);
+
+      // Hero stats
+      const pool = poolByTicketRole();
+      const totalTickets = pool.reduce((s, a) =>
+        s + sumRange(TICKET_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd), 0);
+      const totalTac = pool.reduce((s, a) =>
+        s + sumRange(TAC_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd), 0);
+      const todayTickets = sumRange(TICKET_BY_DATE, todayStr(), todayStr());
+
+      setText('tk-total',  totalTickets > 0 ? totalTickets.toLocaleString('id-ID') : '—');
+      setText('tk-daily',  todayTickets  > 0 ? todayTickets.toLocaleString('id-ID')  : '—');
+      setText('tk-tac',    totalTac     > 0 ? totalTac.toLocaleString('id-ID')     : '—');
+      setText('tk-closed', '—');
+
+      // Status filter counts
+      setText('tks-all',    totalTickets + totalTac);
+      setText('tks-ticket', totalTickets);
+      setText('tks-tac',    totalTac);
+    }
+
+    function renderTickets() {
+      const tbody = document.getElementById('tkTbody');
+      if (!tbody) return;
+      const q = (document.getElementById('tkSearch')?.value || '').toLowerCase().trim();
+
+      let rows = poolByTicketRole()
+        .map(a => ({
+          ...a,
+          tickets: sumRange(TICKET_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd),
+          tac:     sumRange(TAC_BY_AGENT[a.number]    || {}, selectedDateStart, selectedDateEnd),
+        }))
+        .filter(a => {
+          if (q && !a.name.toLowerCase().includes(q)) return false;
+          if (tkStatus === 'ticket') return a.tickets > 0;
+          if (tkStatus === 'tac')    return a.tac > 0;
+          return a.tickets > 0 || a.tac > 0 || tkStatus === 'all';
+        })
+        .sort((a, b) => (b.tickets + b.tac) - (a.tickets + a.tac));
+
+      // Show all agents (including zero) when filter is 'all' and no search
+      if (tkStatus === 'all' && !q) {
+        rows = poolByTicketRole()
+          .map(a => ({
+            ...a,
+            tickets: sumRange(TICKET_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd),
+            tac:     sumRange(TAC_BY_AGENT[a.number]    || {}, selectedDateStart, selectedDateEnd),
+          }))
+          .sort((a, b) => (b.tickets + b.tac) - (a.tickets + a.tac));
+      }
+
+      const total = rows.length;
+      const totalPages = Math.max(1, Math.ceil(total / tkPageSize));
+      if (tkPage > totalPages) tkPage = totalPages;
+      const pgStart = (tkPage - 1) * tkPageSize;
+      const pageRows = rows.slice(pgStart, pgStart + tkPageSize);
+
+      document.getElementById('tkCountChip').textContent = `${total} agent`;
+
+      if (!total) {
+        tbody.innerHTML = `<tr class="empty"><td colspan="5"><div class="empty-t">Tidak ada data tiket</div><div class="empty-s">Coba ubah filter atau rentang tanggal</div></td></tr>`;
+        document.getElementById('tkPagBar').innerHTML = '';
+        return;
+      }
+
+      tbody.innerHTML = pageRows.map((a, i) => `
+        <tr>
+          <td class="c-no">${String(pgStart + i + 1).padStart(2, '0')}</td>
+          <td class="c-name"><span class="outlet-avatar">${initials(a.name)}</span><span>${esc(a.name)}</span></td>
+          <td><span class="badge ${agentRoleCls(a.roleGroup)}"><span class="dot"></span>${esc(a.role)}</span></td>
+          <td class="c-traffic-val">
+            ${a.tickets > 0
+              ? `<span style="color:var(--m-teal);font-weight:600">${a.tickets.toLocaleString('id-ID')}</span>`
+              : '<span style="color:var(--muted-2);font-size:12.5px">—</span>'}
+          </td>
+          <td class="c-traffic-val">
+            ${a.tac > 0
+              ? `<span style="color:#a855f7;font-weight:600">${a.tac.toLocaleString('id-ID')}</span>`
+              : '<span style="color:var(--muted-2);font-size:12.5px">—</span>'}
+          </td>
+        </tr>`).join('');
+
+      // Pagination
+      const bar = document.getElementById('tkPagBar');
+      if (total === 0) { bar.innerHTML = ''; return; }
+      const s = pgStart + 1, e = Math.min(tkPage * tkPageSize, total);
+      let pages = [];
+      if (totalPages <= 7) { for (let i = 1; i <= totalPages; i++) pages.push(i); }
+      else {
+        pages.push(1);
+        if (tkPage > 3) pages.push('...');
+        for (let i = Math.max(2, tkPage - 1); i <= Math.min(totalPages - 1, tkPage + 1); i++) pages.push(i);
+        if (tkPage < totalPages - 2) pages.push('...');
+        pages.push(totalPages);
+      }
+      bar.innerHTML = `
+        <div class="pag-left">
+          <span class="pag-size-label">Tampilkan:</span>
+          <select class="pag-size-select" onchange="tkPageSize=+this.value;tkPage=1;renderTickets()">
+            ${[10,25,50,100].map(n=>`<option value="${n}"${n===tkPageSize?' selected':''}>${n}</option>`).join('')}
+          </select>
+          <span class="pag-info">Ditampilkan ${s}–${e} dari ${total} agent</span>
+        </div>
+        <div class="pag-pages">
+          <button class="pag-btn" onclick="tkPage=${tkPage-1};renderTickets()" ${tkPage<=1?'disabled':''}>←</button>
+          ${pages.map(p => p==='...' ? `<span class="pag-ellipsis">…</span>` : `<button class="pag-btn${p===tkPage?' active':''}" onclick="tkPage=${p};renderTickets()">${p}</button>`).join('')}
+          <button class="pag-btn" onclick="tkPage=${tkPage+1};renderTickets()" ${tkPage>=totalPages?'disabled':''}>Selanjutnya →</button>
+        </div>`;
     }
 
     function drawSpark(id, values, stroke, fill) {
