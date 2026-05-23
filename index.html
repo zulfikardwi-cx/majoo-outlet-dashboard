@@ -1903,7 +1903,41 @@
         display: none;
       }
     }
+
+    /* ── Team Analytics Grid ── */
+    .team-analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:22px; }
+    .analytics-panel { background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
+    .analytics-panel-title { font-size:14px; font-weight:600; color:var(--text); }
+    .analytics-panel-sub { font-size:11.5px; color:var(--muted); margin-top:3px; }
+    .analytics-badge { background:#e6f7f5; color:var(--m-teal); border-radius:999px; padding:3px 11px; font-size:12px; font-weight:600; white-space:nowrap; }
+    /* Role breakdown */
+    .role-row { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+    .role-row-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .role-row-name { font-size:13px; font-weight:500; flex:1; }
+    .role-row-agents { font-size:11.5px; color:var(--muted); margin-right:6px; }
+    .role-row-count { font-size:16px; font-weight:700; line-height:1; }
+    .role-bar-track { height:6px; background:var(--bg-1,#f3f4f6); border-radius:3px; margin:4px 0 2px 16px; }
+    .role-bar-fill { height:100%; border-radius:3px; transition:width .4s; }
+    .role-bar-pct { font-size:10.5px; color:var(--muted); margin-left:16px; margin-bottom:12px; }
+    /* Heatmap */
+    .heatmap-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:14px; }
+    .hm-cell { width:44px; height:44px; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:default; }
+    .hm-cell .hm-date { font-size:16px; font-weight:700; line-height:1; }
+    .hm-cell .hm-day { font-size:10px; opacity:.8; }
+    .hm-legend { display:flex; align-items:center; gap:5px; margin-top:10px; font-size:11px; color:var(--muted); }
+    .hm-legend-sq { width:14px; height:14px; border-radius:3px; flex-shrink:0; }
+    /* Top Performers */
+    .perf-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); }
+    .perf-row:last-child { border-bottom:none; }
+    .perf-rank { font-size:11px; font-weight:600; color:var(--muted); width:20px; flex-shrink:0; text-align:center; }
+    .perf-avatar { width:32px; height:32px; border-radius:50%; background:#e6f7f5; color:var(--m-teal); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .perf-info { flex:1; min-width:0; }
+    .perf-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .perf-role { font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .perf-count { font-size:15px; font-weight:700; text-align:right; }
+    .perf-label { font-size:10px; color:var(--muted); text-align:right; }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 
 <body>
@@ -2256,6 +2290,53 @@
 
       <!-- Team Date Picker Slot -->
       <div id="teamDpSlot"></div>
+
+      <!-- Analytics Grid -->
+      <div class="team-analytics-grid" id="teamAnalyticsGrid">
+
+        <!-- Activity Over Time -->
+        <div class="analytics-panel">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+            <div>
+              <div class="analytics-panel-title">Activity Over Time</div>
+              <div class="analytics-panel-sub">Conversations ditangani per hari · filter aktif</div>
+            </div>
+            <span class="analytics-badge" id="aot-badge">—</span>
+          </div>
+          <div style="position:relative;height:190px"><canvas id="activityChart"></canvas></div>
+        </div>
+
+        <!-- Productivity by Role -->
+        <div class="analytics-panel">
+          <div class="analytics-panel-title">Productivity by Role</div>
+          <div class="analytics-panel-sub" style="margin-bottom:16px">Conversations ditangani · grup peran</div>
+          <div id="roleBreakdown"></div>
+        </div>
+
+        <!-- Daily Activity Heatmap -->
+        <div class="analytics-panel">
+          <div class="analytics-panel-title">Daily Activity Heatmap</div>
+          <div class="analytics-panel-sub">Intensitas conversation · per hari</div>
+          <div class="heatmap-row" id="heatmapRow"></div>
+          <div class="hm-legend">
+            <span>Sepi</span>
+            <div class="hm-legend-sq" style="background:#e6f4f1"></div>
+            <div class="hm-legend-sq" style="background:#9dd9cf"></div>
+            <div class="hm-legend-sq" style="background:#53bfb3"></div>
+            <div class="hm-legend-sq" style="background:#2ba99b"></div>
+            <div class="hm-legend-sq" style="background:#1a8078"></div>
+            <span>Ramai</span>
+          </div>
+        </div>
+
+        <!-- Top Performers -->
+        <div class="analytics-panel">
+          <div class="analytics-panel-title">Top Performers</div>
+          <div class="analytics-panel-sub" style="margin-bottom:12px">5 agent terproduktif pada periode</div>
+          <div id="topPerformersList"></div>
+        </div>
+
+      </div><!-- /team-analytics-grid -->
 
       <!-- Role Filter -->
       <div class="role-filter-section">
@@ -2774,7 +2855,142 @@
       setText('rc-tac', aktif.filter(a => a.roleGroup === 'tac').length);
       setText('rc-support', aktif.filter(a => a.roleGroup === 'support').length);
       setText('rc-lifecycle', aktif.filter(a => a.roleGroup === 'lifecycle').length);
+
+      renderTeamAnalytics();
     }
+    let _activityChart = null;
+    function renderTeamAnalytics() {
+      const pool = poolByRole();
+
+      // ── Build daily totals ──
+      const dailyTotals = {};
+      eachDay(selectedDateStart, selectedDateEnd, ds => { dailyTotals[ds] = 0; });
+      pool.forEach(a => {
+        const msgs = AGENT_MSGS[a.number] || {};
+        Object.entries(msgs).forEach(([d, v]) => {
+          if (dailyTotals[d] !== undefined) dailyTotals[d] += v;
+        });
+      });
+      const days = Object.keys(dailyTotals).sort();
+      const values = days.map(d => dailyTotals[d]);
+      const grandTotal = values.reduce((s, v) => s + v, 0);
+
+      // Badge
+      const badge = document.getElementById('aot-badge');
+      if (badge) badge.textContent = `● ${grandTotal.toLocaleString('id-ID')} chats`;
+
+      // ── 1. Line Chart ──
+      const ctx = document.getElementById('activityChart')?.getContext('2d');
+      if (ctx) {
+        if (_activityChart) { _activityChart.destroy(); _activityChart = null; }
+        const labels = days.map(d => {
+          const dt = new Date(d + 'T00:00:00');
+          return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        });
+        _activityChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              data: values,
+              borderColor: '#2ba99b',
+              backgroundColor: 'rgba(43,169,155,0.09)',
+              borderWidth: 2,
+              pointBackgroundColor: '#2ba99b',
+              pointRadius: days.length > 14 ? 0 : 3,
+              pointHoverRadius: 5,
+              fill: true,
+              tension: 0.35
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: {
+              label: c => ` ${c.parsed.y.toLocaleString('id-ID')} conversations`
+            }}},
+            scales: {
+              x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#9ca3af', maxTicksLimit: 8 } },
+              y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 }, color: '#9ca3af' }, beginAtZero: true }
+            }
+          }
+        });
+      }
+
+      // ── 2. Productivity by Role ──
+      const roleGroups = [
+        { key:'support',    label:'Customer Support',   color:'#a855f7' },
+        { key:'tac',        label:'TAC',                color:'#3b82f6' },
+        { key:'lifecycle',  label:'Customer Lifecycle',  color:'#f97316' },
+        { key:'leadership', label:'Leadership',          color:'#6b7280' },
+      ];
+      const allAktif = AGENTS.filter(a => a.aktif);
+      const roleData = roleGroups.map(rg => {
+        const agents = allAktif.filter(a => a.roleGroup === rg.key);
+        const convs  = agents.reduce((s, a) => s + sumRange(AGENT_MSGS[a.number] || {}, selectedDateStart, selectedDateEnd), 0);
+        return { ...rg, agentCount: agents.length, convs };
+      });
+      const totalConvs = roleData.reduce((s, r) => s + r.convs, 0) || 1;
+      const roleBreakdown = document.getElementById('roleBreakdown');
+      if (roleBreakdown) {
+        roleBreakdown.innerHTML = roleData.map(r => {
+          const pct = ((r.convs / totalConvs) * 100).toFixed(1);
+          return `
+          <div class="role-row">
+            <div class="role-row-dot" style="background:${r.color}"></div>
+            <div class="role-row-name">${r.label}</div>
+            <div class="role-row-agents">${r.agentCount} agent</div>
+            <div class="role-row-count">${r.convs.toLocaleString('id-ID')}</div>
+          </div>
+          <div class="role-bar-track"><div class="role-bar-fill" style="width:${pct}%;background:${r.color}"></div></div>
+          <div class="role-bar-pct">${pct}%</div>`;
+        }).join('');
+      }
+
+      // ── 3. Heatmap ──
+      const maxVal = Math.max(1, ...values);
+      const HM_COLORS = ['#e6f4f1','#9dd9cf','#53bfb3','#2ba99b','#1a8078'];
+      const DAYS_ID   = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+      const heatmapRow = document.getElementById('heatmapRow');
+      if (heatmapRow) {
+        heatmapRow.innerHTML = days.map(d => {
+          const v = dailyTotals[d] || 0;
+          const lvl = maxVal > 0 ? Math.min(4, Math.floor((v / maxVal) * 4.99)) : 0;
+          const bg  = HM_COLORS[lvl];
+          const tc  = lvl >= 2 ? '#fff' : '#2d6e6a';
+          const dt  = new Date(d + 'T00:00:00');
+          return `<div class="hm-cell" style="background:${bg};color:${tc}" title="${v.toLocaleString('id-ID')} chats · ${d}">
+            <div class="hm-date">${dt.getDate()}</div>
+            <div class="hm-day">${DAYS_ID[dt.getDay()]}</div>
+          </div>`;
+        }).join('');
+      }
+
+      // ── 4. Top Performers ──
+      const topPerformersList = document.getElementById('topPerformersList');
+      if (topPerformersList) {
+        const sorted = pool
+          .map(a => ({ ...a, msgs: sumRange(AGENT_MSGS[a.number] || {}, selectedDateStart, selectedDateEnd) }))
+          .filter(a => a.msgs > 0)
+          .sort((a, b) => b.msgs - a.msgs)
+          .slice(0, 5);
+        topPerformersList.innerHTML = sorted.length
+          ? sorted.map((a, i) => `
+            <div class="perf-row">
+              <div class="perf-rank">0${i + 1}</div>
+              <div class="perf-avatar">${initials(a.name)}</div>
+              <div class="perf-info">
+                <div class="perf-name">${esc(a.name)}</div>
+                <div class="perf-role">${esc(a.role)}</div>
+              </div>
+              <div>
+                <div class="perf-count">${a.msgs.toLocaleString('id-ID')}</div>
+                <div class="perf-label">chats</div>
+              </div>
+            </div>`).join('')
+          : `<div style="color:var(--muted);font-size:13px;padding:16px 0;text-align:center">Tidak ada data pada periode ini</div>`;
+      }
+    }
+
     function renderTeam() {
       const tbody = document.getElementById('agentTbody');
       if (!tbody) return;
