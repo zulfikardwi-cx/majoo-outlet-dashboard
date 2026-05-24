@@ -2855,23 +2855,39 @@
     let selectedDateStart = '', selectedDateEnd = '';
     let curPage = 1, pageSize = 10;
 
-    // ── Dismissed Need Reply (persisted to localStorage) ──
-    const DISMISSED_KEY = 'majoo_dismissed_needreply';
-    let dismissedNeedReply = new Set(JSON.parse(localStorage.getItem(DISMISSED_KEY) || '[]'));
+    // ── Dismissed Need Reply (shared via Apps Script ScriptProperties) ──
+    let dismissedNeedReply = new Set();
     function outletKey(o) { return (o.url && o.url !== '#') ? o.url : o.name; }
     function isEffectiveNeedReply(o) { return o.needReply && !dismissedNeedReply.has(outletKey(o)); }
-    function saveDismissed() { localStorage.setItem(DISMISSED_KEY, JSON.stringify([...dismissedNeedReply])); }
-    function dismissOutlet(key) {
-      dismissedNeedReply.add(key);
-      saveDismissed();
-      updateStats();
-      render();
+
+    async function loadDismissed() {
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDismissed`);
+        const data = await res.json();
+        dismissedNeedReply = new Set(data.dismissed || []);
+      } catch(e) { console.warn('loadDismissed failed:', e); }
     }
-    function resetDismissed() {
-      dismissedNeedReply.clear();
-      saveDismissed();
+
+    async function dismissOutlet(key) {
+      // Optimistic UI update — instant response
+      dismissedNeedReply.add(key);
       updateStats();
       render();
+      // Sync to backend in background
+      try {
+        await fetch(`${APPS_SCRIPT_URL}?action=dismissOutlet&key=${encodeURIComponent(key)}`);
+      } catch(e) { console.warn('dismissOutlet sync failed:', e); }
+    }
+
+    async function resetDismissed() {
+      // Optimistic UI update
+      dismissedNeedReply.clear();
+      updateStats();
+      render();
+      // Sync to backend in background
+      try {
+        await fetch(`${APPS_SCRIPT_URL}?action=resetDismissed`);
+      } catch(e) { console.warn('resetDismissed sync failed:', e); }
     }
     // Team page state
     let activeDash = 'outlet';
@@ -3140,7 +3156,11 @@
       setChip('loading', 'Memuat data…');
 
       try {
-        const res = await fetch(APPS_SCRIPT_URL);
+        // Load outlet data and dismissed list in parallel
+        const [res] = await Promise.all([
+          fetch(APPS_SCRIPT_URL),
+          loadDismissed(),
+        ]);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data.error) throw new Error(data.error);
