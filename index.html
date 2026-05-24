@@ -2038,6 +2038,231 @@
     .perf-role { font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .perf-count { font-size:15px; font-weight:700; text-align:right; }
     .perf-label { font-size:10px; color:var(--muted); text-align:right; }
+
+    /* ── Template Konfirmasi FAB ── */
+    .tpl-fab {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px 10px 14px;
+      background: var(--m-teal);
+      color: #fff;
+      border: none;
+      border-radius: 99px;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 16px color-mix(in srgb, var(--m-teal) 40%, transparent);
+      transition: background .15s, transform .1s;
+    }
+    .tpl-fab:hover { background: var(--m-dark); transform: translateY(-1px); }
+    .tpl-fab svg { flex-shrink: 0; }
+    .tpl-fab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background: #000;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* ── Modal overlay ── */
+    .tpl-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.35);
+      z-index: 1000;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 20px 24px;
+    }
+    .tpl-overlay.open { display: flex; }
+
+    /* ── Modal panel ── */
+    .tpl-panel {
+      background: var(--surface);
+      border-radius: var(--rad-lg);
+      width: 420px;
+      max-width: calc(100vw - 48px);
+      max-height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.18);
+      animation: tplSlideIn .18s ease;
+    }
+    @keyframes tplSlideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+
+    .tpl-head {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .tpl-head-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .tpl-head-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .tpl-head-title { font-size: 18px; font-weight: 700; color: var(--ink); }
+    .tpl-head-desc { font-size: 12.5px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+    .tpl-close {
+      background: none;
+      border: none;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .12s;
+    }
+    .tpl-close:hover { background: var(--surface-2); color: var(--ink); }
+
+    .tpl-body {
+      padding: 14px 16px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Template cards ── */
+    .tpl-card {
+      border: 1px solid var(--border);
+      border-radius: var(--rad);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .tpl-card:hover { border-color: var(--m-teal); }
+    .tpl-card.tpl-open { border-color: var(--m-teal); }
+
+    .tpl-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 14px 14px 14px;
+    }
+    .tpl-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      flex-shrink: 0;
+      font-family: var(--mono);
+    }
+    .tpl-card-info { flex: 1; min-width: 0; }
+    .tpl-card-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+    .tpl-card-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+    /* badges */
+    .tpl-badge {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .tpl-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .tpl-badge-tac { background: var(--p-bg); border-color: var(--p-bd); color: var(--p-tx); }
+    .tpl-badge-tac .dot { background: var(--p-dot); }
+    .tpl-badge-inprogress { background: var(--n-bg); border-color: var(--n-bd); color: var(--n-tx); }
+    .tpl-badge-inprogress .dot { background: var(--n-dot); }
+    .tpl-badge-resolved { background: var(--r-bg); border-color: var(--r-bd); color: var(--r-tx); }
+    .tpl-badge-resolved .dot { background: var(--r-dot); }
+    .tpl-badge-closed { background: var(--surface-2); border-color: var(--border-strong); color: var(--muted); }
+    .tpl-badge-closed .dot { background: var(--muted-2); }
+
+    /* template text area */
+    .tpl-content {
+      display: none;
+      padding: 0 0 14px;
+    }
+    .tpl-open .tpl-content { display: block; }
+    .tpl-text-box {
+      background: var(--surface-2);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--ink-2);
+      margin: 0 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .tpl-var {
+      display: inline-block;
+      background: var(--m-tint);
+      color: var(--m-teal);
+      border: 1px solid var(--teal-range);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 12px;
+      font-family: var(--mono);
+      font-weight: 600;
+    }
+    .tpl-copy-btn {
+      padding: 7px 18px;
+      border: 1.5px solid var(--m-teal);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--m-teal);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .12s, color .12s;
+    }
+    .tpl-copy-btn:hover { background: var(--m-teal); color: #fff; }
+    .tpl-copy-btn.copied { background: var(--m-teal); color: #fff; }
+
+    .tpl-foot {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -3985,7 +4210,129 @@
     // Auth check — only load data if session valid
     checkAuth();
     loadData();
+
+    // ════════════════════════════════════════════
+    //  TEMPLATE KONFIRMASI
+    // ════════════════════════════════════════════
+    const TEMPLATES = [
+      {
+        id: 1,
+        title: 'Pengecekan akan dilakukan TAC',
+        desc: 'Saat tiket baru diterima & akan dicek tim TAC',
+        badge: { label: 'TAC Pengecekan', cls: 'tpl-badge-tac' },
+        text: 'Halo kak, terkait hal tersebut akan dilakukan pengecekan terlebih dahulu ya.',
+      },
+      {
+        id: 2,
+        title: 'Tiket eskalasi (proses pengecekan)',
+        desc: 'Saat tiket sudah dieskalasi & sedang diproses',
+        badge: { label: 'In Progress', cls: 'tpl-badge-inprogress' },
+        text: 'Halo kak, terkait dengan kendalanya saat ini dalam pengecekan pada id ticket : {{clickup_id}}',
+      },
+      {
+        id: 3,
+        title: 'Pengecekan sudah selesai',
+        desc: 'Saat hasil pengecekan sudah ada & akan dibagikan ke user',
+        badge: { label: 'Resolved', cls: 'tpl-badge-resolved' },
+        text: 'Halo kak, setelah dilakukan pengecekan. (Lanjutkan conten chat sesuai pengecekan)',
+      },
+      {
+        id: 4,
+        title: 'Tiket eskalasi sudah selesai · Follow up',
+        desc: 'Saat recovery / fixing sudah selesai, follow up ke outlet',
+        badge: { label: 'Closed', cls: 'tpl-badge-closed' },
+        text: 'Halo team {{nama_outlet}}, izin menginformasikan terkait dengan kendala pada id ticket : {{clickup_id}} telah selesai proses recovery/ fixingnya. Mohon untuk di cek kembali, jika masih terdapat ketidaksesuaian, mohon dilakukan konfirmasi kembali.\nTerima kasih',
+      },
+    ];
+
+    function highlightVars(text) {
+      return text
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\{\{(\w+)\}\}/g, '<span class="tpl-var">{{$1}}</span>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function renderTemplates() {
+      const body = document.getElementById('tplBody');
+      body.innerHTML = TEMPLATES.map(t => `
+        <div class="tpl-card" id="tplCard${t.id}">
+          <div class="tpl-card-header" onclick="toggleTpl(${t.id})" style="cursor:pointer">
+            <div class="tpl-num">${String(t.id).padStart(2,'0')}</div>
+            <div class="tpl-card-info">
+              <div class="tpl-card-title">${t.title}</div>
+              <div class="tpl-card-desc">${t.desc}</div>
+            </div>
+            <span class="tpl-badge ${t.badge.cls}"><span class="dot"></span>${t.badge.label}</span>
+          </div>
+          <div class="tpl-content">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 14px">
+              <span style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Teks Template</span>
+              <button class="tpl-copy-btn" id="tplCopyBtn${t.id}" onclick="copyTpl(event,${t.id})" style="width:auto;padding:6px 16px">Salin teks</button>
+            </div>
+            <div class="tpl-text-box">${highlightVars(t.text)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openTplModal() {
+      renderTemplates();
+      document.getElementById('tplOverlay').classList.add('open');
+    }
+    function closeTplModal() {
+      document.getElementById('tplOverlay').classList.remove('open');
+    }
+    function toggleTpl(id) {
+      const card = document.getElementById('tplCard' + id);
+      const wasOpen = card.classList.contains('tpl-open');
+      document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('tpl-open'));
+      if (!wasOpen) card.classList.add('tpl-open');
+    }
+    function copyTpl(e, id) {
+      e.stopPropagation();
+      const t = TEMPLATES.find(t => t.id === id);
+      navigator.clipboard.writeText(t.text).then(() => {
+        const btn = document.getElementById('tplCopyBtn' + id);
+        btn.textContent = '✓ Tersalin!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Salin teks'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+    // Close on overlay click
+    document.getElementById('tplOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeTplModal();
+    });
   </script>
+
+  <!-- Template Konfirmasi FAB -->
+  <button class="tpl-fab" onclick="openTplModal()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 3h12v8H6l-4 3z"/>
+    </svg>
+    Template Konfirmasi
+    <span class="tpl-fab-badge">4</span>
+  </button>
+
+  <!-- Template Modal -->
+  <div class="tpl-overlay" id="tplOverlay">
+    <div class="tpl-panel">
+      <div class="tpl-head">
+        <div class="tpl-head-label">Panduan · Chat Grup Customer</div>
+        <div class="tpl-head-row">
+          <div>
+            <div class="tpl-head-title">Template Konfirmasi User</div>
+            <div class="tpl-head-desc">Gunakan template di bawah saat konfirmasi user di grup. Klik kartu untuk melihat template & salin ke clipboard.</div>
+          </div>
+          <button class="tpl-close" onclick="closeTplModal()">×</button>
+        </div>
+      </div>
+      <div class="tpl-body" id="tplBody"></div>
+      <div class="tpl-foot">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+        Gunakan bahasa yang santun & konsisten. Pastikan ID tiket benar sebelum dikirim ke grup.
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
