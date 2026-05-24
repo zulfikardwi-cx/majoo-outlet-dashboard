@@ -2866,7 +2866,7 @@
       if (!o.needReply) return false;
       const entry = dismissedNeedReply.get(outletKey(o));
       if (!entry) return true; // not dismissed → perlu dibalas
-      const today = fmt(new Date());
+      const today = localDate(new Date());
       if (entry.date !== today) return true; // hari baru → undismiss otomatis
       const inboundToday = sumRange(o.trafficByDate, today, today);
       if (inboundToday > entry.inboundAtDismiss) return true; // ada chat baru → undismiss
@@ -2882,7 +2882,7 @@
     }
 
     async function dismissOutlet(key, inboundToday) {
-      const today = fmt(new Date());
+      const today = localDate(new Date());
       dismissedNeedReply.set(key, { inboundAtDismiss: inboundToday, date: today });
       updateStats();
       render();
@@ -3811,7 +3811,7 @@
     function replyH(o) {
       if (!o.needReply) return `<span style="color:var(--muted-2);font-size:12.5px">—</span>`;
       const key = outletKey(o);
-      const today = fmt(new Date());
+      const today = localDate(new Date());
       const inboundToday = sumRange(o.trafficByDate, today, today);
       const entry = dismissedNeedReply.get(key);
       const isDismissed = entry && entry.date === today && inboundToday <= entry.inboundAtDismiss;
