@@ -1913,6 +1913,30 @@
     .outlet-tac-agents { font-size:11.5px; color:var(--muted); white-space:nowrap; }
     .outlet-tac-count { font-size:14px; font-weight:700; color:#a855f7; white-space:nowrap; min-width:36px; text-align:right; }
     .outlet-tac-agent-list { font-size:11.5px; color:var(--muted); margin-top:2px; }
+    /* ── Login Screen ── */
+    #loginScreen { position:fixed; inset:0; background:#f3f4f6; display:flex; align-items:center; justify-content:center; z-index:9999; padding:20px; }
+    .login-card { background:#fff; border-radius:16px; padding:40px 36px; width:100%; max-width:400px; box-shadow:0 4px 32px rgba(0,0,0,.10); }
+    .login-logo { display:flex; align-items:center; gap:10px; margin-bottom:32px; }
+    .login-logo span { font-size:18px; font-weight:800; color:var(--text); letter-spacing:-.3px; }
+    .login-title { font-size:22px; font-weight:700; color:var(--text); margin-bottom:6px; }
+    .login-sub { font-size:13.5px; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+    .login-field-wrap { margin-bottom:10px; }
+    .login-input { width:100%; box-sizing:border-box; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; color:var(--text); outline:none; transition:border .15s; background:#fff; }
+    .login-input:focus { border-color:var(--m-teal); }
+    .login-otp-wrap { margin-bottom:10px; }
+    .login-otp-input { width:100%; box-sizing:border-box; padding:16px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:28px; font-weight:700; letter-spacing:.4em; text-align:center; color:var(--text); outline:none; transition:border .15s; background:#fff; font-family:'Courier New',monospace; }
+    .login-otp-input:focus { border-color:var(--m-teal); }
+    .login-error { font-size:12.5px; color:#dc2626; min-height:18px; margin-bottom:8px; }
+    .login-btn { width:100%; padding:13px; background:var(--m-teal); color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:background .15s; margin-bottom:12px; }
+    .login-btn:hover { background:#1a8078; }
+    .login-btn:disabled { background:#9ca3af; cursor:not-allowed; }
+    .login-back { background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; padding:0; display:block; margin:0 auto; }
+    .login-back:hover { color:var(--text); }
+    .login-domain-note { text-align:center; font-size:12px; color:var(--muted-2,#9ca3af); margin-top:10px; }
+    .login-resend { text-align:center; font-size:12.5px; color:var(--muted); margin-top:14px; }
+    .login-resend span { color:var(--m-teal); cursor:pointer; font-weight:500; }
+    .login-resend span:hover { text-decoration:underline; }
+    .login-blocked-icon { font-size:40px; text-align:center; margin-bottom:16px; }
     /* ── Ticket Hero ── */
     .ticket-hero { background:linear-gradient(135deg,#1a8078 0%,#2ba99b 45%,#5eca6e 100%); border-radius:14px; padding:28px 32px; margin-bottom:20px; }
     .ticket-stat { flex:1; padding:0 24px; border-right:1px solid rgba(255,255,255,0.2); }
@@ -1969,6 +1993,67 @@
 </head>
 
 <body>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- LOGIN SCREEN                               -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="loginScreen">
+    <div class="login-card">
+
+      <!-- Logo -->
+      <div class="login-logo">
+        <svg width="36" height="36" viewBox="-8 0 158 135" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M140.835 111.61C140.835 120.566 133.632 127.796 124.709 127.796C115.786 127.796 108.583 120.566 108.583 111.61C108.583 91.7558 108.583 72.0091 108.583 52.2625C111.27 52.2625 113.958 52.2625 116.646 52.2625C118.581 52.2625 119.548 50.536 118.151 49.0253C111.915 41.6878 105.572 34.4581 99.337 27.1206C97.7244 24.9625 97.1869 25.3941 95.6818 27.1206C89.4463 34.4581 83.1034 41.6878 76.8679 49.0253C75.4704 50.6439 76.4379 52.2625 78.3731 52.2625C81.0607 52.2625 83.7484 52.2625 86.4361 52.2625C86.4361 72.117 86.5436 91.7558 86.5436 111.61C86.5436 120.566 79.3406 127.796 70.4175 127.796C61.4944 127.796 54.2913 120.566 54.2913 111.61C54.2913 97.6906 54.3989 83.8787 54.3989 70.0668C57.0865 70.0668 59.7742 70.0668 62.4619 70.0668C64.3971 70.0668 65.3646 68.3404 63.967 66.8297C57.7316 59.4921 51.3886 52.2625 45.1532 44.9249C43.5406 42.7668 43.003 43.1984 41.4979 44.9249C35.2625 52.2625 28.9195 59.4921 22.6841 66.8297C21.2865 68.4483 22.2541 70.0668 24.1892 70.0668C26.8769 70.0668 29.5646 70.0668 32.2523 70.0668V70.8222V111.61C32.2523 120.566 25.0493 127.796 16.1261 127.796C7.20301 127.796 0 120.566 0 111.61V48.3779C0 36.5083 4.83784 25.6099 12.6859 17.7328C20.534 9.85572 31.3922 5 43.3256 5C53.6463 5 63.107 8.66878 70.525 14.7115C77.943 8.66878 87.4037 5 97.7244 5C109.658 5 120.516 9.85572 128.364 17.7328C136.212 25.6099 141.05 36.5083 141.05 48.3779V111.61H140.835Z" fill="url(#login_logo_grad)"/>
+          <defs>
+            <linearGradient id="login_logo_grad" x1="70.397" y1="134.015" x2="70.397" y2="-7.48128" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#2DBDB6"/>
+              <stop offset="0.27" stop-color="#2DBDB6"/>
+              <stop offset="1" stop-color="#9ACF87"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Dashboard Monitoring Groups</span>
+      </div>
+
+      <!-- Step 1: Email -->
+      <div id="loginStep1">
+        <div class="login-title">Selamat datang</div>
+        <div class="login-sub">Masukkan email Majoo kamu untuk melanjutkan</div>
+        <div class="login-field-wrap">
+          <input class="login-input" id="loginEmail" type="email" placeholder="nama@majoo.id"
+            onkeydown="if(event.key==='Enter') requestCode()" autocomplete="email" autofocus/>
+        </div>
+        <div class="login-error" id="loginErr1"></div>
+        <button class="login-btn" id="loginSendBtn" onclick="requestCode()">Kirim Kode Sign-In</button>
+      </div>
+
+      <!-- Step 2: OTP -->
+      <div id="loginStep2" style="display:none">
+        <div class="login-title">Masukkan kode</div>
+        <div class="login-sub">Kode 8-digit telah dikirim ke<br><strong id="loginEmailDisplay" style="color:var(--text)"></strong></div>
+        <div class="login-otp-wrap">
+          <input class="login-otp-input" id="loginCode" type="text" inputmode="numeric"
+            maxlength="8" placeholder="· · · · · · · ·"
+            oninput="this.value=this.value.replace(/\D/g,'')"
+            onkeydown="if(event.key==='Enter') verifyCode()" autocomplete="one-time-code"/>
+        </div>
+        <div class="login-error" id="loginErr2"></div>
+        <button class="login-btn" id="loginVerifyBtn" onclick="verifyCode()">Masuk ke Dashboard</button>
+        <button class="login-back" onclick="showLoginStep1()">← Ganti email</button>
+        <div class="login-resend">Tidak menerima email? <span onclick="requestCode(true)">Kirim ulang</span></div>
+      </div>
+
+      <!-- Blocked -->
+      <div id="loginBlocked" style="display:none">
+        <div class="login-blocked-icon">🚫</div>
+        <div class="login-title" style="color:#dc2626">Akses Ditolak</div>
+        <div class="login-sub" id="loginBlockedMsg">Hanya email @majoo.id yang dapat mengakses dashboard ini.</div>
+        <button class="login-back" style="margin-top:20px" onclick="showLoginStep1()">← Coba email lain</button>
+      </div>
+
+    </div>
+  </div>
+
   <div class="shell">
 
     <!-- Header -->
@@ -2592,6 +2677,127 @@
     //  CONFIG
     // ════════════════════════════════════════════
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlyIsRkqcr0OuUr_Yu-wB9sugkirG9P2T7fMdKd9tkHy4bQBLOqJXmL7EeolXDRg0o/exec';
+    const ALLOWED_DOMAIN  = 'majoo.id';
+    const SESSION_KEY     = 'majoo_cx_auth';
+    const SESSION_TTL_MS  = 24 * 60 * 60 * 1000; // 24 hours
+
+    // ── Auth check on load ──
+    function checkAuth() {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (raw) {
+          const sess = JSON.parse(raw);
+          if (sess.expiry && Date.now() < sess.expiry) {
+            document.getElementById('loginScreen').style.display = 'none';
+            return true;
+          }
+        }
+      } catch (e) {}
+      document.getElementById('loginScreen').style.display = 'flex';
+      return false;
+    }
+
+    function saveSession(email) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({
+        email, expiry: Date.now() + SESSION_TTL_MS
+      }));
+    }
+
+    // ── Login UI helpers ──
+    function showLoginStep1() {
+      document.getElementById('loginStep1').style.display = '';
+      document.getElementById('loginStep2').style.display = 'none';
+      document.getElementById('loginBlocked').style.display = 'none';
+      document.getElementById('loginErr1').textContent = '';
+      document.getElementById('loginEmail').focus();
+    }
+
+    function setLoginLoading(btnId, loading, text) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = loading;
+      btn.textContent = loading ? 'Memproses…' : text;
+    }
+
+    // ── Step 1: Request OTP ──
+    async function requestCode(isResend) {
+      const emailEl = document.getElementById('loginEmail');
+      const email = (emailEl?.value || '').trim().toLowerCase();
+      const errEl = document.getElementById('loginErr1');
+      errEl.textContent = '';
+
+      if (!email) { errEl.textContent = 'Masukkan email kamu.'; return; }
+      if (!email.includes('@')) { errEl.textContent = 'Format email tidak valid.'; return; }
+
+      const domain = email.split('@')[1];
+      if (domain !== ALLOWED_DOMAIN) {
+        document.getElementById('loginStep1').style.display = 'none';
+        document.getElementById('loginBlocked').style.display = '';
+        document.getElementById('loginBlockedMsg').textContent =
+          `Email @${domain} tidak diizinkan. Hanya email @${ALLOWED_DOMAIN} yang dapat mengakses dashboard ini.`;
+        return;
+      }
+
+      setLoginLoading('loginSendBtn', true, 'Kirim Kode Sign-In');
+      try {
+        // Timeout 30 detik agar tidak stuck di "Memproses"
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 30000);
+        const res  = await fetch(`${APPS_SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(email)}`, { signal: ctrl.signal });
+        clearTimeout(timer);
+        const data = await res.json();
+        if (data.error) {
+          if (data.error.toLowerCase().includes('diizinkan') || data.error.toLowerCase().includes('domain')) {
+            document.getElementById('loginStep1').style.display = 'none';
+            document.getElementById('loginBlocked').style.display = '';
+            document.getElementById('loginBlockedMsg').textContent = data.error;
+          } else {
+            errEl.textContent = data.error;
+          }
+          return;
+        }
+        // Success — show OTP step
+        document.getElementById('loginEmailDisplay').textContent = email;
+        document.getElementById('loginStep1').style.display = 'none';
+        document.getElementById('loginStep2').style.display = '';
+        document.getElementById('loginErr2').textContent = isResend ? '✓ Kode baru telah dikirim.' : '';
+        setTimeout(() => { document.getElementById('loginCode').focus(); }, 50);
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          errEl.textContent = 'Koneksi timeout. Pastikan Apps Script sudah di-deploy, lalu coba lagi.';
+        } else {
+          errEl.textContent = 'Gagal terhubung ke server. Coba lagi.';
+        }
+      } finally {
+        setLoginLoading('loginSendBtn', false, 'Kirim Kode Sign-In');
+      }
+    }
+
+    // ── Step 2: Verify OTP ──
+    async function verifyCode() {
+      const email = (document.getElementById('loginEmailDisplay')?.textContent || '').trim();
+      const code  = (document.getElementById('loginCode')?.value || '').trim();
+      const errEl = document.getElementById('loginErr2');
+      errEl.textContent = '';
+
+      if (code.length !== 8) { errEl.textContent = 'Masukkan 8 digit kode dari email.'; return; }
+
+      setLoginLoading('loginVerifyBtn', true, 'Masuk ke Dashboard');
+      try {
+        const res  = await fetch(`${APPS_SCRIPT_URL}?action=verifyCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
+        const data = await res.json();
+        if (!data.success) {
+          errEl.textContent = data.error || 'Kode tidak valid.';
+          return;
+        }
+        // Authenticated!
+        saveSession(email);
+        document.getElementById('loginScreen').style.display = 'none';
+      } catch (err) {
+        errEl.textContent = 'Gagal verifikasi. Coba lagi.';
+      } finally {
+        setLoginLoading('loginVerifyBtn', false, 'Masuk ke Dashboard');
+      }
+    }
 
     // ════════════════════════════════════════════
     //  STATE
@@ -3641,6 +3847,8 @@
     updateTriggerUI();
     // Place date picker in the outlet slot (its initial home)
     document.getElementById('outletDpSlot').appendChild(document.getElementById('dpWrap'));
+    // Auth check — only load data if session valid
+    checkAuth();
     loadData();
   </script>
 </body>
