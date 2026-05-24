@@ -2885,8 +2885,8 @@
       <div class="analytics-panel" id="outletTacPanel" style="margin-bottom:18px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div>
-            <div class="analytics-panel-title">On Handling TAC · Per Outlet</div>
-            <div class="analytics-panel-sub">Outlet yang memiliki TAC pengecekan pada periode ini</div>
+            <div class="analytics-panel-title" id="outletTacTitle">On Handling TAC · Per Outlet</div>
+            <div class="analytics-panel-sub" id="outletTacSub">Outlet yang memiliki TAC pengecekan pada periode ini</div>
           </div>
           <span class="analytics-badge" id="outletTacCount">— outlet</span>
         </div>
@@ -3821,41 +3821,70 @@
     }
 
     function renderOutletTacList() {
-      const list = document.getElementById('outletTacList');
+      const list  = document.getElementById('outletTacList');
       const badge = document.getElementById('outletTacCount');
+      const titleEl = document.getElementById('outletTacTitle');
+      const subEl   = document.getElementById('outletTacSub');
       if (!list) return;
+
+      // Determine mode based on tkStatus
+      const showTicket = tkStatus === 'ticket';
+      const showTac    = tkStatus === 'tac' || tkStatus === 'all';
+      const showBoth   = tkStatus === 'all';
+
+      // Update panel title & subtitle
+      if (titleEl) {
+        titleEl.textContent = showTicket
+          ? 'Tiket Dibuat · Per Outlet'
+          : showBoth ? 'Tiket & TAC · Per Outlet'
+          : 'On Handling TAC · Per Outlet';
+      }
+      if (subEl) {
+        subEl.textContent = showTicket
+          ? 'Outlet yang memiliki tiket dibuat pada periode ini'
+          : showBoth ? 'Outlet yang memiliki tiket atau TAC pengecekan pada periode ini'
+          : 'Outlet yang memiliki TAC pengecekan pada periode ini';
+      }
 
       // Build agent number → name map
       const agentMap = {};
       AGENTS.forEach(a => { if (a.number) agentMap[a.number] = a.name; });
 
-      // For each outlet file, sum TAC in selected period per agent
+      // For each outlet file, sum ticket/TAC per agent based on filter
       const outletRows = [];
       OUTLET_FILES.forEach(f => {
-        const agentData = f.tacByAgentDate || {};
-        const agentSummary = [];
-        let outletTotal = 0;
+        const ticketData = f.ticketsByAgentDate || {};
+        const tacData    = f.tacByAgentDate     || {};
 
-        Object.entries(agentData).forEach(([num, byDate]) => {
-          const count = sumRange(byDate, selectedDateStart, selectedDateEnd);
-          if (count > 0) {
-            agentSummary.push({ name: agentMap[num] || num, count });
-            outletTotal += count;
-          }
-        });
+        const agentTotals = {};
+
+        if (showTicket || showBoth) {
+          Object.entries(ticketData).forEach(([num, byDate]) => {
+            const c = sumRange(byDate, selectedDateStart, selectedDateEnd);
+            if (c > 0) agentTotals[num] = (agentTotals[num] || 0) + c;
+          });
+        }
+        if (showTac) {
+          Object.entries(tacData).forEach(([num, byDate]) => {
+            const c = sumRange(byDate, selectedDateStart, selectedDateEnd);
+            if (c > 0) agentTotals[num] = (agentTotals[num] || 0) + c;
+          });
+        }
+
+        const agentSummary = Object.entries(agentTotals)
+          .map(([num, count]) => ({ name: agentMap[num] || num, count }));
+        const outletTotal = agentSummary.reduce((s, a) => s + a.count, 0);
 
         if (outletTotal > 0) {
           outletRows.push({ title: f.title, url: f.url, agents: agentSummary, total: outletTotal });
         }
       });
 
-      // Sort by total descending
       outletRows.sort((a, b) => b.total - a.total);
-
       if (badge) badge.textContent = `${outletRows.length} outlet`;
 
       if (!outletRows.length) {
-        list.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px 0">Belum ada data TAC pada periode ini</div>';
+        list.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px 0">Belum ada data pada periode ini</div>`;
         return;
       }
 
@@ -3886,6 +3915,7 @@
         b.classList.toggle('active', b.dataset.ts === ts));
       tkPage = 1;
       renderTickets();
+      renderOutletTacList();
     }
 
     function updateTicketStats() {
