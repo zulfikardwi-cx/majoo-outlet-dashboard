@@ -2857,35 +2857,44 @@
     let curPage = 1, pageSize = 10;
 
     // ── Dismissed Need Reply (shared via Apps Script ScriptProperties) ──
-    let dismissedNeedReply = new Set();
+    // Stored as Map: outletKey → { inboundAtDismiss: N, date: 'YYYY-MM-DD' }
+    // Auto-undismiss when inbound count increases OR new day starts
+    let dismissedNeedReply = new Map();
     function outletKey(o) { return (o.url && o.url !== '#') ? o.url : o.name; }
-    function isEffectiveNeedReply(o) { return o.needReply && !dismissedNeedReply.has(outletKey(o)); }
+
+    function isEffectiveNeedReply(o) {
+      if (!o.needReply) return false;
+      const entry = dismissedNeedReply.get(outletKey(o));
+      if (!entry) return true; // not dismissed → perlu dibalas
+      const today = fmt(new Date());
+      if (entry.date !== today) return true; // hari baru → undismiss otomatis
+      const inboundToday = sumRange(o.trafficByDate, today, today);
+      if (inboundToday > entry.inboundAtDismiss) return true; // ada chat baru → undismiss
+      return false; // masih valid diabaikan
+    }
 
     async function loadDismissed() {
       try {
         const res = await fetch(`${APPS_SCRIPT_URL}?action=getDismissed`);
         const data = await res.json();
-        dismissedNeedReply = new Set(data.dismissed || []);
+        dismissedNeedReply = new Map(Object.entries(data.dismissed || {}));
       } catch(e) { console.warn('loadDismissed failed:', e); }
     }
 
-    async function dismissOutlet(key) {
-      // Optimistic UI update — instant response
-      dismissedNeedReply.add(key);
+    async function dismissOutlet(key, inboundToday) {
+      const today = fmt(new Date());
+      dismissedNeedReply.set(key, { inboundAtDismiss: inboundToday, date: today });
       updateStats();
       render();
-      // Sync to backend in background
       try {
-        await fetch(`${APPS_SCRIPT_URL}?action=dismissOutlet&key=${encodeURIComponent(key)}`);
+        await fetch(`${APPS_SCRIPT_URL}?action=dismissOutlet&key=${encodeURIComponent(key)}&count=${inboundToday}&date=${encodeURIComponent(today)}`);
       } catch(e) { console.warn('dismissOutlet sync failed:', e); }
     }
 
     async function resetDismissed() {
-      // Optimistic UI update
       dismissedNeedReply.clear();
       updateStats();
       render();
-      // Sync to backend in background
       try {
         await fetch(`${APPS_SCRIPT_URL}?action=resetDismissed`);
       } catch(e) { console.warn('resetDismissed sync failed:', e); }
@@ -3802,10 +3811,12 @@
     function replyH(o) {
       if (!o.needReply) return `<span style="color:var(--muted-2);font-size:12.5px">—</span>`;
       const key = outletKey(o);
-      const isDismissed = dismissedNeedReply.has(key);
+      const today = fmt(new Date());
+      const inboundToday = sumRange(o.trafficByDate, today, today);
+      const entry = dismissedNeedReply.get(key);
+      const isDismissed = entry && entry.date === today && inboundToday <= entry.inboundAtDismiss;
       if (isDismissed) return `<span class="s-dismissed">Diabaikan</span>`;
-      const safeKey = esc(key);
-      return `<span class="s-needreply"><span class="dot"></span>Perlu Dibalas</span><button class="dismiss-btn" onclick="dismissOutlet(decodeURIComponent('${encodeURIComponent(key)}'));event.stopPropagation();" title="Tandai tidak perlu dibalas">✕ Selesai</button>`;
+      return `<span class="s-needreply"><span class="dot"></span>Perlu Dibalas</span><button class="dismiss-btn" onclick="dismissOutlet(decodeURIComponent('${encodeURIComponent(key)}'),${inboundToday});event.stopPropagation();" title="Tandai tidak perlu dibalas">✕ Selesai</button>`;
     }
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
     function numH(n, col) { return n > 0 ? `<span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(${col})">${n.toLocaleString('id-ID')}</span>` : `<span style="color:var(--muted-2);font-size:12.5px">—</span>`; }
