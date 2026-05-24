@@ -1410,6 +1410,55 @@
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--n-dot) 22%, transparent);
     }
 
+    .s-dismissed {
+      color: var(--muted-2);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .dismiss-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .dismiss-btn:hover {
+      background: var(--surface-2);
+      color: var(--ink-2);
+      border-color: var(--border-strong);
+    }
+
+    .needreply-reset-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 6px 0 2px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .needreply-reset-bar button {
+      background: none;
+      border: none;
+      color: var(--m-teal);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
     /* skeleton + empty */
     .skel-row td {
       height: 50px;
@@ -2805,6 +2854,25 @@
     let OUTLETS = [], curFilter = 'all', curGroup = 'all';
     let selectedDateStart = '', selectedDateEnd = '';
     let curPage = 1, pageSize = 10;
+
+    // ── Dismissed Need Reply (persisted to localStorage) ──
+    const DISMISSED_KEY = 'majoo_dismissed_needreply';
+    let dismissedNeedReply = new Set(JSON.parse(localStorage.getItem(DISMISSED_KEY) || '[]'));
+    function outletKey(o) { return (o.url && o.url !== '#') ? o.url : o.name; }
+    function isEffectiveNeedReply(o) { return o.needReply && !dismissedNeedReply.has(outletKey(o)); }
+    function saveDismissed() { localStorage.setItem(DISMISSED_KEY, JSON.stringify([...dismissedNeedReply])); }
+    function dismissOutlet(key) {
+      dismissedNeedReply.add(key);
+      saveDismissed();
+      updateStats();
+      render();
+    }
+    function resetDismissed() {
+      dismissedNeedReply.clear();
+      saveDismissed();
+      updateStats();
+      render();
+    }
     // Team page state
     let activeDash = 'outlet';
     let AGENTS = [], AGENT_MSGS = {}, RESP_SUM = {}, RESP_COUNT = {};
@@ -3159,7 +3227,7 @@
       const pool = poolByGroup();
       setNum('n-all', pool.length);
       setNum('n-active', pool.filter(o => o.activeToday).length);
-      setNum('n-needreply', pool.filter(o => o.needReply).length);
+      setNum('n-needreply', pool.filter(o => isEffectiveNeedReply(o)).length);
 
       const inSum = pool.reduce((s, o) => s + sumRange(o.trafficByDate, selectedDateStart, selectedDateEnd), 0);
       const outSum = pool.reduce((s, o) => s + sumRange(o.outboundByDate, selectedDateStart, selectedDateEnd), 0);
@@ -3710,7 +3778,14 @@
     };
     function badgeH(g) { return `<span class="badge ${GM[g].cls}"><span class="dot"></span>${GM[g].label}</span>`; }
     function statusH(a) { return a ? `<span class="s-active"><span class="dot"></span>Aktif hari ini</span>` : `<span class="s-idle"><span class="dot"></span>Tidak ada aktivitas</span>`; }
-    function replyH(r) { return r ? `<span class="s-needreply"><span class="dot"></span>Perlu Dibalas</span>` : `<span style="color:var(--muted-2);font-size:12.5px">—</span>`; }
+    function replyH(o) {
+      if (!o.needReply) return `<span style="color:var(--muted-2);font-size:12.5px">—</span>`;
+      const key = outletKey(o);
+      const isDismissed = dismissedNeedReply.has(key);
+      if (isDismissed) return `<span class="s-dismissed">Diabaikan</span>`;
+      const safeKey = esc(key);
+      return `<span class="s-needreply"><span class="dot"></span>Perlu Dibalas</span><button class="dismiss-btn" onclick="dismissOutlet(decodeURIComponent('${encodeURIComponent(key)}'));event.stopPropagation();" title="Tandai tidak perlu dibalas">✕ Selesai</button>`;
+    }
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
     function numH(n, col) { return n > 0 ? `<span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(${col})">${n.toLocaleString('id-ID')}</span>` : `<span style="color:var(--muted-2);font-size:12.5px">—</span>`; }
     function initials(name) { return name.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase(); }
@@ -3726,7 +3801,7 @@
         const match =
           curFilter === 'all' ? true :
             curFilter === 'active' ? o.activeToday :
-              curFilter === 'needreply' ? o.needReply :
+              curFilter === 'needreply' ? isEffectiveNeedReply(o) :
                 curFilter === 'inbound' ? ib > 0 :
                   curFilter === 'outbound' ? ob > 0 : true;
         return match && (!q || o.name.toLowerCase().includes(q));
@@ -3759,13 +3834,24 @@
         <td class="c-name"><a href="${o.url || '#'}" target="_blank"><span class="outlet-avatar">${initials(o.name)}</span><span>${esc(o.name)}</span></a></td>
         <td>${badgeH(o.group)}</td>
         <td>${statusH(o.activeToday)}</td>
-        <td>${replyH(o.needReply)}</td>
+        <td>${replyH(o)}</td>
         <td class="c-traffic-val">${numH(ib, '--t-tx')}</td>
         <td class="c-outbound-val">${numH(ob, '--o-tx')}</td>
       </tr>`;
       }).join('');
 
       renderPagination(total, totalPages);
+
+      // Reset bar — shown when in needreply filter and there are dismissed items
+      const existingResetBar = document.getElementById('needreply-reset-bar');
+      if (existingResetBar) existingResetBar.remove();
+      if (curFilter === 'needreply' && dismissedNeedReply.size > 0) {
+        const bar = document.createElement('div');
+        bar.id = 'needreply-reset-bar';
+        bar.className = 'needreply-reset-bar';
+        bar.innerHTML = `<span>${dismissedNeedReply.size} outlet diabaikan</span><button onclick="resetDismissed()">Tampilkan lagi semua</button>`;
+        document.getElementById('tbody').closest('table').after(bar);
+      }
 
       const footL = document.getElementById('footerL');
       if (!footL.textContent.startsWith('Mode preview')) {
