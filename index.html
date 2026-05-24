@@ -2856,48 +2856,65 @@
     let selectedDateStart = '', selectedDateEnd = '';
     let curPage = 1, pageSize = 10;
 
-    // ── Dismissed Need Reply (shared via Apps Script ScriptProperties) ──
-    // Stored as Map: outletKey → { inboundAtDismiss: N, date: 'YYYY-MM-DD' }
-    // Auto-undismiss when inbound count increases OR new day starts
+    // ── Dismissed Need Reply ──
+    // Fully server-side via Apps Script ScriptProperties — shared ke semua user.
+    // Map: outletKey → { inboundAtDismiss: N, date: 'YYYY-MM-DD' }
+    // Auto-undismiss ketika inbound bertambah ATAU hari berganti.
     let dismissedNeedReply = new Map();
+
     function outletKey(o) { return (o.url && o.url !== '#') ? o.url : o.name; }
 
     function isEffectiveNeedReply(o) {
       if (!o.needReply) return false;
       const entry = dismissedNeedReply.get(outletKey(o));
-      if (!entry) return true; // not dismissed → perlu dibalas
+      if (!entry) return true;
       const today = localDate(new Date());
-      if (entry.date !== today) return true; // hari baru → undismiss otomatis
+      if (entry.date !== today) return true;
       const inboundToday = sumRange(o.trafficByDate, today, today);
-      if (inboundToday > entry.inboundAtDismiss) return true; // ada chat baru → undismiss
-      return false; // masih valid diabaikan
+      if (inboundToday > entry.inboundAtDismiss) return true;
+      return false;
     }
 
     async function loadDismissed() {
       try {
         const res = await fetch(`${APPS_SCRIPT_URL}?action=getDismissed`);
         const data = await res.json();
-        dismissedNeedReply = new Map(Object.entries(data.dismissed || {}));
+        if (data.dismissed && typeof data.dismissed === 'object') {
+          dismissedNeedReply = new Map(Object.entries(data.dismissed));
+        }
       } catch(e) { console.warn('loadDismissed failed:', e); }
     }
 
-    async function dismissOutlet(key, inboundToday) {
+    async function dismissOutlet(btn, key, inboundToday) {
+      // Tampilkan loading pada tombol, tunggu konfirmasi backend
+      if (btn) { btn.disabled = true; btn.textContent = '…'; }
       const today = localDate(new Date());
-      dismissedNeedReply.set(key, { inboundAtDismiss: inboundToday, date: today });
-      updateStats();
-      render();
       try {
-        await fetch(`${APPS_SCRIPT_URL}?action=dismissOutlet&key=${encodeURIComponent(key)}&count=${inboundToday}&date=${encodeURIComponent(today)}`);
-      } catch(e) { console.warn('dismissOutlet sync failed:', e); }
+        const r = await fetch(`${APPS_SCRIPT_URL}?action=dismissOutlet&key=${encodeURIComponent(key)}&count=${inboundToday}&date=${encodeURIComponent(today)}`);
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        if (data.dismissed && typeof data.dismissed === 'object') {
+          dismissedNeedReply = new Map(Object.entries(data.dismissed));
+        }
+        updateStats();
+        render();
+      } catch(e) {
+        console.warn('dismissOutlet failed:', e);
+        if (btn) { btn.disabled = false; btn.textContent = '✕ Selesai'; }
+        alert('Gagal menyimpan. Pastikan Apps Script sudah di-deploy dengan versi terbaru.');
+      }
     }
 
     async function resetDismissed() {
-      dismissedNeedReply.clear();
-      updateStats();
-      render();
       try {
-        await fetch(`${APPS_SCRIPT_URL}?action=resetDismissed`);
-      } catch(e) { console.warn('resetDismissed sync failed:', e); }
+        const r = await fetch(`${APPS_SCRIPT_URL}?action=resetDismissed`);
+        const data = await r.json();
+        if (data.dismissed !== undefined) {
+          dismissedNeedReply = new Map(Object.entries(data.dismissed));
+        }
+        updateStats();
+        render();
+      } catch(e) { console.warn('resetDismissed failed:', e); }
     }
     // Team page state
     let activeDash = 'outlet';
@@ -3816,7 +3833,7 @@
       const entry = dismissedNeedReply.get(key);
       const isDismissed = entry && entry.date === today && inboundToday <= entry.inboundAtDismiss;
       if (isDismissed) return `<span class="s-dismissed">Diabaikan</span>`;
-      return `<span class="s-needreply"><span class="dot"></span>Perlu Dibalas</span><button class="dismiss-btn" onclick="dismissOutlet(decodeURIComponent('${encodeURIComponent(key)}'),${inboundToday});event.stopPropagation();" title="Tandai tidak perlu dibalas">✕ Selesai</button>`;
+      return `<span class="s-needreply"><span class="dot"></span>Perlu Dibalas</span><button class="dismiss-btn" onclick="dismissOutlet(this,decodeURIComponent('${encodeURIComponent(key)}'),${inboundToday});event.stopPropagation();" title="Tandai tidak perlu dibalas">✕ Selesai</button>`;
     }
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
     function numH(n, col) { return n > 0 ? `<span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(${col})">${n.toLocaleString('id-ID')}</span>` : `<span style="color:var(--muted-2);font-size:12.5px">—</span>`; }
