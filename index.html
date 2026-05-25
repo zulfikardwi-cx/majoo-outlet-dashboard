@@ -2823,7 +2823,7 @@
               TOTAL TIKET DIBUAT
             </div>
             <div class="ticket-stat-num" id="tk-total">—</div>
-            <div class="ticket-stat-sub">Tiket masuk pada periode</div>
+            <div class="ticket-stat-sub">Kumulatif seluruh waktu</div>
           </div>
           <div class="ticket-stat">
             <div class="ticket-stat-label">
@@ -3935,10 +3935,11 @@
         s + sumRange(TAC_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd), 0);
       const todayTickets = sumRange(TICKET_BY_DATE, todayStr(), todayStr());
 
-      // All-time TAC total (not filtered by date range)
-      const allTimeTac = Object.values(TAC_BY_DATE).reduce((s, v) => s + v, 0);
+      // All-time totals (not filtered by date range)
+      const allTimeTac     = Object.values(TAC_BY_DATE).reduce((s, v) => s + v, 0);
+      const allTimeTickets = Object.values(TICKET_BY_DATE).reduce((s, v) => s + v, 0);
 
-      setText('tk-total',  totalTickets > 0 ? totalTickets.toLocaleString('id-ID') : '—');
+      setText('tk-total',  allTimeTickets > 0 ? allTimeTickets.toLocaleString('id-ID') : '—');
       setText('tk-daily',  todayTickets  > 0 ? todayTickets.toLocaleString('id-ID')  : '—');
       setText('tk-tac',    totalTac     > 0 ? totalTac.toLocaleString('id-ID')     : '—');
       setText('tk-closed', allTimeTac   > 0 ? allTimeTac.toLocaleString('id-ID')   : '—');
