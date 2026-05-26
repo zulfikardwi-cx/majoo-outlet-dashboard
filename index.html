@@ -5133,26 +5133,29 @@
       setText('tkrc-support',    aktif.filter(a => a.roleGroup === 'support').length);
       setText('tkrc-lifecycle',  aktif.filter(a => a.roleGroup === 'lifecycle').length);
 
-      // Hero stats
+      // ── Ticket counts derived from TICKET_LIST (unique IDs, source of truth) ──
+      const today = todayStr();
+      const ticketsAllTime = (TICKET_LIST || []).length;
+      const ticketsToday   = (TICKET_LIST || []).filter(t => t.dateISO === today).length;
+      const ticketsInRange = (TICKET_LIST || []).filter(t =>
+        (!selectedDateStart || t.dateISO >= selectedDateStart) &&
+        (!selectedDateEnd   || t.dateISO <= selectedDateEnd)
+      ).length;
+
+      // TAC stats (unchanged — still from message-level counter)
       const pool = poolByTicketRole();
-      const totalTickets = pool.reduce((s, a) =>
-        s + sumRange(TICKET_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd), 0);
       const totalTac = pool.reduce((s, a) =>
         s + sumRange(TAC_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd), 0);
-      const todayTickets = sumRange(TICKET_BY_DATE, todayStr(), todayStr());
+      const allTimeTac = Object.values(TAC_BY_DATE).reduce((s, v) => s + v, 0);
 
-      // All-time totals (not filtered by date range)
-      const allTimeTac     = Object.values(TAC_BY_DATE).reduce((s, v) => s + v, 0);
-      const allTimeTickets = Object.values(TICKET_BY_DATE).reduce((s, v) => s + v, 0);
+      setText('tk-total',  ticketsAllTime > 0 ? ticketsAllTime.toLocaleString('id-ID') : '—');
+      setText('tk-daily',  ticketsToday   > 0 ? ticketsToday.toLocaleString('id-ID')   : '—');
+      setText('tk-tac',    totalTac       > 0 ? totalTac.toLocaleString('id-ID')       : '—');
+      setText('tk-closed', allTimeTac     > 0 ? allTimeTac.toLocaleString('id-ID')     : '—');
 
-      setText('tk-total',  allTimeTickets > 0 ? allTimeTickets.toLocaleString('id-ID') : '—');
-      setText('tk-daily',  todayTickets  > 0 ? todayTickets.toLocaleString('id-ID')  : '—');
-      setText('tk-tac',    totalTac     > 0 ? totalTac.toLocaleString('id-ID')     : '—');
-      setText('tk-closed', allTimeTac   > 0 ? allTimeTac.toLocaleString('id-ID')   : '—');
-
-      // Status filter counts
-      setText('tks-all',    totalTickets + totalTac);
-      setText('tks-ticket', totalTickets);
+      // Status filter counts (Tiket Dibuat = unique ticket IDs in active range)
+      setText('tks-all',    ticketsInRange + totalTac);
+      setText('tks-ticket', ticketsInRange);
       setText('tks-tac',    totalTac);
     }
 
@@ -5161,11 +5164,24 @@
       if (!tbody) return;
       const q = (document.getElementById('tkSearch')?.value || '').toLowerCase().trim();
 
+      // ── Build per-agent ticket count from TICKET_LIST (unique IDs in range) ──
+      const ticketsByAgent = {};
+      (TICKET_LIST || []).forEach(t => {
+        const inRange =
+          (!selectedDateStart || t.dateISO >= selectedDateStart) &&
+          (!selectedDateEnd   || t.dateISO <= selectedDateEnd);
+        if (!inRange) return;
+        const num = String(t.senderNumber || '');
+        if (!num) return;
+        ticketsByAgent[num] = (ticketsByAgent[num] || 0) + 1;
+      });
+      const ticketsOf = a => ticketsByAgent[String(a.number || '')] || 0;
+
       let rows = poolByTicketRole()
         .map(a => ({
           ...a,
-          tickets: sumRange(TICKET_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd),
-          tac:     sumRange(TAC_BY_AGENT[a.number]    || {}, selectedDateStart, selectedDateEnd),
+          tickets: ticketsOf(a),
+          tac:     sumRange(TAC_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd),
         }))
         .filter(a => {
           if (q && !a.name.toLowerCase().includes(q)) return false;
@@ -5180,8 +5196,8 @@
         rows = poolByTicketRole()
           .map(a => ({
             ...a,
-            tickets: sumRange(TICKET_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd),
-            tac:     sumRange(TAC_BY_AGENT[a.number]    || {}, selectedDateStart, selectedDateEnd),
+            tickets: ticketsOf(a),
+            tac:     sumRange(TAC_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd),
           }))
           .sort((a, b) => (b.tickets + b.tac) - (a.tickets + a.tac));
       }
