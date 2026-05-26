@@ -2264,9 +2264,56 @@
       flex-shrink: 0;
     }
 
+    /* Default: range parts inline on other pages (preserves current look) */
+    .dp-r-start, .dp-r-end { display: inline; }
+
     /* ── Traffic Analytic page ── */
     #trafficDpSlot .dp-wrap { margin-bottom: 0; }
-    #trafficDpSlot .dp-trigger { padding: 8px 12px; }
+    #trafficDpSlot .dp-trigger {
+      padding: 10px 14px;
+      gap: 12px;
+      align-items: center;
+    }
+    /* Redundant — kartu sudah punya label "Periode" di atas */
+    #trafficDpSlot .dp-trigger-label,
+    #trafficDpSlot .dp-trigger-divider { display: none; }
+    /* Calendar icon: slight visual lift to match larger 2-line range */
+    #trafficDpSlot .dp-trigger-ico {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--m-tint);
+      display: grid; place-items: center;
+      align-self: center;
+    }
+    #trafficDpSlot .dp-trigger-ico svg { width: 16px; height: 16px; }
+    /* Stack the range across 2 lines */
+    #trafficDpSlot .dp-trigger-range {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.25;
+      gap: 1px;
+      min-width: 0;
+    }
+    #trafficDpSlot .dp-r-start {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+    }
+    #trafficDpSlot .dp-r-end {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: -0.005em;
+    }
+    #trafficDpSlot .dp-trigger-hint {
+      align-self: center;
+      font-size: 11px;
+      padding: 3px 10px;
+    }
     .ta-filters {
       display: grid;
       grid-template-columns: 1fr 1.6fr 1fr;
@@ -2596,6 +2643,80 @@
       position: relative;
       height: 400px;
       min-width: 100%;
+    }
+
+    /* TA Top 8 Outlet panel */
+    .ta-top-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rad-lg);
+      padding: 22px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .ta-top-head { margin-bottom: 14px; }
+    .ta-top-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+    .ta-top-sub   { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .ta-top-list { display: flex; flex-direction: column; gap: 8px; }
+    .ta-top-row {
+      display: grid;
+      grid-template-columns: 42px 1fr auto auto;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--rad);
+      background: var(--surface);
+      transition: border-color .15s, transform .12s, box-shadow .15s;
+    }
+    .ta-top-row:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px -6px rgba(0,0,0,0.08);
+    }
+    .ta-top-rank {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted-2);
+      letter-spacing: -.02em;
+    }
+    .ta-top-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ta-top-name a { color: inherit; text-decoration: none; }
+    .ta-top-name a:hover { color: var(--m-dark); }
+    .ta-top-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .ta-top-badge.b-enterprise { background: var(--e-bg); border-color: var(--e-bd); color: var(--e-tx); }
+    .ta-top-badge.b-premium    { background: var(--p-bg); border-color: var(--p-bd); color: var(--p-tx); }
+    .ta-top-badge.b-project    { background: var(--r-bg); border-color: var(--r-bd); color: var(--r-tx); }
+    .ta-top-value {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -.02em;
+      min-width: 56px;
+      text-align: right;
+    }
+
+    @media (max-width: 720px) {
+      .ta-top-row { grid-template-columns: 36px 1fr auto; gap: 10px; padding: 10px 12px; }
+      .ta-top-badge { display: none; }
     }
 
     @media (max-width: 960px) {
@@ -3238,8 +3359,51 @@
           </div>
           <span class="analytics-badge" id="outletTacCount">— outlet</span>
         </div>
+        <!-- Search outlet -->
+        <div class="toolbar" style="margin-bottom:12px">
+          <div class="search-wrap">
+            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="6.5" cy="6.5" r="5.5"/><line x1="11" y1="11" x2="15" y2="15"/></svg></span>
+            <input class="search-input" id="outletTacSearch" type="text" placeholder="Cari nama outlet…" oninput="outTacQuery=this.value;outTacPage=1;renderOutletTacList()"/>
+          </div>
+          <span class="count-chip" id="outletTacShownChip">— outlet</span>
+        </div>
         <div id="outletTacList">
           <div style="color:var(--muted);font-size:13px;text-align:center;padding:16px 0">Belum ada data TAC pada periode ini</div>
+        </div>
+        <div class="pag-bar" id="outletTacPagBar"></div>
+      </div>
+
+      <!-- Ticket ID List · per chat message -->
+      <div class="analytics-panel" id="ticketIdPanel" style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div>
+            <div class="analytics-panel-title">Daftar Ticket ID</div>
+            <div class="analytics-panel-sub">ID ticket yang terdeteksi pada pesan chat dalam periode aktif</div>
+          </div>
+          <span class="analytics-badge" id="ticketIdCount">— ticket</span>
+        </div>
+        <!-- Search -->
+        <div class="toolbar" style="margin-bottom:12px">
+          <div class="search-wrap">
+            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="6.5" cy="6.5" r="5.5"/><line x1="11" y1="11" x2="15" y2="15"/></svg></span>
+            <input class="search-input" id="ticketIdSearch" type="text" placeholder="Cari Ticket ID, outlet, atau creator…" oninput="tlQuery=this.value;tlPage=1;renderTicketIdList()"/>
+          </div>
+          <span class="count-chip" id="ticketIdShownChip">— ticket</span>
+        </div>
+        <!-- Table -->
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="c-no">#</th>
+                <th style="min-width:140px">Ticket ID</th>
+                <th class="c-name">Outlet</th>
+                <th style="min-width:180px">Creator</th>
+              </tr>
+            </thead>
+            <tbody id="ticketIdTbody"></tbody>
+          </table>
+          <div class="pag-bar" id="ticketIdPagBar"></div>
         </div>
       </div>
 
@@ -3403,6 +3567,19 @@
           <div class="ta-chart-canvas-wrap">
             <canvas id="taChart"></canvas>
           </div>
+        </div>
+      </div>
+
+      <!-- Top 8 Outlet -->
+      <div class="ta-top-panel" style="margin-top:20px">
+        <div class="ta-top-head">
+          <div>
+            <div class="ta-top-title">Top 8 Outlet — Periode Aktif</div>
+            <div class="ta-top-sub" id="taTopSub">Outlet dengan traffic tertinggi pada periode aktif, dari semua group yang dicentang</div>
+          </div>
+        </div>
+        <div class="ta-top-list" id="taTopList">
+          <div style="color:var(--muted);font-size:13px;text-align:center;padding:24px 0">Belum ada data pada periode ini</div>
         </div>
       </div>
 
@@ -3634,6 +3811,11 @@
     let TICKET_BY_AGENT = {}, TAC_BY_AGENT = {}, TICKET_BY_DATE = {}, TAC_BY_DATE = {};
     let OUTLET_FILES = []; // raw files array with per-outlet TAC data
     let tkRole = 'all', tkStatus = 'all', tkPage = 1, tkPageSize = 10;
+    let outTacQuery = '', outTacPage = 1, outTacPageSize = 10;
+    // Ticket-ID list (Ticket ID · Outlet · Creator). Source: backend `data.ticketList`.
+    // Expected shape: [{ id, outletTitle, senderNumber, dateISO }]
+    let TICKET_LIST = [];
+    let tlQuery = '', tlPage = 1, tlPageSize = 10;
     // Traffic Analytic state
     let taGroups = { enterprise: true, premium: true, project: true };
     let taChats  = { inbound: true, outbound: true };
@@ -3696,7 +3878,7 @@
       selectedDateStart = s; selectedDateEnd = e;
       updateTriggerUI(); updateStats(); render();
       if (activeDash === 'team')   { updateTeamStats(); renderTeam(); }
-      if (activeDash === 'ticket') { updateTicketStats(); renderTickets(); renderOutletTacList(); }
+      if (activeDash === 'ticket') { updateTicketStats(); renderTickets(); renderOutletTacList(); renderTicketIdList(); }
       if (activeDash === 'traffic') { renderTraffic(); }
       closePicker();
     }
@@ -3787,16 +3969,20 @@
     }
     function updateTriggerUI() {
       const s = selectedDateStart, e = selectedDateEnd, t = todayStr();
-      let rangeText = '', hintText = '';
+      let rangeHTML = '', hintText = '';
       if (s === e) {
-        rangeText = s === t ? 'Hari ini — ' + fmtLong(s) : fmtLong(s);
+        if (s === t) {
+          rangeHTML = `<span class="dp-r-start">Hari ini</span><span class="dp-r-end"> — ${fmtLong(s)}</span>`;
+        } else {
+          rangeHTML = `<span class="dp-r-start">${fmtLong(s)}</span>`;
+        }
         hintText = s === t ? 'Hari ini' : '1 hari';
       } else {
-        rangeText = fmtLong(s) + ' — ' + fmtLong(e);
+        rangeHTML = `<span class="dp-r-start">${fmtLong(s)}</span><span class="dp-r-end"> — ${fmtLong(e)}</span>`;
         const days = Math.round((new Date(e + 'T00:00:00') - new Date(s + 'T00:00:00')) / 86400000) + 1;
         hintText = days + ' hari';
       }
-      document.getElementById('dpTriggerRange').textContent = rangeText;
+      document.getElementById('dpTriggerRange').innerHTML = rangeHTML;
       const hintEl = document.getElementById('dpTriggerHint');
       hintEl.textContent = hintText; hintEl.style.display = '';
     }
@@ -3866,7 +4052,7 @@
       }
 
       if (page === 'team')    { updateTeamStats(); renderTeam(); }
-      else if (page === 'ticket')  { updateTicketStats(); renderTickets(); renderOutletTacList(); }
+      else if (page === 'ticket')  { updateTicketStats(); renderTickets(); renderOutletTacList(); renderTicketIdList(); }
       else if (page === 'traffic') {
         // First time visiting → default to last 30 days
         if (taFirstVisit) {
@@ -4169,6 +4355,49 @@
           },
         },
       });
+
+      // Render Top 8 Outlet list
+      renderTaTopOutlets();
+    }
+
+    function renderTaTopOutlets() {
+      const list = document.getElementById('taTopList');
+      const subEl = document.getElementById('taTopSub');
+      if (!list) return;
+
+      const activeGroups = Object.keys(taGroups).filter(g => taGroups[g]);
+      const grpLabel = activeGroups.length === 3 ? 'semua group' : activeGroups.map(g => TA_COLORS[g].label).join(' & ');
+      const chatPart = (taChats.inbound && taChats.outbound) ? 'inbound + outbound'
+                     : taChats.inbound ? 'inbound' : taChats.outbound ? 'outbound' : '—';
+      if (subEl) subEl.textContent = `Outlet dengan traffic tertinggi (${chatPart}) pada periode aktif, dari ${grpLabel}`;
+
+      // Filter outlets by active group, compute sum per outlet
+      const ranked = OUTLETS
+        .filter(o => taGroups[o.group])
+        .map(o => ({ o, total: taSumOutletInRange(o) }))
+        .filter(x => x.total > 0)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 8);
+
+      if (!ranked.length) {
+        list.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:24px 0">Belum ada data pada periode ini</div>`;
+        return;
+      }
+
+      const GROUP_LABEL = { enterprise: 'Enterprise', premium: 'Premium', project: 'Project' };
+      list.innerHTML = ranked.map((x, i) => {
+        const o = x.o;
+        const nameHtml = (o.url && o.url !== '#')
+          ? `<a href="${o.url}" target="_blank" rel="noopener">${esc(o.name)}</a>`
+          : esc(o.name);
+        return `
+          <div class="ta-top-row">
+            <div class="ta-top-rank">#${i + 1}</div>
+            <div class="ta-top-name">${nameHtml}</div>
+            <span class="ta-top-badge b-${o.group}">${GROUP_LABEL[o.group]}</span>
+            <div class="ta-top-value">${x.total.toLocaleString('id-ID')}</div>
+          </div>`;
+      }).join('');
     }
 
     // ════════════════════════════════════════════
@@ -4245,10 +4474,11 @@
         TICKET_BY_DATE  = data.ticketsByDate      || {};
         TAC_BY_DATE     = data.tacByDate          || {};
         OUTLET_FILES    = data.files              || [];
+        TICKET_LIST     = Array.isArray(data.ticketList) ? data.ticketList : [];
 
         updateStats(); render();
         if (activeDash === 'team')    { updateTeamStats(); renderTeam(); }
-        if (activeDash === 'ticket')  { updateTicketStats(); renderTickets(); renderOutletTacList(); }
+        if (activeDash === 'ticket')  { updateTicketStats(); renderTickets(); renderOutletTacList(); renderTicketIdList(); }
         if (activeDash === 'traffic') { renderTraffic(); }
         setChip('live', '✓ Live · ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
         document.getElementById('footerL').textContent = `Data dari Google Drive · ${OUTLETS.length} outlet · ${new Date().toLocaleString('id-ID')}`;
@@ -4688,12 +4918,41 @@
       outletRows.sort((a, b) => b.total - a.total);
       if (badge) badge.textContent = `${outletRows.length} outlet`;
 
+      const pagBar = document.getElementById('outletTacPagBar');
+      const shownChip = document.getElementById('outletTacShownChip');
+
+      // ── Filter by search query ──
+      const q = (outTacQuery || '').trim().toLowerCase();
+      const filteredRows = q
+        ? outletRows.filter(r => (r.title || '').toLowerCase().includes(q))
+        : outletRows;
+
+      if (shownChip) {
+        shownChip.textContent = q
+          ? `${filteredRows.length} dari ${outletRows.length} outlet`
+          : `${outletRows.length} outlet`;
+      }
+
       if (!outletRows.length) {
         list.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px 0">Belum ada data pada periode ini</div>`;
+        if (pagBar) pagBar.innerHTML = '';
+        return;
+      }
+      if (!filteredRows.length) {
+        list.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px 0">Tidak ada outlet yang cocok dengan pencarian "${esc(outTacQuery)}"</div>`;
+        if (pagBar) pagBar.innerHTML = '';
         return;
       }
 
-      list.innerHTML = outletRows.map(r => {
+      // ── Pagination ──
+      const total = filteredRows.length;
+      const totalPages = Math.max(1, Math.ceil(total / outTacPageSize));
+      if (outTacPage > totalPages) outTacPage = totalPages;
+      if (outTacPage < 1) outTacPage = 1;
+      const pgStart = (outTacPage - 1) * outTacPageSize;
+      const pageRows = filteredRows.slice(pgStart, pgStart + outTacPageSize);
+
+      list.innerHTML = pageRows.map(r => {
         const agentNames = r.agents.sort((a, b) => b.count - a.count)
           .map(a => `${esc(a.name)} (${a.count})`).join(' · ');
         return `<div class="outlet-tac-row">
@@ -4704,6 +4963,147 @@
           <div class="outlet-tac-count">${r.total}</div>
         </div>`;
       }).join('');
+
+      // ── Pagination bar ──
+      if (pagBar) {
+        const s = pgStart + 1, e = Math.min(outTacPage * outTacPageSize, total);
+        let pages = [];
+        if (totalPages <= 7) { for (let i = 1; i <= totalPages; i++) pages.push(i); }
+        else {
+          pages.push(1);
+          if (outTacPage > 3) pages.push('...');
+          for (let i = Math.max(2, outTacPage - 1); i <= Math.min(totalPages - 1, outTacPage + 1); i++) pages.push(i);
+          if (outTacPage < totalPages - 2) pages.push('...');
+          pages.push(totalPages);
+        }
+        pagBar.innerHTML = `
+          <div class="pag-left">
+            <span class="pag-size-label">Tampilkan:</span>
+            <select class="pag-size-select" onchange="outTacPageSize=+this.value;outTacPage=1;renderOutletTacList()">
+              ${[10,25,50,100].map(n=>`<option value="${n}"${n===outTacPageSize?' selected':''}>${n}</option>`).join('')}
+            </select>
+            <span class="pag-info">Ditampilkan ${s}–${e} dari ${total} outlet</span>
+          </div>
+          <div class="pag-pages">
+            <button class="pag-btn" onclick="outTacPage=${outTacPage-1};renderOutletTacList()" ${outTacPage<=1?'disabled':''}>←</button>
+            ${pages.map(p => p==='...' ? `<span class="pag-ellipsis">…</span>` : `<button class="pag-btn${p===outTacPage?' active':''}" onclick="outTacPage=${p};renderOutletTacList()">${p}</button>`).join('')}
+            <button class="pag-btn" onclick="outTacPage=${outTacPage+1};renderOutletTacList()" ${outTacPage>=totalPages?'disabled':''}>Selanjutnya →</button>
+          </div>`;
+      }
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  TICKET-ID LIST  ·  Ticket ID · Outlet · Creator
+    //  Backend contract: data.ticketList = [
+    //    { id: "86exput6m", outletTitle: "WA - Majoo Premium X …",
+    //      senderNumber: "62812xxxxxx", dateISO: "2026-05-26" }
+    //  ]
+    //  Creator name = lookup senderNumber → AGENTS (PIC Majoo · Template)
+    // ════════════════════════════════════════════════════════════
+    function renderTicketIdList() {
+      const tbody  = document.getElementById('ticketIdTbody');
+      const badge  = document.getElementById('ticketIdCount');
+      const chip   = document.getElementById('ticketIdShownChip');
+      const pagBar = document.getElementById('ticketIdPagBar');
+      if (!tbody) return;
+
+      // Build sender-number → name lookup from PIC Majoo Template (AGENTS)
+      const picMap = {};
+      AGENTS.forEach(a => { if (a.number) picMap[String(a.number)] = a.name; });
+
+      // 1) Filter by selected date range
+      const inRange = (TICKET_LIST || []).filter(t => {
+        if (!t || !t.id) return false;
+        const d = t.dateISO || '';
+        return (!selectedDateStart || d >= selectedDateStart) &&
+               (!selectedDateEnd   || d <= selectedDateEnd);
+      });
+
+      // 2) Resolve creator name for each row (fallback: senderNumber, then '—')
+      const resolved = inRange.map(t => {
+        const num = String(t.senderNumber || '');
+        const creator = picMap[num] || num || '—';
+        return {
+          id: String(t.id || '').toLowerCase(),
+          outletTitle: t.outletTitle || '—',
+          creator,
+          creatorIsKnown: !!picMap[num],
+          dateISO: t.dateISO || '',
+        };
+      });
+
+      // 3) Search filter (id / outlet / creator)
+      const q = (tlQuery || '').trim().toLowerCase();
+      const filtered = q
+        ? resolved.filter(r =>
+            r.id.includes(q) ||
+            r.outletTitle.toLowerCase().includes(q) ||
+            r.creator.toLowerCase().includes(q))
+        : resolved;
+
+      // 4) Update badge & chip
+      if (badge) badge.textContent = `${resolved.length} ticket`;
+      if (chip) {
+        chip.textContent = q
+          ? `${filtered.length} dari ${resolved.length} ticket`
+          : `${resolved.length} ticket`;
+      }
+
+      // 5) Empty states
+      if (!resolved.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Belum ada Ticket ID terdeteksi pada periode ini</td></tr>`;
+        if (pagBar) pagBar.innerHTML = '';
+        return;
+      }
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Tidak ada Ticket ID yang cocok dengan pencarian "${esc(tlQuery)}"</td></tr>`;
+        if (pagBar) pagBar.innerHTML = '';
+        return;
+      }
+
+      // 6) Pagination
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / tlPageSize));
+      if (tlPage > totalPages) tlPage = totalPages;
+      if (tlPage < 1) tlPage = 1;
+      const pgStart = (tlPage - 1) * tlPageSize;
+      const pageRows = filtered.slice(pgStart, pgStart + tlPageSize);
+
+      // 7) Render rows
+      tbody.innerHTML = pageRows.map((r, i) => `
+        <tr>
+          <td class="c-no" style="color:var(--muted-2)">${pgStart + i + 1}</td>
+          <td><span style="font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink);background:var(--surface-2);padding:3px 8px;border-radius:6px;letter-spacing:.01em">${esc(r.id)}</span></td>
+          <td class="c-name" style="font-weight:500">${esc(r.outletTitle)}</td>
+          <td style="${r.creatorIsKnown ? '' : 'color:var(--muted-2);font-family:var(--mono);font-size:12.5px'}">${esc(r.creator)}</td>
+        </tr>`).join('');
+
+      // 8) Pagination bar
+      if (pagBar) {
+        const s = pgStart + 1, e = Math.min(tlPage * tlPageSize, total);
+        let pages = [];
+        if (totalPages <= 7) { for (let i = 1; i <= totalPages; i++) pages.push(i); }
+        else {
+          pages.push(1);
+          if (tlPage > 3) pages.push('...');
+          for (let i = Math.max(2, tlPage - 1); i <= Math.min(totalPages - 1, tlPage + 1); i++) pages.push(i);
+          if (tlPage < totalPages - 2) pages.push('...');
+          pages.push(totalPages);
+        }
+        pagBar.innerHTML = `
+          <div class="pag-left">
+            <span class="pag-size-label">Tampilkan:</span>
+            <select class="pag-size-select" onchange="tlPageSize=+this.value;tlPage=1;renderTicketIdList()">
+              ${[10,25,50,100].map(n=>`<option value="${n}"${n===tlPageSize?' selected':''}>${n}</option>`).join('')}
+            </select>
+            <span class="pag-info">Ditampilkan ${s}–${e} dari ${total} ticket</span>
+          </div>
+          <div class="pag-pages">
+            <button class="pag-btn" onclick="tlPage=${tlPage-1};renderTicketIdList()" ${tlPage<=1?'disabled':''}>←</button>
+            ${pages.map(p => p==='...' ? `<span class="pag-ellipsis">…</span>` : `<button class="pag-btn${p===tlPage?' active':''}" onclick="tlPage=${p};renderTicketIdList()">${p}</button>`).join('')}
+            <button class="pag-btn" onclick="tlPage=${tlPage+1};renderTicketIdList()" ${tlPage>=totalPages?'disabled':''}>Selanjutnya →</button>
+          </div>`;
+      }
     }
 
     function setTicketRole(rg) {
@@ -4719,6 +5119,7 @@
       document.querySelectorAll('#ticketStatusTabs .tk-status-btn').forEach(b =>
         b.classList.toggle('active', b.dataset.ts === ts));
       tkPage = 1;
+      outTacPage = 1;
       renderTickets();
       renderOutletTacList();
     }
