@@ -1963,6 +1963,26 @@
     .outlet-tac-agents { font-size:11.5px; color:var(--muted); white-space:nowrap; }
     .outlet-tac-count { font-size:14px; font-weight:700; color:#a855f7; white-space:nowrap; min-width:36px; text-align:right; }
     .outlet-tac-agent-list { font-size:11.5px; color:var(--muted); margin-top:2px; }
+    /* Status breakdown chips (Escalated / On Handling TAC) */
+    .ota-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+    .ota-chip {
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:11px; font-weight:600;
+      padding:2px 9px 2px 8px;
+      border-radius:999px;
+      border:1px solid transparent;
+      letter-spacing:-.005em;
+      white-space:nowrap;
+    }
+    .ota-chip-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .ota-chip-esc {
+      background:rgba(59,130,246,.08); border-color:rgba(59,130,246,.22); color:#1d4ed8;
+    }
+    .ota-chip-esc .ota-chip-dot { background:#3b82f6; }
+    .ota-chip-tac {
+      background:rgba(168,85,247,.08); border-color:rgba(168,85,247,.22); color:#7c3aed;
+    }
+    .ota-chip-tac .ota-chip-dot { background:#a855f7; }
     /* ── Login Screen ── */
     #loginScreen { position:fixed; inset:0; background:#f3f4f6; display:flex; align-items:center; justify-content:center; z-index:9999; padding:20px; }
     .login-card { background:#fff; border-radius:16px; padding:40px 36px; width:100%; max-width:400px; box-shadow:0 4px 32px rgba(0,0,0,.10); }
@@ -2714,9 +2734,290 @@
       text-align: right;
     }
 
+    /* ── Pivot Table — Outlet × Tanggal ── */
+    .ta-pv-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rad-lg);
+      padding: 22px 24px 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .ta-pv-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .ta-pv-title-row { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .ta-pv-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+    .ta-pv-mode {
+      font-family: var(--mono);
+      font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
+      color: var(--m-dark);
+      background: var(--m-tint);
+      border: 1px solid #b8e5e1;
+      border-radius: 999px;
+      padding: 2px 10px;
+      white-space: nowrap;
+    }
+    .ta-pv-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .ta-pv-legend { display: inline-flex; align-items: center; gap: 6px; }
+    .ta-pv-legend-lbl { font-size: 11px; color: var(--muted); }
+    .ta-pv-legend-grid { display: inline-flex; gap: 2px; }
+    .ta-pv-legend-cell { width: 14px; height: 14px; border-radius: 3px; }
+
+    .ta-pv-toolbar {
+      display: flex; align-items: center; gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--rad);
+      background: #fafafa;
+    }
+    .ta-pv-search-wrap {
+      position: relative; display: inline-flex; align-items: center;
+      min-width: 240px; flex: 1 1 240px; max-width: 320px;
+    }
+    .ta-pv-search-wrap .search-icon {
+      position: absolute; left: 10px; color: var(--muted-2);
+      display: flex; pointer-events: none;
+    }
+    .ta-pv-search-input {
+      width: 100%;
+      padding: 8px 12px 8px 30px;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-radius: var(--rad);
+      background: var(--surface);
+      color: var(--ink);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .ta-pv-search-input:focus {
+      border-color: var(--m-teal);
+      box-shadow: 0 0 0 3px rgba(45,189,182,.18);
+    }
+    .ta-pv-sort-group { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .ta-pv-sort-lbl { font-size: 12px; color: var(--muted); }
+    .ta-pv-sort-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 600;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--rad);
+      background: var(--surface);
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: all .14s;
+    }
+    .ta-pv-sort-btn:hover { border-color: var(--border-strong); }
+    .ta-pv-sort-btn.active {
+      background: #0c0a09;
+      color: #fff;
+      border-color: #0c0a09;
+    }
+    .ta-pv-info { margin-left: auto; font-size: 12px; color: var(--muted); }
+    .ta-pv-info b { color: var(--ink); font-weight: 700; }
+
+    .ta-pv-tablewrap {
+      overflow: auto;
+      max-height: 640px;
+      border: 1px solid var(--border);
+      border-radius: var(--rad);
+      background: var(--surface);
+    }
+    .ta-pv-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: max-content;
+      min-width: 100%;
+      font-size: 12.5px;
+    }
+    .ta-pv-table thead th {
+      position: sticky;
+      top: 0;
+      background: #fafafa;
+      border-bottom: 1px solid var(--border);
+      z-index: 2;
+      padding: 10px 8px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .ta-pv-th-no, .ta-pv-th-outlet {
+      position: sticky;
+      left: 0;
+      background: #fafafa;
+      z-index: 4;
+      text-align: left;
+    }
+    .ta-pv-th-no { left: 0; min-width: 44px; padding-left: 14px; }
+    .ta-pv-th-outlet {
+      left: 44px;
+      min-width: 240px;
+      font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    }
+    .ta-pv-th-total {
+      position: sticky; right: 0;
+      background: #f0faf6;
+      border-left: 1px solid var(--border);
+      z-index: 3;
+      min-width: 80px;
+      font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--m-dark);
+    }
+    .ta-pv-th-date {
+      cursor: pointer;
+      user-select: none;
+      min-width: 50px;
+      padding: 8px 6px;
+      transition: background .14s;
+    }
+    .ta-pv-th-date:hover { background: #f0faf6; }
+    .ta-pv-th-date.active { background: var(--m-tint); color: var(--m-dark); }
+    .ta-pv-th-date-day {
+      display: block;
+      font-family: var(--mono);
+      font-size: 9.5px; font-weight: 700; letter-spacing: .06em;
+      color: var(--muted-2);
+    }
+    .ta-pv-th-date.active .ta-pv-th-date-day,
+    .ta-pv-th-date.active .ta-pv-th-date-mon { color: var(--m-dark); }
+    .ta-pv-th-date.weekend .ta-pv-th-date-day { color: var(--m-teal); }
+    .ta-pv-th-date-num {
+      display: block;
+      font-family: var(--mono);
+      font-size: 13px; font-weight: 700;
+      color: var(--ink);
+      margin: 2px 0;
+    }
+    .ta-pv-th-date-mon {
+      display: block;
+      font-family: var(--mono);
+      font-size: 9.5px; font-weight: 700; letter-spacing: .06em;
+      color: var(--muted-2);
+    }
+    .ta-pv-th-date-sortico {
+      display: inline-block;
+      margin-top: 3px;
+      opacity: 0;
+      transition: opacity .14s;
+      font-size: 10px;
+      color: var(--m-dark);
+    }
+    .ta-pv-th-date.active .ta-pv-th-date-sortico { opacity: 1; }
+    .ta-pv-th-date:hover .ta-pv-th-date-sortico { opacity: .6; }
+
+    .ta-pv-table tbody td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #f1f1f0;
+      vertical-align: middle;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .ta-pv-cell-no, .ta-pv-cell-outlet {
+      position: sticky;
+      left: 0;
+      background: var(--surface);
+      z-index: 1;
+      text-align: left;
+    }
+    .ta-pv-cell-no {
+      left: 0; min-width: 44px;
+      padding-left: 14px !important;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted-2);
+    }
+    .ta-pv-cell-outlet {
+      left: 44px;
+      min-width: 240px;
+      padding: 10px 10px 10px 0 !important;
+    }
+    .ta-pv-outlet-name {
+      font-size: 13px; font-weight: 600;
+      color: var(--ink);
+      line-height: 1.25;
+      margin-bottom: 3px;
+    }
+    .ta-pv-outlet-meta { display: inline-flex; align-items: center; gap: 6px; }
+    .ta-pv-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+    }
+    .ta-pv-pill.enterprise { background: var(--e-bg); border-color: var(--e-bd); color: var(--e-tx); }
+    .ta-pv-pill.premium    { background: var(--p-bg); border-color: var(--p-bd); color: var(--p-tx); }
+    .ta-pv-pill.project    { background: var(--r-bg); border-color: var(--r-bd); color: var(--r-tx); }
+
+    .ta-pv-cell-data {
+      font-family: var(--mono);
+      font-size: 12px; font-weight: 600;
+      color: var(--ink);
+      min-width: 50px;
+    }
+    .ta-pv-cell-empty { color: var(--muted-2); font-family: var(--mono); }
+    .ta-pv-cell-total {
+      position: sticky; right: 0;
+      background: #f0faf6;
+      border-left: 1px solid var(--border);
+      z-index: 1;
+      font-family: var(--mono);
+      font-size: 13px; font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* Heatmap levels — base teal scaled by intensity */
+    .ta-pv-cell-l1 { background: rgba(45,189,182,.08); color: var(--ink); }
+    .ta-pv-cell-l2 { background: rgba(45,189,182,.18); color: var(--ink); }
+    .ta-pv-cell-l3 { background: rgba(45,189,182,.32); color: var(--m-dark); }
+    .ta-pv-cell-l4 { background: rgba(45,189,182,.52); color: var(--m-dark); }
+    .ta-pv-cell-l5 { background: rgba(45,189,182,.78); color: #052b29; }
+
+    .ta-pv-table tfoot td {
+      position: sticky; bottom: 0;
+      background: #fafafa;
+      border-top: 2px solid var(--border);
+      padding: 10px 8px;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 12px; font-weight: 700;
+      color: var(--ink);
+      z-index: 2;
+    }
+    .ta-pv-tfoot-label {
+      position: sticky; left: 0;
+      background: #fafafa;
+      z-index: 3;
+      text-align: left !important;
+      padding-left: 14px !important;
+      font-family: var(--mono);
+      font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--m-dark);
+    }
+    .ta-pv-tfoot-grand {
+      position: sticky; right: 0;
+      background: var(--m-tint);
+      border-left: 1px solid var(--border);
+      z-index: 3;
+      color: var(--m-dark);
+    }
+
+    .ta-pv-empty {
+      padding: 40px 20px; text-align: center; color: var(--muted); font-size: 13px;
+    }
+
     @media (max-width: 720px) {
       .ta-top-row { grid-template-columns: 36px 1fr auto; gap: 10px; padding: 10px 12px; }
       .ta-top-badge { display: none; }
+      .ta-pv-panel { padding: 16px 14px; }
+      .ta-pv-info { margin-left: 0; }
     }
 
     @media (max-width: 960px) {
@@ -3338,18 +3639,6 @@
         </div>
       </div>
 
-      <!-- Role Filter (reuse same role filter pattern) -->
-      <div class="role-filter-section">
-        <div class="role-filter-label">FILTER BERDASARKAN ROLE</div>
-        <div class="role-tabs" id="ticketRoleTabs">
-          <button class="role-tab active" data-rg="all" onclick="setTicketRole('all')">All Roles <span class="gcount" id="tkrc-all">—</span></button>
-          <button class="role-tab" data-rg="leadership" onclick="setTicketRole('leadership')"><span class="g-dot dot-e"></span>Leadership <span class="gcount" id="tkrc-leadership">—</span></button>
-          <button class="role-tab" data-rg="tac"        onclick="setTicketRole('tac')"><span class="g-dot dot-t"></span>TAC <span class="gcount" id="tkrc-tac">—</span></button>
-          <button class="role-tab" data-rg="support"    onclick="setTicketRole('support')"><span class="g-dot dot-p"></span>Customer Support <span class="gcount" id="tkrc-support">—</span></button>
-          <button class="role-tab" data-rg="lifecycle"  onclick="setTicketRole('lifecycle')"><span class="g-dot dot-n"></span>Customer Lifecycle <span class="gcount" id="tkrc-lifecycle">—</span></button>
-        </div>
-      </div>
-
       <!-- Outlet TAC Breakdown -->
       <div class="analytics-panel" id="outletTacPanel" style="margin-bottom:18px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
@@ -3399,11 +3688,24 @@
                 <th style="min-width:140px">Ticket ID</th>
                 <th class="c-name">Outlet</th>
                 <th style="min-width:180px">Creator</th>
+                <th style="min-width:170px">Status ClickUp</th>
               </tr>
             </thead>
             <tbody id="ticketIdTbody"></tbody>
           </table>
           <div class="pag-bar" id="ticketIdPagBar"></div>
+        </div>
+      </div>
+
+      <!-- Role Filter (moved here — directly above the agent list) -->
+      <div class="role-filter-section">
+        <div class="role-filter-label">FILTER BERDASARKAN ROLE</div>
+        <div class="role-tabs" id="ticketRoleTabs">
+          <button class="role-tab active" data-rg="all" onclick="setTicketRole('all')">All Roles <span class="gcount" id="tkrc-all">—</span></button>
+          <button class="role-tab" data-rg="leadership" onclick="setTicketRole('leadership')"><span class="g-dot dot-e"></span>Leadership <span class="gcount" id="tkrc-leadership">—</span></button>
+          <button class="role-tab" data-rg="tac"        onclick="setTicketRole('tac')"><span class="g-dot dot-t"></span>TAC <span class="gcount" id="tkrc-tac">—</span></button>
+          <button class="role-tab" data-rg="support"    onclick="setTicketRole('support')"><span class="g-dot dot-p"></span>Customer Support <span class="gcount" id="tkrc-support">—</span></button>
+          <button class="role-tab" data-rg="lifecycle"  onclick="setTicketRole('lifecycle')"><span class="g-dot dot-n"></span>Customer Lifecycle <span class="gcount" id="tkrc-lifecycle">—</span></button>
         </div>
       </div>
 
@@ -3550,12 +3852,12 @@
         </div>
       </div>
 
-      <!-- Stacked Bar Chart -->
+      <!-- Stacked Bar Chart · Per Chat (jumlah pesan per hari) -->
       <div class="ta-chart-panel">
         <div class="ta-chart-head">
           <div>
-            <div class="ta-chart-title">Traffic Harian per Group</div>
-            <div class="ta-chart-sub">Stacked bar · setiap kolom = traffic per hari (sesuai filter Type Chat), di-stack berdasarkan group</div>
+            <div class="ta-chart-title">Traffic Harian per Chat</div>
+            <div class="ta-chart-sub">Stacked bar · setiap kolom = jumlah pesan per hari (sesuai filter Type Chat), di-stack berdasarkan group</div>
           </div>
           <div class="ta-chart-legend" id="taChartLegend">
             <span class="ta-legend-item"><span class="ta-legend-dot" style="background:#93c5fd"></span>Enterprise</span>
@@ -3564,8 +3866,28 @@
           </div>
         </div>
         <div class="ta-chart-scroll">
-          <div class="ta-chart-canvas-wrap">
+          <div class="ta-chart-canvas-wrap" id="taChartWrap">
             <canvas id="taChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stacked Bar Chart · Per Group (jumlah outlet aktif per hari) -->
+      <div class="ta-chart-panel" style="margin-top:20px">
+        <div class="ta-chart-head">
+          <div>
+            <div class="ta-chart-title">Traffic Harian per Group</div>
+            <div class="ta-chart-sub">Stacked bar · setiap kolom = jumlah outlet aktif per hari (outlet yang punya minimal 1 pesan, sesuai filter Type Chat), di-stack berdasarkan group</div>
+          </div>
+          <div class="ta-chart-legend" id="taChartOutletsLegend">
+            <span class="ta-legend-item"><span class="ta-legend-dot" style="background:#93c5fd"></span>Enterprise</span>
+            <span class="ta-legend-item"><span class="ta-legend-dot" style="background:#d8b4fe"></span>Premium Services</span>
+            <span class="ta-legend-item"><span class="ta-legend-dot" style="background:#86efac"></span>Project</span>
+          </div>
+        </div>
+        <div class="ta-chart-scroll">
+          <div class="ta-chart-canvas-wrap" id="taChartOutletsWrap">
+            <canvas id="taChartOutlets"></canvas>
           </div>
         </div>
       </div>
@@ -3580,6 +3902,56 @@
         </div>
         <div class="ta-top-list" id="taTopList">
           <div style="color:var(--muted);font-size:13px;text-align:center;padding:24px 0">Belum ada data pada periode ini</div>
+        </div>
+      </div>
+
+      <!-- Pivot Table — Outlet × Tanggal -->
+      <div class="ta-pv-panel" style="margin-top:20px">
+        <div class="ta-pv-head">
+          <div class="ta-pv-title-wrap">
+            <div class="ta-pv-title-row">
+              <div class="ta-pv-title">Pivot Table — Jumlah Conversation</div>
+              <span class="ta-pv-mode" id="taPvModeBadge">INBOUND + OUTBOUND</span>
+            </div>
+            <div class="ta-pv-sub" id="taPvSub">— outlet · — kolom tanggal · sel = jumlah percakapan</div>
+          </div>
+          <div class="ta-pv-legend">
+            <span class="ta-pv-legend-lbl">Rendah</span>
+            <span class="ta-pv-legend-grid">
+              <span class="ta-pv-legend-cell ta-pv-cell-l1"></span>
+              <span class="ta-pv-legend-cell ta-pv-cell-l2"></span>
+              <span class="ta-pv-legend-cell ta-pv-cell-l3"></span>
+              <span class="ta-pv-legend-cell ta-pv-cell-l4"></span>
+              <span class="ta-pv-legend-cell ta-pv-cell-l5"></span>
+            </span>
+            <span class="ta-pv-legend-lbl">Tinggi</span>
+          </div>
+        </div>
+
+        <div class="ta-pv-toolbar">
+          <div class="ta-pv-search-wrap">
+            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="6.5" cy="6.5" r="5.5"/><line x1="11" y1="11" x2="15" y2="15"/></svg></span>
+            <input class="ta-pv-search-input" id="taPvSearchInput" type="text" placeholder="Cari nama outlet…" oninput="taPvQuery=this.value;renderTaPivot()"/>
+          </div>
+          <div class="ta-pv-sort-group">
+            <span class="ta-pv-sort-lbl">Urutkan default:</span>
+            <button class="ta-pv-sort-btn" data-sort="total-desc" onclick="setTaPvSort('total','desc')">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 3h8M3 6h6M4 9h4"/></svg>
+              Total chat terbanyak
+            </button>
+            <span class="ta-pv-sort-lbl" style="margin-left:6px">Atau:</span>
+            <button class="ta-pv-sort-btn" data-sort="name-asc"  onclick="setTaPvSort('name','asc')">A → Z</button>
+            <button class="ta-pv-sort-btn" data-sort="name-desc" onclick="setTaPvSort('name','desc')">Z → A</button>
+          </div>
+          <div class="ta-pv-info" id="taPvInfo">Diurutkan: <b>Total (semua tanggal)</b> · Turun (Desc)</div>
+        </div>
+
+        <div class="ta-pv-tablewrap" id="taPvTableWrap">
+          <table class="ta-pv-table" id="taPvTable">
+            <thead id="taPvThead"></thead>
+            <tbody id="taPvTbody"></tbody>
+            <tfoot id="taPvTfoot"></tfoot>
+          </table>
         </div>
       </div>
 
@@ -3819,8 +4191,12 @@
     // Traffic Analytic state
     let taGroups = { enterprise: true, premium: true, project: true };
     let taChats  = { inbound: true, outbound: true };
+    // Pivot table state — sort mode + search query
+    let taPvSort  = { kind: 'total', dir: 'desc', date: null };  // kind: 'total' | 'name' | 'date'
+    let taPvQuery = '';
     let taFirstVisit = true;
     let _taChart = null;
+    let _taOutletChart = null;
 
     // ════════════════════════════════════════════
     //  DATE UTILITIES
@@ -4200,10 +4576,11 @@
         return dt.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
       });
 
-      const seriesByGroup = {};
+      // ── Series 1: Per Chat = jumlah pesan per hari (existing behavior) ──
+      const seriesByGroupChat = {};
       allOnGroups.forEach(g => {
         const list = OUTLETS.filter(o => o.group === g);
-        seriesByGroup[g] = days.map(ds => {
+        seriesByGroupChat[g] = days.map(ds => {
           let s = 0;
           list.forEach(o => {
             if (taChats.inbound)  s += (o.trafficByDate[ds]  || 0);
@@ -4213,13 +4590,61 @@
         });
       });
 
-      // Update legend to reflect active group filter only
-      const legendEl = document.getElementById('taChartLegend');
-      legendEl.innerHTML = allOnGroups.map(g =>
-        `<span class="ta-legend-item"><span class="ta-legend-dot" style="background:${TA_COLORS[g].fill}"></span>${TA_COLORS[g].label}</span>`
-      ).join('');
+      // ── Series 2: Per Group = jumlah outlet aktif per hari ──
+      // Outlet "aktif" = punya minimal 1 pesan pada hari itu (sesuai filter Type Chat)
+      const seriesByGroupOutlets = {};
+      allOnGroups.forEach(g => {
+        const list = OUTLETS.filter(o => o.group === g);
+        seriesByGroupOutlets[g] = days.map(ds => {
+          let n = 0;
+          list.forEach(o => {
+            let v = 0;
+            if (taChats.inbound)  v += (o.trafficByDate[ds]  || 0);
+            if (taChats.outbound) v += (o.outboundByDate[ds] || 0);
+            if (v > 0) n++;
+          });
+          return n;
+        });
+      });
 
-      // Build datasets in fixed visual order (enterprise → premium → project) to keep stack consistent
+      // Render both charts
+      _taChart = _renderTaStackedBar({
+        prev: _taChart,
+        canvasId: 'taChart',
+        legendElId: 'taChartLegend',
+        canvasWrapId: 'taChartWrap',
+        days, labels,
+        seriesByGroup: seriesByGroupChat,
+        allOnGroups,
+        unitLabel: 'pesan',
+      });
+      _taOutletChart = _renderTaStackedBar({
+        prev: _taOutletChart,
+        canvasId: 'taChartOutlets',
+        legendElId: 'taChartOutletsLegend',
+        canvasWrapId: 'taChartOutletsWrap',
+        days, labels,
+        seriesByGroup: seriesByGroupOutlets,
+        allOnGroups,
+        unitLabel: 'outlet',
+      });
+
+      // Render Top 8 Outlet list + Pivot Table
+      renderTaTopOutlets();
+      renderTaPivot();
+    }
+
+    // ── Helper: render satu stacked-bar chart untuk Traffic Analytic ──
+    function _renderTaStackedBar({ prev, canvasId, legendElId, canvasWrapId, days, labels, seriesByGroup, allOnGroups, unitLabel }) {
+      // Update legend to reflect active group filter only
+      const legendEl = document.getElementById(legendElId);
+      if (legendEl) {
+        legendEl.innerHTML = allOnGroups.map(g =>
+          `<span class="ta-legend-item"><span class="ta-legend-dot" style="background:${TA_COLORS[g].fill}"></span>${TA_COLORS[g].label}</span>`
+        ).join('');
+      }
+
+      // Build datasets in fixed visual order (enterprise → premium → project)
       const order = ['enterprise','premium','project'].filter(g => allOnGroups.includes(g));
       const lastIdx = order.length - 1;
       const datasets = order.map((g, i) => ({
@@ -4233,22 +4658,21 @@
         stack: 'traffic',
       }));
 
-      // Resize inner wrap so every day gets a readable slot (enables horizontal scroll for long ranges)
-      const canvasWrap = document.querySelector('.ta-chart-canvas-wrap');
+      // Resize inner wrap so every day gets a readable slot
+      const canvasWrap = document.getElementById(canvasWrapId);
       if (canvasWrap) {
         const PER_DAY = 38;
         canvasWrap.style.width = (days.length * PER_DAY) + 'px';
       }
 
-      const ctx = document.getElementById('taChart')?.getContext('2d');
-      if (!ctx) return;
-      if (_taChart) { _taChart.destroy(); _taChart = null; }
+      const ctx = document.getElementById(canvasId)?.getContext('2d');
+      if (!ctx) return prev;
+      if (prev) { prev.destroy(); }
 
       const DAYNAMES = ['MINGGU','SENIN','SELASA','RABU','KAMIS','JUMAT','SABTU'];
 
-      // Custom plugin: draw stack totals on top of each bar (tooltip hover unaffected)
       const stackTotalsPlugin = {
-        id: 'stackTotals',
+        id: 'stackTotals_' + canvasId,
         afterDatasetsDraw(chart) {
           const { ctx, data } = chart;
           const dsCount = data.datasets.length;
@@ -4281,7 +4705,7 @@
         },
       };
 
-      _taChart = new Chart(ctx, {
+      return new Chart(ctx, {
         type: 'bar',
         data: { labels, datasets },
         plugins: [stackTotalsPlugin],
@@ -4291,10 +4715,7 @@
           interaction: { mode: 'index', intersect: false },
           layout: { padding: { top: 26, right: 4, left: 0, bottom: 0 } },
           datasets: {
-            bar: {
-              categoryPercentage: 1.0,
-              barPercentage: 0.92,
-            },
+            bar: { categoryPercentage: 1.0, barPercentage: 0.92 },
           },
           plugins: {
             legend: { display: false },
@@ -4316,10 +4737,10 @@
                   return DAYNAMES[dt.getDay()] + ' · ' +
                          dt.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
                 },
-                label: (c) => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('id-ID')}`,
+                label: (c) => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('id-ID')} ${unitLabel}`,
                 footer: (items) => {
                   const total = items.reduce((s, it) => s + it.parsed.y, 0);
-                  return 'Total: ' + total.toLocaleString('id-ID');
+                  return 'Total: ' + total.toLocaleString('id-ID') + ' ' + unitLabel;
                 },
               },
               footerColor: '#fff',
@@ -4355,9 +4776,6 @@
           },
         },
       });
-
-      // Render Top 8 Outlet list
-      renderTaTopOutlets();
     }
 
     function renderTaTopOutlets() {
@@ -4398,6 +4816,184 @@
             <div class="ta-top-value">${x.total.toLocaleString('id-ID')}</div>
           </div>`;
       }).join('');
+    }
+
+    // ════════════════════════════════════════════
+    //  PIVOT TABLE — Outlet × Tanggal
+    // ════════════════════════════════════════════
+    function setTaPvSort(kind, dir, date) {
+      taPvSort = { kind, dir, date: date || null };
+      renderTaPivot();
+    }
+
+    function renderTaPivot() {
+      const thead = document.getElementById('taPvThead');
+      const tbody = document.getElementById('taPvTbody');
+      const tfoot = document.getElementById('taPvTfoot');
+      const sub   = document.getElementById('taPvSub');
+      const info  = document.getElementById('taPvInfo');
+      const modeBadge = document.getElementById('taPvModeBadge');
+      if (!thead || !tbody) return;
+
+      // Mode badge (Inbound / Outbound / Both)
+      const modeText = (taChats.inbound && taChats.outbound) ? 'INBOUND + OUTBOUND'
+                     : taChats.inbound ? 'INBOUND'
+                     : taChats.outbound ? 'OUTBOUND' : '—';
+      if (modeBadge) modeBadge.textContent = modeText;
+
+      // Active sort button styling
+      document.querySelectorAll('.ta-pv-sort-btn').forEach(b => {
+        const key = `${taPvSort.kind}-${taPvSort.dir}`;
+        b.classList.toggle('active', b.dataset.sort === key);
+      });
+
+      // Build days list
+      const days = [];
+      eachDay(selectedDateStart, selectedDateEnd, ds => days.push(ds));
+
+      // Filter outlets by active group + search query
+      const q = (taPvQuery || '').trim().toLowerCase();
+      const outletPool = OUTLETS.filter(o => taGroups[o.group]);
+      const filtered = q
+        ? outletPool.filter(o => (o.name || '').toLowerCase().includes(q))
+        : outletPool;
+
+      // Compute per-outlet per-day values (in + out per filter Type Chat)
+      const rows = filtered.map(o => {
+        const valByDate = {};
+        let total = 0;
+        days.forEach(ds => {
+          let v = 0;
+          if (taChats.inbound)  v += (o.trafficByDate[ds]  || 0);
+          if (taChats.outbound) v += (o.outboundByDate[ds] || 0);
+          valByDate[ds] = v;
+          total += v;
+        });
+        return { o, valByDate, total };
+      });
+
+      // Sort
+      const dir = taPvSort.dir === 'asc' ? 1 : -1;
+      if (taPvSort.kind === 'name') {
+        rows.sort((a, b) => dir * (a.o.name || '').localeCompare(b.o.name || '', 'id'));
+      } else if (taPvSort.kind === 'date' && taPvSort.date) {
+        const d = taPvSort.date;
+        rows.sort((a, b) => dir * ((a.valByDate[d] || 0) - (b.valByDate[d] || 0)) || (b.total - a.total));
+      } else {
+        // total
+        rows.sort((a, b) => dir * (a.total - b.total));
+      }
+
+      // Heatmap max across all data cells (rows × days)
+      let maxVal = 0;
+      rows.forEach(r => { days.forEach(d => { if (r.valByDate[d] > maxVal) maxVal = r.valByDate[d]; }); });
+
+      // Subtitle
+      if (sub) {
+        const unit = (taChats.inbound && taChats.outbound) ? 'in + out'
+                   : taChats.inbound ? 'inbound' : taChats.outbound ? 'outbound' : '—';
+        sub.textContent = `${rows.length} outlet · ${days.length} kolom tanggal · sel = jumlah percakapan (${unit})`;
+      }
+
+      // Sort info line
+      if (info) {
+        let kindLbl;
+        if (taPvSort.kind === 'name') kindLbl = 'Nama outlet';
+        else if (taPvSort.kind === 'date' && taPvSort.date) {
+          const dt = new Date(taPvSort.date + 'T00:00:00');
+          kindLbl = dt.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
+        } else kindLbl = 'Total (semua tanggal)';
+        const dirLbl = taPvSort.dir === 'asc' ? 'Naik (Asc)' : 'Turun (Desc)';
+        info.innerHTML = `Diurutkan: <b>${esc(kindLbl)}</b> · ${dirLbl}`;
+      }
+
+      // ── Build THEAD ──
+      const DAYNAMES = ['MIN','SEN','SEL','RAB','KAM','JUM','SAB'];
+      const MONNAMES = ['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGU','SEP','OKT','NOV','DES'];
+      const sortIcoFor = (d) => {
+        if (taPvSort.kind !== 'date' || taPvSort.date !== d) return '↕';
+        return taPvSort.dir === 'asc' ? '▲' : '▼';
+      };
+      const dayCols = days.map(ds => {
+        const dt = new Date(ds + 'T00:00:00');
+        const isWeekend = (dt.getDay() === 0 || dt.getDay() === 6);
+        const isActive = (taPvSort.kind === 'date' && taPvSort.date === ds);
+        return `<th class="ta-pv-th-date${isActive ? ' active' : ''}${isWeekend ? ' weekend' : ''}" onclick="onTaPvDateHeaderClick('${ds}')">
+          <span class="ta-pv-th-date-day">${DAYNAMES[dt.getDay()]}</span>
+          <span class="ta-pv-th-date-num">${String(dt.getDate()).padStart(2,'0')}</span>
+          <span class="ta-pv-th-date-mon">${MONNAMES[dt.getMonth()]}</span>
+          <span class="ta-pv-th-date-sortico">${sortIcoFor(ds)}</span>
+        </th>`;
+      }).join('');
+      thead.innerHTML = `<tr>
+        <th class="ta-pv-th-no">#</th>
+        <th class="ta-pv-th-outlet">Outlet</th>
+        ${dayCols}
+        <th class="ta-pv-th-total" onclick="setTaPvSort('total', taPvSort.kind==='total' &amp;&amp; taPvSort.dir==='desc' ? 'asc' : 'desc')" style="cursor:pointer">Total</th>
+      </tr>`;
+
+      // ── Build TBODY ──
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="${2 + days.length + 1}" class="ta-pv-empty">${q ? `Tidak ada outlet yang cocok dengan pencarian "${esc(taPvQuery)}"` : 'Belum ada outlet pada filter ini'}</td></tr>`;
+        if (tfoot) tfoot.innerHTML = '';
+        return;
+      }
+
+      const GROUP_LABEL = { enterprise: 'Enterprise', premium: 'Premium', project: 'Project' };
+      const levelClass = (v) => {
+        if (!v || v <= 0) return 'ta-pv-cell-empty';
+        if (maxVal <= 0) return 'ta-pv-cell-l1';
+        const r = v / maxVal;
+        if (r <= 0.20) return 'ta-pv-cell-data ta-pv-cell-l1';
+        if (r <= 0.40) return 'ta-pv-cell-data ta-pv-cell-l2';
+        if (r <= 0.60) return 'ta-pv-cell-data ta-pv-cell-l3';
+        if (r <= 0.80) return 'ta-pv-cell-data ta-pv-cell-l4';
+        return 'ta-pv-cell-data ta-pv-cell-l5';
+      };
+
+      tbody.innerHTML = rows.map((r, i) => {
+        const o = r.o;
+        const cells = days.map(ds => {
+          const v = r.valByDate[ds] || 0;
+          if (v === 0) return `<td class="ta-pv-cell-empty">·</td>`;
+          return `<td class="${levelClass(v)}" title="${o.name} · ${ds}\n${v.toLocaleString('id-ID')} pesan">${v.toLocaleString('id-ID')}</td>`;
+        }).join('');
+        return `<tr>
+          <td class="ta-pv-cell-no">${String(i + 1).padStart(2,'0')}</td>
+          <td class="ta-pv-cell-outlet">
+            <div class="ta-pv-outlet-name">${esc(o.name)}</div>
+            <div class="ta-pv-outlet-meta">
+              <span class="ta-pv-pill ${o.group}">${GROUP_LABEL[o.group] || o.group}</span>
+            </div>
+          </td>
+          ${cells}
+          <td class="ta-pv-cell-total">${r.total.toLocaleString('id-ID')}</td>
+        </tr>`;
+      }).join('');
+
+      // ── Build TFOOT (totals per day) ──
+      if (tfoot) {
+        let grand = 0;
+        const colTotals = days.map(ds => {
+          const s = rows.reduce((acc, r) => acc + (r.valByDate[ds] || 0), 0);
+          grand += s;
+          return s;
+        });
+        tfoot.innerHTML = `<tr>
+          <td class="ta-pv-tfoot-label" colspan="2">● Total per hari</td>
+          ${colTotals.map(s => `<td>${s > 0 ? s.toLocaleString('id-ID') : '·'}</td>`).join('')}
+          <td class="ta-pv-tfoot-grand">${grand.toLocaleString('id-ID')}</td>
+        </tr>`;
+      }
+    }
+
+    // Cycle sort: same date → toggle dir; new date → start desc
+    function onTaPvDateHeaderClick(ds) {
+      if (taPvSort.kind === 'date' && taPvSort.date === ds) {
+        setTaPvSort('date', taPvSort.dir === 'desc' ? 'asc' : 'desc', ds);
+      } else {
+        setTaPvSort('date', 'desc', ds);
+      }
     }
 
     // ════════════════════════════════════════════
@@ -4885,24 +5481,48 @@
       const agentMap = {};
       AGENTS.forEach(a => { if (a.number) agentMap[a.number] = a.name; });
 
+      // ── Pre-compute per-outlet ticket counts from TICKET_LIST (unique IDs in range) ──
+      // Konsisten dengan Hero stats & chip "Tiket Dibuat" yang juga pakai TICKET_LIST.
+      const ticketTotalByOutlet  = {}; // { outletTitle: total ticket count }
+      const ticketAgentsByOutlet = {}; // { outletTitle: { senderNumber: count } }
+      (TICKET_LIST || []).forEach(t => {
+        const inRange =
+          (!selectedDateStart || t.dateISO >= selectedDateStart) &&
+          (!selectedDateEnd   || t.dateISO <= selectedDateEnd);
+        if (!inRange) return;
+        const title = t.outletTitle || '';
+        if (!title) return;
+        ticketTotalByOutlet[title] = (ticketTotalByOutlet[title] || 0) + 1;
+        if (!ticketAgentsByOutlet[title]) ticketAgentsByOutlet[title] = {};
+        const num = String(t.senderNumber || '');
+        if (num) ticketAgentsByOutlet[title][num] = (ticketAgentsByOutlet[title][num] || 0) + 1;
+      });
+
       // For each outlet file, sum ticket/TAC per agent based on filter
       const outletRows = [];
       OUTLET_FILES.forEach(f => {
-        const ticketData = f.ticketsByAgentDate || {};
-        const tacData    = f.tacByAgentDate     || {};
+        const tacData = f.tacByAgentDate || {};
 
         const agentTotals = {};
+        let ticketCount = 0;
+        let tacCount    = 0;
 
+        // ── Tickets: source = TICKET_LIST grouped by outletTitle ──
         if (showTicket || showBoth) {
-          Object.entries(ticketData).forEach(([num, byDate]) => {
-            const c = sumRange(byDate, selectedDateStart, selectedDateEnd);
-            if (c > 0) agentTotals[num] = (agentTotals[num] || 0) + c;
+          ticketCount = ticketTotalByOutlet[f.title] || 0;
+          const ticketAgents = ticketAgentsByOutlet[f.title] || {};
+          Object.entries(ticketAgents).forEach(([num, count]) => {
+            agentTotals[num] = (agentTotals[num] || 0) + count;
           });
         }
+        // ── TAC: source = f.tacByAgentDate (unchanged — message-level counter) ──
         if (showTac) {
           Object.entries(tacData).forEach(([num, byDate]) => {
             const c = sumRange(byDate, selectedDateStart, selectedDateEnd);
-            if (c > 0) agentTotals[num] = (agentTotals[num] || 0) + c;
+            if (c > 0) {
+              agentTotals[num] = (agentTotals[num] || 0) + c;
+              tacCount += c;
+            }
           });
         }
 
@@ -4911,7 +5531,15 @@
         const outletTotal = agentSummary.reduce((s, a) => s + a.count, 0);
 
         if (outletTotal > 0) {
-          outletRows.push({ title: f.title, url: f.url, agents: agentSummary, total: outletTotal });
+          outletRows.push({
+            title: f.title,
+            displayName: extractName(f.title),
+            url: f.url,
+            agents: agentSummary,
+            total: outletTotal,
+            ticketCount,
+            tacCount,
+          });
         }
       });
 
@@ -4921,10 +5549,12 @@
       const pagBar = document.getElementById('outletTacPagBar');
       const shownChip = document.getElementById('outletTacShownChip');
 
-      // ── Filter by search query ──
+      // ── Filter by search query (cocokkan ke clean name & full title) ──
       const q = (outTacQuery || '').trim().toLowerCase();
       const filteredRows = q
-        ? outletRows.filter(r => (r.title || '').toLowerCase().includes(q))
+        ? outletRows.filter(r =>
+            (r.displayName || '').toLowerCase().includes(q) ||
+            (r.title       || '').toLowerCase().includes(q))
         : outletRows;
 
       if (shownChip) {
@@ -4955,10 +5585,31 @@
       list.innerHTML = pageRows.map(r => {
         const agentNames = r.agents.sort((a, b) => b.count - a.count)
           .map(a => `${esc(a.name)} (${a.count})`).join(' · ');
+
+        // Breakdown chips — only show when "Semua Status" filter is active and
+        // at least one of the two values is non-zero. Avoids redundancy
+        // when filter sudah specific ke Ticket atau TAC.
+        let breakdownHTML = '';
+        if (showBoth && (r.ticketCount > 0 || r.tacCount > 0)) {
+          const chips = [];
+          if (r.ticketCount > 0) {
+            chips.push(`<span class="ota-chip ota-chip-esc" title="Tiket Dibuat → Escalated">
+              <span class="ota-chip-dot"></span>Escalated · ${r.ticketCount}
+            </span>`);
+          }
+          if (r.tacCount > 0) {
+            chips.push(`<span class="ota-chip ota-chip-tac" title="On Handling TAC">
+              <span class="ota-chip-dot"></span>On Handling TAC · ${r.tacCount}
+            </span>`);
+          }
+          breakdownHTML = `<div class="ota-chips">${chips.join('')}</div>`;
+        }
+
         return `<div class="outlet-tac-row">
           <div class="outlet-tac-name">
-            <a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a>
+            <a href="${esc(r.url)}" target="_blank" title="${esc(r.title)}">${esc(r.displayName)}</a>
             <div class="outlet-tac-agent-list">${agentNames}</div>
+            ${breakdownHTML}
           </div>
           <div class="outlet-tac-count">${r.total}</div>
         </div>`;
@@ -5029,16 +5680,21 @@
           creator,
           creatorIsKnown: !!picMap[num],
           dateISO: t.dateISO || '',
+          // ClickUp status enrichment from backend (may be undefined until backend ships)
+          status: t.status || '',
+          statusColor: t.statusColor || '',
+          clickupUrl: t.clickupUrl || ('https://app.clickup.com/t/' + String(t.id || '').toLowerCase()),
         };
       });
 
-      // 3) Search filter (id / outlet / creator)
+      // 3) Search filter (id / outlet / creator / status)
       const q = (tlQuery || '').trim().toLowerCase();
       const filtered = q
         ? resolved.filter(r =>
             r.id.includes(q) ||
             r.outletTitle.toLowerCase().includes(q) ||
-            r.creator.toLowerCase().includes(q))
+            r.creator.toLowerCase().includes(q) ||
+            (r.status || '').toLowerCase().includes(q))
         : resolved;
 
       // 4) Update badge & chip
@@ -5051,12 +5707,12 @@
 
       // 5) Empty states
       if (!resolved.length) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Belum ada Ticket ID terdeteksi pada periode ini</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Belum ada Ticket ID terdeteksi pada periode ini</td></tr>`;
         if (pagBar) pagBar.innerHTML = '';
         return;
       }
       if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Tidak ada Ticket ID yang cocok dengan pencarian "${esc(tlQuery)}"</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Tidak ada Ticket ID yang cocok dengan pencarian "${esc(tlQuery)}"</td></tr>`;
         if (pagBar) pagBar.innerHTML = '';
         return;
       }
@@ -5069,13 +5725,25 @@
       const pgStart = (tlPage - 1) * tlPageSize;
       const pageRows = filtered.slice(pgStart, pgStart + tlPageSize);
 
+      // Helper: render status badge (color-tinted pill) — fallback to muted dash
+      const renderStatusBadge = (r) => {
+        if (!r.status) return `<span style="color:var(--muted-2);font-size:12px">—</span>`;
+        const color = r.statusColor || '#87909e';
+        // Use the ClickUp color as accent (border + tinted bg + bold text)
+        return `<a href="${esc(r.clickupUrl)}" target="_blank" rel="noopener" title="Buka di ClickUp" style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:999px;border:1px solid ${esc(color)}66;background:${esc(color)}1a;color:${esc(color)};font-size:11.5px;font-weight:700;letter-spacing:.01em;text-transform:capitalize;text-decoration:none;white-space:nowrap">
+          <span style="width:6px;height:6px;border-radius:50%;background:${esc(color)};flex-shrink:0"></span>
+          ${esc(r.status)}
+        </a>`;
+      };
+
       // 7) Render rows
       tbody.innerHTML = pageRows.map((r, i) => `
         <tr>
           <td class="c-no" style="color:var(--muted-2)">${pgStart + i + 1}</td>
-          <td><span style="font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink);background:var(--surface-2);padding:3px 8px;border-radius:6px;letter-spacing:.01em">${esc(r.id)}</span></td>
+          <td><a href="${esc(r.clickupUrl)}" target="_blank" rel="noopener" title="Buka di ClickUp" style="font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink);background:var(--surface-2);padding:3px 8px;border-radius:6px;letter-spacing:.01em;text-decoration:none;display:inline-block">${esc(r.id)}</a></td>
           <td class="c-name" style="font-weight:500">${esc(r.outletTitle)}</td>
           <td style="${r.creatorIsKnown ? '' : 'color:var(--muted-2);font-family:var(--mono);font-size:12.5px'}">${esc(r.creator)}</td>
+          <td>${renderStatusBadge(r)}</td>
         </tr>`).join('');
 
       // 8) Pagination bar
