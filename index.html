@@ -2263,6 +2263,348 @@
       color: var(--muted);
       flex-shrink: 0;
     }
+
+    /* ── Traffic Analytic page ── */
+    #trafficDpSlot .dp-wrap { margin-bottom: 0; }
+    #trafficDpSlot .dp-trigger { padding: 8px 12px; }
+    .ta-filters {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr 1fr;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .ta-fcard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rad-lg);
+      padding: 14px 18px;
+      position: relative;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .ta-flabel {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .ta-flabel-ico {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--m-tint);
+      color: var(--m-dark);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .ta-fhint {
+      margin-left: auto;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--muted-2);
+    }
+    .ta-fperiode-trigger {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rad);
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+      user-select: none;
+    }
+    .ta-fperiode-trigger:hover { border-color: var(--border-strong); }
+    .ta-fperiode-trigger.open {
+      border-color: var(--m-teal);
+      box-shadow: 0 0 0 3px rgba(45, 189, 182, 0.18);
+    }
+    .ta-fperiode-ico {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      background: var(--m-tint);
+      color: var(--m-dark);
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .ta-fperiode-range {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink);
+      flex: 1;
+      line-height: 1.25;
+    }
+    .ta-fperiode-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--m-dark);
+      background: var(--m-tint);
+      border: 1px solid #b8e5e1;
+      border-radius: 20px;
+      padding: 2px 10px;
+      flex-shrink: 0;
+    }
+    .ta-fperiode-chev {
+      color: var(--muted-2);
+      flex-shrink: 0;
+      transition: transform .2s;
+    }
+    .ta-fperiode-trigger.open .ta-fperiode-chev { transform: rotate(180deg); }
+
+    .ta-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px 7px 10px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      transition: all .14s ease;
+    }
+    .ta-chip:hover { border-color: var(--border-strong); }
+    .ta-chip .ta-check {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border-strong);
+      background: #fff;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+      transition: all .14s;
+    }
+    .ta-chip .ta-check svg { opacity: 0; transition: opacity .12s; }
+    .ta-chip .ta-cdot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .ta-chip.on { color: var(--ink); }
+    .ta-chip.on .ta-check svg { opacity: 1; }
+
+    .ta-chip[data-g="enterprise"].on { background: var(--e-bg); border-color: var(--e-bd); color: var(--e-tx); }
+    .ta-chip[data-g="enterprise"].on .ta-check { background: var(--e-dot); border-color: var(--e-dot); }
+    .ta-chip[data-g="enterprise"] .ta-cdot { background: var(--e-dot); }
+    .ta-chip[data-g="premium"].on { background: var(--p-bg); border-color: var(--p-bd); color: var(--p-tx); }
+    .ta-chip[data-g="premium"].on .ta-check { background: var(--p-dot); border-color: var(--p-dot); }
+    .ta-chip[data-g="premium"] .ta-cdot { background: var(--p-dot); }
+    .ta-chip[data-g="project"].on { background: var(--r-bg); border-color: var(--r-bd); color: var(--r-tx); }
+    .ta-chip[data-g="project"].on .ta-check { background: var(--r-dot); border-color: var(--r-dot); }
+    .ta-chip[data-g="project"] .ta-cdot { background: var(--r-dot); }
+
+    .ta-chip[data-c="inbound"].on { background: var(--m-tint); border-color: #b8e5e1; color: var(--m-dark); }
+    .ta-chip[data-c="inbound"].on .ta-check { background: var(--m-teal); border-color: var(--m-teal); }
+    .ta-chip[data-c="outbound"].on { background: var(--m-tint); border-color: #b8e5e1; color: var(--m-dark); }
+    .ta-chip[data-c="outbound"].on .ta-check { background: var(--m-teal); border-color: var(--m-teal); }
+
+    .ta-chip-count {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+      color: inherit;
+      margin-left: 2px;
+    }
+    .ta-chip:not(.on) .ta-chip-count {
+      background: var(--surface-2);
+      color: var(--muted);
+    }
+
+    /* TA Hero — big stats panel */
+    .ta-hero {
+      background: var(--m-grad);
+      border-radius: var(--rad-lg);
+      padding: 22px 26px 24px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 22px;
+      box-shadow: 0 12px 32px -16px rgba(13, 59, 57, 0.32);
+    }
+    .ta-hero::before {
+      content: '';
+      position: absolute;
+      right: -90px; top: -90px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.18), transparent 60%);
+      pointer-events: none;
+    }
+    .ta-hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.92);
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .ta-hero-eyebrow::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.25);
+    }
+    .ta-hero-meta {
+      position: absolute;
+      right: 24px; top: 22px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.85);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 1;
+    }
+    .ta-hero-meta::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+    }
+    .ta-hero-row {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 1fr 1fr;
+      gap: 4px;
+      position: relative;
+      z-index: 1;
+    }
+    .ta-hero-stat {
+      padding: 0 24px 0 0;
+      border-right: 1px solid rgba(255,255,255,0.18);
+    }
+    .ta-hero-stat + .ta-hero-stat { padding-left: 24px; }
+    .ta-hero-stat:last-child { border-right: none; padding-right: 0; }
+    .ta-hero-stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: 0.95;
+      margin-bottom: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ta-hero-stat-label::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.65);
+    }
+    .ta-hero-stat[data-k="total"] .ta-hero-stat-label::before { background: #fff; }
+    .ta-hero-stat[data-k="enterprise"] .ta-hero-stat-label::before { background: #bfdbfe; }
+    .ta-hero-stat[data-k="premium"] .ta-hero-stat-label::before { background: #e9d5ff; }
+    .ta-hero-stat[data-k="project"] .ta-hero-stat-label::before { background: #bbf7d0; }
+    .ta-hero-stat-num {
+      font-family: var(--mono);
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      line-height: 1;
+      color: #fff;
+    }
+    .ta-hero-stat[data-k="total"] .ta-hero-stat-num { font-size: 50px; }
+    .ta-hero-stat-sub {
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.78);
+      margin-top: 8px;
+    }
+    .ta-hero-stat-delta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--mono);
+    }
+
+    /* TA Chart */
+    .ta-chart-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rad-lg);
+      padding: 22px 24px 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .ta-chart-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .ta-chart-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+    .ta-chart-sub  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .ta-chart-legend {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .ta-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-2);
+    }
+    .ta-legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .ta-chart-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      margin: 0 -4px;
+      padding: 0 4px 2px;
+    }
+    .ta-chart-scroll::-webkit-scrollbar { height: 8px; }
+    .ta-chart-scroll::-webkit-scrollbar-track { background: #f5f5f4; border-radius: 4px; }
+    .ta-chart-scroll::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 4px; }
+    .ta-chart-scroll::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+    .ta-chart-canvas-wrap {
+      position: relative;
+      height: 400px;
+      min-width: 100%;
+    }
+
+    @media (max-width: 960px) {
+      .ta-filters { grid-template-columns: 1fr; }
+      .ta-hero-row { grid-template-columns: 1fr 1fr; }
+      .ta-hero-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.18); padding: 0 0 14px; }
+      .ta-hero-stat + .ta-hero-stat { padding-left: 0; padding-top: 14px; }
+      .ta-hero-stat:last-child { border-bottom: none; padding-bottom: 0; }
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -2401,6 +2743,12 @@
           <path d="M5 8h6M5 11h4"/>
         </svg>
         Tickets
+      </button>
+      <button class="page-nav-btn" data-dash="traffic" onclick="switchDash('traffic')">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 13V8.5M6 13V5M10 13V9M14 13V3"/>
+        </svg>
+        Traffic Analytic
       </button>
     </div>
 
@@ -2923,6 +3271,143 @@
 
     </div><!-- /ticketPage -->
 
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TRAFFIC ANALYTICS PAGE                                 -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="trafficPage" style="display:none">
+
+      <!-- Filter row: Periode · Group · Type Chat -->
+      <div class="ta-filters">
+        <!-- Periode -->
+        <div class="ta-fcard">
+          <div class="ta-flabel">
+            <span class="ta-flabel-ico">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="1.5" y="2.5" width="13" height="12" rx="2"/>
+                <path d="M5 1v3M11 1v3M1.5 6.5h13"/>
+              </svg>
+            </span>
+            Periode
+          </div>
+          <!-- This slot hosts the shared date-picker when this page is active -->
+          <div id="trafficDpSlot"></div>
+        </div>
+
+        <!-- Group Filter -->
+        <div class="ta-fcard">
+          <div class="ta-flabel">
+            <span class="ta-flabel-ico">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="2" y="2" width="5" height="5" rx="1"/>
+                <rect x="9" y="2" width="5" height="5" rx="1"/>
+                <rect x="2" y="9" width="5" height="5" rx="1"/>
+                <rect x="9" y="9" width="5" height="5" rx="1"/>
+              </svg>
+            </span>
+            Filter Group
+          </div>
+          <div class="ta-chips" id="taGroupChips">
+            <div class="ta-chip on" data-g="enterprise" onclick="toggleTaGroup('enterprise')">
+              <span class="ta-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg></span>
+              <span class="ta-cdot"></span>
+              Enterprise
+              <span class="ta-chip-count" id="ta-gc-enterprise">—</span>
+            </div>
+            <div class="ta-chip on" data-g="premium" onclick="toggleTaGroup('premium')">
+              <span class="ta-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg></span>
+              <span class="ta-cdot"></span>
+              Premium Services
+              <span class="ta-chip-count" id="ta-gc-premium">—</span>
+            </div>
+            <div class="ta-chip on" data-g="project" onclick="toggleTaGroup('project')">
+              <span class="ta-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg></span>
+              <span class="ta-cdot"></span>
+              Project
+              <span class="ta-chip-count" id="ta-gc-project">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Type Chat Filter -->
+        <div class="ta-fcard">
+          <div class="ta-flabel">
+            <span class="ta-flabel-ico">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M3 8h10M9 4l4 4-4 4"/>
+              </svg>
+            </span>
+            Type Chat
+            <span class="ta-fhint">centang keduanya = total</span>
+          </div>
+          <div class="ta-chips" id="taChatChips">
+            <div class="ta-chip on" data-c="inbound" onclick="toggleTaChat('inbound')">
+              <span class="ta-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg></span>
+              <span style="font-size:13px;line-height:1">→</span>
+              Inbound
+            </div>
+            <div class="ta-chip on" data-c="outbound" onclick="toggleTaChat('outbound')">
+              <span class="ta-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg></span>
+              <span style="font-size:13px;line-height:1">←</span>
+              Outbound
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero KPI: Total + per-group -->
+      <div class="ta-hero">
+        <div class="ta-hero-eyebrow">Volume Traffic · Periode Aktif</div>
+        <div class="ta-hero-meta" id="taHeroMeta">—</div>
+        <div class="ta-hero-row">
+          <div class="ta-hero-stat" data-k="total">
+            <div class="ta-hero-stat-label">Total Traffic</div>
+            <div class="ta-hero-stat-num" id="ta-n-total">—</div>
+            <div class="ta-hero-stat-sub" id="ta-s-total">Semua group aktif</div>
+            <div class="ta-hero-stat-delta" id="ta-d-total" style="display:none"></div>
+          </div>
+          <div class="ta-hero-stat" data-k="enterprise">
+            <div class="ta-hero-stat-label">Enterprise</div>
+            <div class="ta-hero-stat-num" id="ta-n-enterprise">—</div>
+            <div class="ta-hero-stat-sub" id="ta-s-enterprise">— outlet</div>
+            <div class="ta-hero-stat-delta" id="ta-d-enterprise" style="display:none"></div>
+          </div>
+          <div class="ta-hero-stat" data-k="premium">
+            <div class="ta-hero-stat-label">Premium Services</div>
+            <div class="ta-hero-stat-num" id="ta-n-premium">—</div>
+            <div class="ta-hero-stat-sub" id="ta-s-premium">— outlet</div>
+            <div class="ta-hero-stat-delta" id="ta-d-premium" style="display:none"></div>
+          </div>
+          <div class="ta-hero-stat" data-k="project">
+            <div class="ta-hero-stat-label">Project</div>
+            <div class="ta-hero-stat-num" id="ta-n-project">—</div>
+            <div class="ta-hero-stat-sub" id="ta-s-project">— outlet</div>
+            <div class="ta-hero-stat-delta" id="ta-d-project" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stacked Bar Chart -->
+      <div class="ta-chart-panel">
+        <div class="ta-chart-head">
+          <div>
+            <div class="ta-chart-title">Traffic Harian per Group</div>
+            <div class="ta-chart-sub">Stacked bar · setiap kolom = traffic per hari (sesuai filter Type Chat), di-stack berdasarkan group</div>
+          </div>
+          <div class="ta-chart-legend" id="taChartLegend">
+            <span class="ta-legend-item"><span class="ta-legend-dot" style="background:#93c5fd"></span>Enterprise</span>
+            <span class="ta-legend-item"><span class="ta-legend-dot" style="background:#d8b4fe"></span>Premium Services</span>
+            <span class="ta-legend-item"><span class="ta-legend-dot" style="background:#86efac"></span>Project</span>
+          </div>
+        </div>
+        <div class="ta-chart-scroll">
+          <div class="ta-chart-canvas-wrap">
+            <canvas id="taChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /trafficPage -->
+
     <!-- Footer -->
     <div class="footer">
       <div class="footer-l">
@@ -3149,6 +3634,11 @@
     let TICKET_BY_AGENT = {}, TAC_BY_AGENT = {}, TICKET_BY_DATE = {}, TAC_BY_DATE = {};
     let OUTLET_FILES = []; // raw files array with per-outlet TAC data
     let tkRole = 'all', tkStatus = 'all', tkPage = 1, tkPageSize = 10;
+    // Traffic Analytic state
+    let taGroups = { enterprise: true, premium: true, project: true };
+    let taChats  = { inbound: true, outbound: true };
+    let taFirstVisit = true;
+    let _taChart = null;
 
     // ════════════════════════════════════════════
     //  DATE UTILITIES
@@ -3207,6 +3697,7 @@
       updateTriggerUI(); updateStats(); render();
       if (activeDash === 'team')   { updateTeamStats(); renderTeam(); }
       if (activeDash === 'ticket') { updateTicketStats(); renderTickets(); renderOutletTacList(); }
+      if (activeDash === 'traffic') { renderTraffic(); }
       closePicker();
     }
     function shiftPickerMonth(delta) {
@@ -3337,17 +3828,20 @@
     // ════════════════════════════════════════════
     function switchDash(page) {
       activeDash = page;
-      document.getElementById('outletPage').style.display  = page === 'outlet' ? '' : 'none';
-      document.getElementById('teamPage').style.display    = page === 'team'   ? '' : 'none';
-      document.getElementById('ticketPage').style.display  = page === 'ticket' ? '' : 'none';
+      document.getElementById('outletPage').style.display   = page === 'outlet'  ? '' : 'none';
+      document.getElementById('teamPage').style.display     = page === 'team'    ? '' : 'none';
+      document.getElementById('ticketPage').style.display   = page === 'ticket'  ? '' : 'none';
+      document.getElementById('trafficPage').style.display  = page === 'traffic' ? '' : 'none';
       document.querySelectorAll('.page-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.dash === page));
 
       // Move the single date-picker into the active slot
       const dpWrap = document.getElementById('dpWrap');
-      const slotId = page === 'team' ? 'teamDpSlot' : page === 'ticket' ? 'ticketDpSlot' : 'outletDpSlot';
+      const slotId = page === 'team' ? 'teamDpSlot'
+                   : page === 'ticket' ? 'ticketDpSlot'
+                   : page === 'traffic' ? 'trafficDpSlot'
+                   : 'outletDpSlot';
       const slot = document.getElementById(slotId);
       if (dpWrap && slot && !slot.contains(dpWrap)) slot.appendChild(dpWrap);
-
       // Update header branding
       if (page === 'team') {
         document.getElementById('brandEyebrow').textContent = 'TEAM PRODUCTIVITY';
@@ -3359,6 +3853,11 @@
         document.getElementById('brandTitle').textContent = 'Handling Kendala & Support Tickets';
         document.getElementById('brandSub').textContent = 'Real-time monitoring tiket · alur penanganan oleh tim Customer Experience';
         document.getElementById('brandPills').style.display = 'none';
+      } else if (page === 'traffic') {
+        document.getElementById('brandEyebrow').textContent = 'TRAFFIC ANALYTIC';
+        document.getElementById('brandTitle').textContent = 'Volume Traffic Monitoring';
+        document.getElementById('brandSub').textContent = 'Visualisasi inbound & outbound · per group outlet';
+        document.getElementById('brandPills').style.display = '';
       } else {
         document.getElementById('brandEyebrow').textContent = 'DATABASE GROUPS';
         document.getElementById('brandTitle').textContent = 'Dashboard Outlet';
@@ -3366,9 +3865,310 @@
         document.getElementById('brandPills').style.display = '';
       }
 
-      if (page === 'team')   { updateTeamStats(); renderTeam(); }
-      else if (page === 'ticket') { updateTicketStats(); renderTickets(); renderOutletTacList(); }
+      if (page === 'team')    { updateTeamStats(); renderTeam(); }
+      else if (page === 'ticket')  { updateTicketStats(); renderTickets(); renderOutletTacList(); }
+      else if (page === 'traffic') {
+        // First time visiting → default to last 30 days
+        if (taFirstVisit) {
+          taFirstVisit = false;
+          const t = todayStr();
+          selectedDateStart = addDays(t, -29);
+          selectedDateEnd = t;
+          dp.activePreset = '30days';
+          updateTriggerUI();
+        }
+        renderTraffic();
+      }
       else { updateStats(); render(); }
+    }
+
+    // ════════════════════════════════════════════
+    //  TRAFFIC ANALYTIC
+    // ════════════════════════════════════════════
+    const TA_COLORS = {
+      enterprise: { fill: '#93c5fd', text: 'var(--e-tx)', label: 'Enterprise' },
+      premium:    { fill: '#d8b4fe', text: 'var(--p-tx)', label: 'Premium Services' },
+      project:    { fill: '#86efac', text: 'var(--r-tx)', label: 'Project' },
+    };
+
+    function toggleTaGroup(g) {
+      // Prevent unchecking last one
+      const others = Object.keys(taGroups).filter(k => k !== g);
+      if (taGroups[g] && !others.some(k => taGroups[k])) return;
+      taGroups[g] = !taGroups[g];
+      document.querySelector(`.ta-chip[data-g="${g}"]`)?.classList.toggle('on', taGroups[g]);
+      renderTraffic();
+    }
+    function toggleTaChat(c) {
+      const other = c === 'inbound' ? 'outbound' : 'inbound';
+      if (taChats[c] && !taChats[other]) return;
+      taChats[c] = !taChats[c];
+      document.querySelector(`.ta-chip[data-c="${c}"]`)?.classList.toggle('on', taChats[c]);
+      renderTraffic();
+    }
+
+    function taSumOutletInRange(o) {
+      let total = 0;
+      if (taChats.inbound)  total += sumRange(o.trafficByDate,  selectedDateStart, selectedDateEnd);
+      if (taChats.outbound) total += sumRange(o.outboundByDate, selectedDateStart, selectedDateEnd);
+      return total;
+    }
+    function taSumGroup(group, start, end) {
+      const list = OUTLETS.filter(o => o.group === group);
+      let total = 0;
+      list.forEach(o => {
+        if (taChats.inbound)  total += sumRange(o.trafficByDate,  start, end);
+        if (taChats.outbound) total += sumRange(o.outboundByDate, start, end);
+      });
+      return total;
+    }
+
+    function periodeLabel() {
+      if (!selectedDateStart || !selectedDateEnd) return '—';
+      if (selectedDateStart === selectedDateEnd) return fmtLong(selectedDateStart);
+      // Compute friendly label based on preset/range length
+      const t = todayStr();
+      if (dp.activePreset === 'today') return 'Hari Ini';
+      if (dp.activePreset === 'yesterday') return 'Kemarin';
+      if (dp.activePreset === '7days') return '7 Hari Terakhir';
+      if (dp.activePreset === '30days') return '30 Hari Terakhir';
+      if (dp.activePreset === 'thisweek') return 'Minggu Ini';
+      if (dp.activePreset === 'lastweek') return 'Minggu Lalu';
+      if (dp.activePreset === 'thismonth') return 'Bulan Ini';
+      if (dp.activePreset === 'lastmonth') return 'Bulan Lalu';
+      // fallback day count
+      const a = new Date(selectedDateStart + 'T00:00:00');
+      const b = new Date(selectedDateEnd + 'T00:00:00');
+      const days = Math.round((b - a) / 86400000) + 1;
+      return days + ' Hari Terakhir';
+    }
+    function chatLabel() {
+      if (taChats.inbound && taChats.outbound) return 'Total (Inbound + Outbound)';
+      if (taChats.inbound)  return 'Inbound saja';
+      if (taChats.outbound) return 'Outbound saja';
+      return '—';
+    }
+    function activeGroupsLabel() {
+      const on = Object.keys(taGroups).filter(k => taGroups[k]);
+      if (on.length === 3) return 'Semua Group';
+      return on.map(k => TA_COLORS[k].label).join(' + ');
+    }
+
+    function setTaNum(id, v) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = (v || 0).toLocaleString('id-ID');
+    }
+    function setTaDelta(id, cur, prev) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if ((!prev && !cur) || (prev === 0 && cur === 0)) { el.style.display = 'none'; return; }
+      let pct, arrow;
+      if (prev === 0) { pct = 100; arrow = '↑'; }
+      else { pct = ((cur - prev) / prev) * 100; arrow = pct >= 0 ? '↑' : '↓'; }
+      el.textContent = `${arrow} ${Math.abs(pct).toFixed(1)}% vs periode sebelumnya`;
+      el.style.display = '';
+    }
+
+    function renderTraffic() {
+      if (!OUTLETS.length) return;
+
+      // Update group-count chips
+      document.getElementById('ta-gc-enterprise').textContent = OUTLETS.filter(o => o.group === 'enterprise').length;
+      document.getElementById('ta-gc-premium').textContent    = OUTLETS.filter(o => o.group === 'premium').length;
+      document.getElementById('ta-gc-project').textContent    = OUTLETS.filter(o => o.group === 'project').length;
+
+      const days = [];
+      eachDay(selectedDateStart, selectedDateEnd, ds => days.push(ds));
+      // Previous period for deltas
+      const dlen = days.length || 1;
+      const prevStart = addDays(selectedDateStart, -dlen);
+      const prevEnd   = addDays(selectedDateStart, -1);
+
+      // KPI totals (respect type-chat filter; group filter affects only TOTAL card display, individual cards always show their own group)
+      const allOnGroups = Object.keys(taGroups).filter(g => taGroups[g]);
+      let totalCur = 0, totalPrev = 0;
+      allOnGroups.forEach(g => {
+        totalCur  += taSumGroup(g, selectedDateStart, selectedDateEnd);
+        totalPrev += taSumGroup(g, prevStart, prevEnd);
+      });
+      setTaNum('ta-n-total', totalCur);
+      setTaDelta('ta-d-total', totalCur, totalPrev);
+      document.getElementById('ta-s-total').textContent = `${activeGroupsLabel()} aktif`;
+
+      ['enterprise','premium','project'].forEach(g => {
+        const cur  = taSumGroup(g, selectedDateStart, selectedDateEnd);
+        const prev = taSumGroup(g, prevStart, prevEnd);
+        const cnt  = OUTLETS.filter(o => o.group === g).length;
+        setTaNum('ta-n-' + g, cur);
+        setTaDelta('ta-d-' + g, cur, prev);
+        document.getElementById('ta-s-' + g).textContent = `${cnt} outlet`;
+      });
+
+      // Hero meta line
+      document.getElementById('taHeroMeta').textContent =
+        `${chatLabel()} · ${activeGroupsLabel()} · ${periodeLabel()}`;
+
+      // Chart series — stacked by group
+      const labels = days.map(d => {
+        const dt = new Date(d + 'T00:00:00');
+        return dt.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+      });
+
+      const seriesByGroup = {};
+      allOnGroups.forEach(g => {
+        const list = OUTLETS.filter(o => o.group === g);
+        seriesByGroup[g] = days.map(ds => {
+          let s = 0;
+          list.forEach(o => {
+            if (taChats.inbound)  s += (o.trafficByDate[ds]  || 0);
+            if (taChats.outbound) s += (o.outboundByDate[ds] || 0);
+          });
+          return s;
+        });
+      });
+
+      // Update legend to reflect active group filter only
+      const legendEl = document.getElementById('taChartLegend');
+      legendEl.innerHTML = allOnGroups.map(g =>
+        `<span class="ta-legend-item"><span class="ta-legend-dot" style="background:${TA_COLORS[g].fill}"></span>${TA_COLORS[g].label}</span>`
+      ).join('');
+
+      // Build datasets in fixed visual order (enterprise → premium → project) to keep stack consistent
+      const order = ['enterprise','premium','project'].filter(g => allOnGroups.includes(g));
+      const lastIdx = order.length - 1;
+      const datasets = order.map((g, i) => ({
+        label: TA_COLORS[g].label,
+        data: seriesByGroup[g],
+        backgroundColor: TA_COLORS[g].fill,
+        borderRadius: i === lastIdx
+          ? { topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 0 }
+          : 0,
+        borderSkipped: false,
+        stack: 'traffic',
+      }));
+
+      // Resize inner wrap so every day gets a readable slot (enables horizontal scroll for long ranges)
+      const canvasWrap = document.querySelector('.ta-chart-canvas-wrap');
+      if (canvasWrap) {
+        const PER_DAY = 38;
+        canvasWrap.style.width = (days.length * PER_DAY) + 'px';
+      }
+
+      const ctx = document.getElementById('taChart')?.getContext('2d');
+      if (!ctx) return;
+      if (_taChart) { _taChart.destroy(); _taChart = null; }
+
+      const DAYNAMES = ['MINGGU','SENIN','SELASA','RABU','KAMIS','JUMAT','SABTU'];
+
+      // Custom plugin: draw stack totals on top of each bar (tooltip hover unaffected)
+      const stackTotalsPlugin = {
+        id: 'stackTotals',
+        afterDatasetsDraw(chart) {
+          const { ctx, data } = chart;
+          const dsCount = data.datasets.length;
+          if (!dsCount) return;
+          const firstMeta = chart.getDatasetMeta(0);
+          if (!firstMeta || !firstMeta.data) return;
+          ctx.save();
+          ctx.font = '600 11px "Geist Mono", ui-monospace, monospace';
+          ctx.fillStyle = '#0d3b39';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          firstMeta.data.forEach((_, i) => {
+            let total = 0;
+            let topY = Infinity;
+            let centerX = 0;
+            for (let d = 0; d < dsCount; d++) {
+              const meta = chart.getDatasetMeta(d);
+              if (!meta || meta.hidden) continue;
+              const el = meta.data[i];
+              if (!el) continue;
+              const v = data.datasets[d].data[i] || 0;
+              total += v;
+              if (v > 0 && el.y < topY) topY = el.y;
+              centerX = el.x;
+            }
+            if (total <= 0 || !isFinite(topY)) return;
+            ctx.fillText(total.toLocaleString('id-ID'), centerX, topY - 6);
+          });
+          ctx.restore();
+        },
+      };
+
+      _taChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets },
+        plugins: [stackTotalsPlugin],
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          layout: { padding: { top: 26, right: 4, left: 0, bottom: 0 } },
+          datasets: {
+            bar: {
+              categoryPercentage: 1.0,
+              barPercentage: 0.92,
+            },
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0c0a09',
+              titleColor: '#f5f5f4',
+              titleFont: { size: 11, weight: '600' },
+              bodyColor: '#fff',
+              bodyFont: { size: 12 },
+              padding: 12,
+              cornerRadius: 8,
+              displayColors: true,
+              boxWidth: 8, boxHeight: 8, boxPadding: 4,
+              callbacks: {
+                title: (items) => {
+                  if (!items.length) return '';
+                  const ds = days[items[0].dataIndex];
+                  const dt = new Date(ds + 'T00:00:00');
+                  return DAYNAMES[dt.getDay()] + ' · ' +
+                         dt.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                },
+                label: (c) => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('id-ID')}`,
+                footer: (items) => {
+                  const total = items.reduce((s, it) => s + it.parsed.y, 0);
+                  return 'Total: ' + total.toLocaleString('id-ID');
+                },
+              },
+              footerColor: '#fff',
+              footerFont: { size: 12, weight: '700' },
+              footerMarginTop: 6,
+            },
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { display: false },
+              border: { color: '#e5e5e5' },
+              ticks: {
+                font: { size: 10, family: '"Geist Mono", ui-monospace, monospace' },
+                color: '#57534e',
+                maxRotation: 70,
+                minRotation: 60,
+                autoSkip: false,
+                padding: 6,
+              },
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              grid: { color: '#f3f4f6' },
+              border: { display: false },
+              ticks: {
+                font: { size: 10.5 }, color: '#a8a29e',
+                padding: 8,
+                callback: (v) => v.toLocaleString('id-ID'),
+              },
+            },
+          },
+        },
+      });
     }
 
     // ════════════════════════════════════════════
@@ -3394,11 +4194,15 @@
 
     async function loadData() {
       // Ensure correct page is visible and date picker is in the right slot
-      document.getElementById('outletPage').style.display  = activeDash === 'outlet' ? '' : 'none';
-      document.getElementById('teamPage').style.display    = activeDash === 'team'   ? '' : 'none';
-      document.getElementById('ticketPage').style.display  = activeDash === 'ticket' ? '' : 'none';
+      document.getElementById('outletPage').style.display   = activeDash === 'outlet'  ? '' : 'none';
+      document.getElementById('teamPage').style.display     = activeDash === 'team'    ? '' : 'none';
+      document.getElementById('ticketPage').style.display   = activeDash === 'ticket'  ? '' : 'none';
+      document.getElementById('trafficPage').style.display  = activeDash === 'traffic' ? '' : 'none';
       const _dpEl   = document.getElementById('dpWrap');
-      const _slotId = activeDash === 'team' ? 'teamDpSlot' : activeDash === 'ticket' ? 'ticketDpSlot' : 'outletDpSlot';
+      const _slotId = activeDash === 'team' ? 'teamDpSlot'
+                     : activeDash === 'ticket' ? 'ticketDpSlot'
+                     : activeDash === 'traffic' ? 'trafficDpSlot'
+                     : 'outletDpSlot';
       const _slotEl = document.getElementById(_slotId);
       if (_dpEl && _slotEl && !_slotEl.contains(_dpEl)) _slotEl.appendChild(_dpEl);
 
@@ -3443,8 +4247,9 @@
         OUTLET_FILES    = data.files              || [];
 
         updateStats(); render();
-        if (activeDash === 'team')   { updateTeamStats(); renderTeam(); }
-        if (activeDash === 'ticket') { updateTicketStats(); renderTickets(); renderOutletTacList(); }
+        if (activeDash === 'team')    { updateTeamStats(); renderTeam(); }
+        if (activeDash === 'ticket')  { updateTicketStats(); renderTickets(); renderOutletTacList(); }
+        if (activeDash === 'traffic') { renderTraffic(); }
         setChip('live', '✓ Live · ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
         document.getElementById('footerL').textContent = `Data dari Google Drive · ${OUTLETS.length} outlet · ${new Date().toLocaleString('id-ID')}`;
       } catch (err) {
@@ -4333,6 +5138,7 @@
     document.getElementById('tplOverlay').addEventListener('click', function(e) {
       if (e.target === this) closeTplModal();
     });
+
   </script>
 
   <!-- Template Konfirmasi FAB -->
