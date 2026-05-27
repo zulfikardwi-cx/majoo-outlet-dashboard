@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -3590,18 +3590,10 @@
           <div class="ticket-stat">
             <div class="ticket-stat-label">
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="3" width="14" height="10" rx="2"/><path d="M5 3V1.5M11 3V1.5M1 7h14"/></svg>
-              TOTAL TIKET DIBUAT
+              ESCALATED ENG
             </div>
             <div class="ticket-stat-num" id="tk-total">—</div>
-            <div class="ticket-stat-sub">Kumulatif seluruh waktu</div>
-          </div>
-          <div class="ticket-stat">
-            <div class="ticket-stat-label">
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8l2.5 2"/></svg>
-              DAILY TIKET DIBUAT
-            </div>
-            <div class="ticket-stat-num" id="tk-daily">—</div>
-            <div class="ticket-stat-sub">In Progress oleh CS / Team Leader</div>
+            <div class="ticket-stat-sub">Tiket Escalated pada periode</div>
           </div>
           <div class="ticket-stat">
             <div class="ticket-stat-label">
@@ -3611,19 +3603,67 @@
             <div class="ticket-stat-num" id="tk-tac">—</div>
             <div class="ticket-stat-sub">Eskalasi teknis ke TAC pada periode</div>
           </div>
+          <div class="ticket-stat">
+            <div class="ticket-stat-label">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8l2.5 2"/></svg>
+              TICKET ON PROGRESS
+            </div>
+            <div class="ticket-stat-num" id="tk-progress">—</div>
+            <div class="ticket-stat-sub">Escalated Eng yang belum solved</div>
+          </div>
           <div class="ticket-stat" style="border-right:none">
             <div class="ticket-stat-label">
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 8l4 4 8-8"/></svg>
-              TOTAL ON HANDLING TAC
+              TOTAL TIKET HANDLING
             </div>
             <div class="ticket-stat-num" id="tk-closed">—</div>
-            <div class="ticket-stat-sub">Kumulatif seluruh waktu</div>
+            <div class="ticket-stat-sub">Escalated Eng + On Handling TAC</div>
           </div>
         </div>
       </div>
 
       <!-- Date Picker Slot -->
       <div id="ticketDpSlot"></div>
+
+      <!-- Traffic Tiket Harian (full-width stacked bar chart) -->
+      <div class="analytics-panel" style="margin-bottom:18px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+          <div>
+            <div class="analytics-panel-title">Traffic Tiket Harian</div>
+            <div class="analytics-panel-sub">Tiket dibuat vs diselesaikan · per hari</div>
+          </div>
+          <span class="analytics-badge" id="tkTrendBadge">— tiket</span>
+        </div>
+        <div style="position:relative;height:260px"><canvas id="ticketTrendChart"></canvas></div>
+        <div style="display:flex;gap:18px;justify-content:flex-start;margin-top:12px;font-size:12px;color:var(--muted)">
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:10px;background:#3b82f6;border-radius:3px"></span>Escalated Eng</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:10px;background:#2ba99b;border-radius:3px"></span>On Handling TAC</span>
+        </div>
+      </div>
+
+      <!-- Status Escalated + Trend Tiket (TAC Feature) -->
+      <div class="team-analytics-grid" style="margin-bottom:18px">
+        <div class="analytics-panel">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+            <div>
+              <div class="analytics-panel-title">Status Escalated</div>
+              <div class="analytics-panel-sub">Clickup progress updates</div>
+            </div>
+            <span class="analytics-badge" id="tkStatusBadge">— tiket</span>
+          </div>
+          <div id="tkStatusList"></div>
+        </div>
+        <div class="analytics-panel">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+            <div>
+              <div class="analytics-panel-title">Trend Tiket</div>
+              <div class="analytics-panel-sub">Breakdown per (TAC) Feature dari ClickUp</div>
+            </div>
+            <span class="analytics-badge" id="tkFeatureBadge">— tiket</span>
+          </div>
+          <div id="tkFeatureList"></div>
+        </div>
+      </div>
 
       <!-- Status Filter -->
       <div style="margin-bottom:16px">
@@ -3643,7 +3683,7 @@
       <div class="analytics-panel" id="outletTacPanel" style="margin-bottom:18px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div>
-            <div class="analytics-panel-title" id="outletTacTitle">On Handling TAC · Per Outlet</div>
+            <div class="analytics-panel-title" id="outletTacTitle">Escalated & On Handling TAC</div>
             <div class="analytics-panel-sub" id="outletTacSub">Outlet yang memiliki TAC pengecekan pada periode ini</div>
           </div>
           <span class="analytics-badge" id="outletTacCount">— outlet</span>
@@ -3671,6 +3711,28 @@
           </div>
           <span class="analytics-badge" id="ticketIdCount">— ticket</span>
         </div>
+        <!-- Filters -->
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;align-items:center">
+          <label style="display:inline-flex;align-items:center;gap:6px">
+            <span class="pag-size-label">Creator:</span>
+            <select class="pag-size-select" id="tlFilterCreator" style="min-width:160px" onchange="tlFilterCreator=this.value;tlPage=1;renderTicketIdList()">
+              <option value="">Semua</option>
+            </select>
+          </label>
+          <label style="display:inline-flex;align-items:center;gap:6px">
+            <span class="pag-size-label">TAC Feature:</span>
+            <select class="pag-size-select" id="tlFilterFeature" style="min-width:160px" onchange="tlFilterFeature=this.value;tlPage=1;renderTicketIdList()">
+              <option value="">Semua</option>
+            </select>
+          </label>
+          <label style="display:inline-flex;align-items:center;gap:6px">
+            <span class="pag-size-label">Status ClickUp:</span>
+            <select class="pag-size-select" id="tlFilterStatus" style="min-width:170px" onchange="tlFilterStatus=this.value;tlPage=1;renderTicketIdList()">
+              <option value="">Semua</option>
+            </select>
+          </label>
+          <button class="pag-size-select" style="cursor:pointer;background:var(--surface-2);color:var(--muted);padding:4px 12px;background-image:none" onclick="tlFilterCreator='';tlFilterFeature='';tlFilterStatus='';tlQuery='';document.getElementById('ticketIdSearch').value='';tlPage=1;renderTicketIdList()">Reset Filter</button>
+        </div>
         <!-- Search -->
         <div class="toolbar" style="margin-bottom:12px">
           <div class="search-wrap">
@@ -3688,6 +3750,7 @@
                 <th style="min-width:140px">Ticket ID</th>
                 <th class="c-name">Outlet</th>
                 <th style="min-width:180px">Creator</th>
+                <th style="min-width:150px">TAC Feature</th>
                 <th style="min-width:170px">Status ClickUp</th>
               </tr>
             </thead>
@@ -3889,19 +3952,6 @@
           <div class="ta-chart-canvas-wrap" id="taChartOutletsWrap">
             <canvas id="taChartOutlets"></canvas>
           </div>
-        </div>
-      </div>
-
-      <!-- Top 8 Outlet -->
-      <div class="ta-top-panel" style="margin-top:20px">
-        <div class="ta-top-head">
-          <div>
-            <div class="ta-top-title">Top 8 Outlet — Periode Aktif</div>
-            <div class="ta-top-sub" id="taTopSub">Outlet dengan traffic tertinggi pada periode aktif, dari semua group yang dicentang</div>
-          </div>
-        </div>
-        <div class="ta-top-list" id="taTopList">
-          <div style="color:var(--muted);font-size:13px;text-align:center;padding:24px 0">Belum ada data pada periode ini</div>
         </div>
       </div>
 
@@ -4113,6 +4163,16 @@
     // ════════════════════════════════════════════
     let OUTLETS = [], curFilter = 'all', curGroup = 'all';
     let selectedDateStart = '', selectedDateEnd = '';
+
+    // ── Per-page date state ────────────────────────────────────
+    // Outlet Groups punya filter date independent (default: Hari Ini).
+    // Team / Ticket / Traffic share satu state (default: 30 Hari Terakhir).
+    //   bucket: 'outlet' → outlet; 'shared' → team|ticket|traffic
+    const pageDateState = {
+      outlet: { start: '', end: '', preset: 'today',  initialized: false },
+      shared: { start: '', end: '', preset: '30days', initialized: false },
+    };
+    const dateBucketOf = (page) => page === 'outlet' ? 'outlet' : 'shared';
     let curPage = 1, pageSize = 10;
 
     // ── Dismissed Need Reply ──
@@ -4188,6 +4248,7 @@
     // Expected shape: [{ id, outletTitle, senderNumber, dateISO }]
     let TICKET_LIST = [];
     let tlQuery = '', tlPage = 1, tlPageSize = 10;
+    let tlFilterCreator = '', tlFilterFeature = '', tlFilterStatus = '';
     // Traffic Analytic state
     let taGroups = { enterprise: true, premium: true, project: true };
     let taChats  = { inbound: true, outbound: true };
@@ -4254,7 +4315,7 @@
       selectedDateStart = s; selectedDateEnd = e;
       updateTriggerUI(); updateStats(); render();
       if (activeDash === 'team')   { updateTeamStats(); renderTeam(); }
-      if (activeDash === 'ticket') { updateTicketStats(); renderTickets(); renderOutletTacList(); renderTicketIdList(); }
+      if (activeDash === 'ticket') { updateTicketStats(); renderTickets(); renderTicketTrendStatus(); renderOutletTacList(); renderTicketIdList(); }
       if (activeDash === 'traffic') { renderTraffic(); }
       closePicker();
     }
@@ -4389,7 +4450,34 @@
     //  PAGE SWITCHER
     // ════════════════════════════════════════════
     function switchDash(page) {
+      // ── Save state of OUTGOING page bucket ───────────────────
+      const prevBucket = dateBucketOf(activeDash);
+      pageDateState[prevBucket].start  = selectedDateStart;
+      pageDateState[prevBucket].end    = selectedDateEnd;
+      pageDateState[prevBucket].preset = dp.activePreset;
+      pageDateState[prevBucket].initialized = true;
+
       activeDash = page;
+
+      // ── Restore / initialize state for INCOMING page bucket ──
+      const newBucket = dateBucketOf(page);
+      const st = pageDateState[newBucket];
+      if (!st.initialized) {
+        const t = todayStr();
+        if (st.preset === '30days') {
+          st.start = addDays(t, -29); st.end = t;
+        } else {
+          st.start = t; st.end = t;
+        }
+        st.initialized = true;
+      }
+      if (prevBucket !== newBucket) {
+        selectedDateStart = st.start;
+        selectedDateEnd   = st.end;
+        dp.activePreset   = st.preset;
+        updateTriggerUI();
+      }
+
       document.getElementById('outletPage').style.display   = page === 'outlet'  ? '' : 'none';
       document.getElementById('teamPage').style.display     = page === 'team'    ? '' : 'none';
       document.getElementById('ticketPage').style.display   = page === 'ticket'  ? '' : 'none';
@@ -4428,19 +4516,8 @@
       }
 
       if (page === 'team')    { updateTeamStats(); renderTeam(); }
-      else if (page === 'ticket')  { updateTicketStats(); renderTickets(); renderOutletTacList(); renderTicketIdList(); }
-      else if (page === 'traffic') {
-        // First time visiting → default to last 30 days
-        if (taFirstVisit) {
-          taFirstVisit = false;
-          const t = todayStr();
-          selectedDateStart = addDays(t, -29);
-          selectedDateEnd = t;
-          dp.activePreset = '30days';
-          updateTriggerUI();
-        }
-        renderTraffic();
-      }
+      else if (page === 'ticket')  { updateTicketStats(); renderTickets(); renderTicketTrendStatus(); renderOutletTacList(); renderTicketIdList(); }
+      else if (page === 'traffic') { renderTraffic(); }
       else { updateStats(); render(); }
     }
 
@@ -4629,8 +4706,7 @@
         unitLabel: 'outlet',
       });
 
-      // Render Top 8 Outlet list + Pivot Table
-      renderTaTopOutlets();
+      // Render Pivot Table
       renderTaPivot();
     }
 
@@ -5074,7 +5150,7 @@
 
         updateStats(); render();
         if (activeDash === 'team')    { updateTeamStats(); renderTeam(); }
-        if (activeDash === 'ticket')  { updateTicketStats(); renderTickets(); renderOutletTacList(); renderTicketIdList(); }
+        if (activeDash === 'ticket')  { updateTicketStats(); renderTickets(); renderTicketTrendStatus(); renderOutletTacList(); renderTicketIdList(); }
         if (activeDash === 'traffic') { renderTraffic(); }
         setChip('live', '✓ Live · ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
         document.getElementById('footerL').textContent = `Data dari Google Drive · ${OUTLETS.length} outlet · ${new Date().toLocaleString('id-ID')}`;
@@ -5467,7 +5543,7 @@
       if (titleEl) {
         titleEl.textContent = showTicket
           ? 'Tiket Dibuat · Per Outlet'
-          : showBoth ? 'Tiket & TAC · Per Outlet'
+          : showBoth ? 'Escalated & On Handling TAC'
           : 'On Handling TAC · Per Outlet';
       }
       if (subEl) {
@@ -5683,36 +5759,77 @@
           // ClickUp status enrichment from backend (may be undefined until backend ships)
           status: t.status || '',
           statusColor: t.statusColor || '',
+          // (TAC) FEATURE custom field — array of { name, color }
+          tacFeatures: Array.isArray(t.tacFeatures) ? t.tacFeatures : [],
           clickupUrl: t.clickupUrl || ('https://app.clickup.com/t/' + String(t.id || '').toLowerCase()),
         };
       });
 
-      // 3) Search filter (id / outlet / creator / status)
+      // 3a) Populate filter dropdowns dari distinct values di `resolved`.
+      //     Pertahankan nilai yang lagi dipilih supaya UX tidak reset.
+      const fillSelect = (id, values, current) => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        const sorted = Array.from(new Set(values.filter(v => v && v !== '—'))).sort((a, b) =>
+          String(a).localeCompare(String(b), 'id', { sensitivity: 'base' }));
+        // Kalau current value tidak lagi ada di dataset, fall back ke "Semua"
+        const valid = !current || sorted.includes(current);
+        const effective = valid ? current : '';
+        if (!valid) {
+          // Sync global state ke nilai effective
+          if (id === 'tlFilterCreator') tlFilterCreator = '';
+          if (id === 'tlFilterFeature') tlFilterFeature = '';
+          if (id === 'tlFilterStatus')  tlFilterStatus  = '';
+        }
+        sel.innerHTML = `<option value="">Semua</option>` +
+          sorted.map(v => `<option value="${esc(v)}" ${v === effective ? 'selected' : ''}>${esc(v)}</option>`).join('');
+      };
+      const allCreators  = resolved.map(r => r.creator);
+      const allFeatures  = resolved.flatMap(r => (r.tacFeatures || []).map(f => f.name));
+      const allStatuses  = resolved.map(r => r.status);
+      fillSelect('tlFilterCreator', allCreators, tlFilterCreator);
+      fillSelect('tlFilterFeature', allFeatures, tlFilterFeature);
+      fillSelect('tlFilterStatus',  allStatuses, tlFilterStatus);
+
+      // 3b) Apply dropdown filters
+      const filteredByDropdowns = resolved.filter(r => {
+        if (tlFilterCreator && r.creator !== tlFilterCreator) return false;
+        if (tlFilterFeature && !(r.tacFeatures || []).some(f => f.name === tlFilterFeature)) return false;
+        if (tlFilterStatus  && r.status !== tlFilterStatus)  return false;
+        return true;
+      });
+
+      // 3c) Search filter (id / outlet / creator / status / TAC feature)
       const q = (tlQuery || '').trim().toLowerCase();
       const filtered = q
-        ? resolved.filter(r =>
+        ? filteredByDropdowns.filter(r =>
             r.id.includes(q) ||
             r.outletTitle.toLowerCase().includes(q) ||
             r.creator.toLowerCase().includes(q) ||
-            (r.status || '').toLowerCase().includes(q))
-        : resolved;
+            (r.status || '').toLowerCase().includes(q) ||
+            (r.tacFeatures || []).some(f => (f.name || '').toLowerCase().includes(q)))
+        : filteredByDropdowns;
 
       // 4) Update badge & chip
       if (badge) badge.textContent = `${resolved.length} ticket`;
+      const hasFilter = !!(q || tlFilterCreator || tlFilterFeature || tlFilterStatus);
       if (chip) {
-        chip.textContent = q
+        chip.textContent = hasFilter
           ? `${filtered.length} dari ${resolved.length} ticket`
           : `${resolved.length} ticket`;
       }
 
       // 5) Empty states
       if (!resolved.length) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Belum ada Ticket ID terdeteksi pada periode ini</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Belum ada Ticket ID terdeteksi pada periode ini</td></tr>`;
         if (pagBar) pagBar.innerHTML = '';
         return;
       }
       if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Tidak ada Ticket ID yang cocok dengan pencarian "${esc(tlQuery)}"</td></tr>`;
+        const msg = q
+          ? `Tidak ada Ticket ID yang cocok dengan pencarian "${esc(tlQuery)}"`
+          : `Tidak ada Ticket ID yang cocok dengan filter aktif`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">${msg}</td></tr>`;
         if (pagBar) pagBar.innerHTML = '';
         return;
       }
@@ -5736,6 +5853,31 @@
         </a>`;
       };
 
+      // Helper: render (TAC) FEATURE chips — supports multi-value dropdown/labels
+      // Catatan: beberapa option di ClickUp di-set warna terlalu terang (mis. #fff)
+      // → chip jadi invisible di background putih. Deteksi luminance lalu fallback
+      // ke indigo (#6366f1) supaya tetap terbaca.
+      const _isLightHex = (hex) => {
+        const m = String(hex || '').replace('#','').trim();
+        if (m.length < 3) return true;
+        const full = m.length === 3 ? m.split('').map(c => c+c).join('') : m.padEnd(6,'0').substring(0,6);
+        const r = parseInt(full.substring(0,2),16);
+        const g = parseInt(full.substring(2,4),16);
+        const b = parseInt(full.substring(4,6),16);
+        if (isNaN(r) || isNaN(g) || isNaN(b)) return true;
+        // Perceived luminance — kalau >205 dari 255, anggap terlalu terang
+        return (0.299*r + 0.587*g + 0.114*b) > 205;
+      };
+      const renderTacFeatures = (r) => {
+        const feats = r.tacFeatures || [];
+        if (!feats.length) return `<span style="color:var(--muted-2);font-size:12px">—</span>`;
+        return feats.map(f => {
+          const raw = f.color || '#6366f1';
+          const color = _isLightHex(raw) ? '#6366f1' : raw;
+          return `<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 7px;border-radius:999px;border:1px solid ${esc(color)}66;background:${esc(color)}1a;color:${esc(color)};font-size:11px;font-weight:600;letter-spacing:.01em;margin:1px 3px 1px 0;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:${esc(color)};flex-shrink:0"></span>${esc(f.name || '—')}</span>`;
+        }).join('');
+      };
+
       // 7) Render rows
       tbody.innerHTML = pageRows.map((r, i) => `
         <tr>
@@ -5743,6 +5885,7 @@
           <td><a href="${esc(r.clickupUrl)}" target="_blank" rel="noopener" title="Buka di ClickUp" style="font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink);background:var(--surface-2);padding:3px 8px;border-radius:6px;letter-spacing:.01em;text-decoration:none;display:inline-block">${esc(r.id)}</a></td>
           <td class="c-name" style="font-weight:500">${esc(r.outletTitle)}</td>
           <td style="${r.creatorIsKnown ? '' : 'color:var(--muted-2);font-family:var(--mono);font-size:12.5px'}">${esc(r.creator)}</td>
+          <td>${renderTacFeatures(r)}</td>
           <td>${renderStatusBadge(r)}</td>
         </tr>`).join('');
 
@@ -5792,6 +5935,190 @@
       renderOutletTacList();
     }
 
+    // ════════════════════════════════════════════
+    //  TICKET TREND (Bar Chart) + STATUS ESCALATED
+    // ════════════════════════════════════════════
+    let _ticketTrendChart = null;
+    function renderTicketTrendStatus() {
+      // ── 1. Bar Chart per-day ─────────────────────────────────────
+      const days = [];
+      if (selectedDateStart && selectedDateEnd) {
+        eachDay(selectedDateStart, selectedDateEnd, ds => days.push(ds));
+      }
+
+      const ticketByDate = {};
+      (TICKET_LIST || []).forEach(t => {
+        if (!t || !t.dateISO) return;
+        if (selectedDateStart && t.dateISO < selectedDateStart) return;
+        if (selectedDateEnd   && t.dateISO > selectedDateEnd)   return;
+        ticketByDate[t.dateISO] = (ticketByDate[t.dateISO] || 0) + 1;
+      });
+
+      const ticketSeries = days.map(d => ticketByDate[d] || 0);
+      const tacSeries    = days.map(d => (TAC_BY_DATE && TAC_BY_DATE[d]) || 0);
+      const totalTickets = ticketSeries.reduce((s, v) => s + v, 0)
+                         + tacSeries.reduce((s, v) => s + v, 0);
+
+      const tBadge = document.getElementById('tkTrendBadge');
+      if (tBadge) tBadge.textContent = `● ${totalTickets.toLocaleString('id-ID')} tiket`;
+
+      const ctx = document.getElementById('ticketTrendChart')?.getContext('2d');
+      if (ctx) {
+        if (_ticketTrendChart) { _ticketTrendChart.destroy(); _ticketTrendChart = null; }
+        const labels = days.map(d => {
+          const dt = new Date(d + 'T00:00:00');
+          return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        });
+        _ticketTrendChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Escalated Eng',   data: ticketSeries, backgroundColor: '#3b82f6', borderRadius: 4, maxBarThickness: 28, stack: 'tickets' },
+              { label: 'On Handling TAC', data: tacSeries,    backgroundColor: '#2ba99b', borderRadius: 4, maxBarThickness: 28, stack: 'tickets' },
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                mode: 'index',
+                callbacks: {
+                  label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('id-ID')}`,
+                  footer: items => {
+                    const total = items.reduce((s, it) => s + (it.parsed.y || 0), 0);
+                    return 'Total: ' + total.toLocaleString('id-ID');
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 }, color: '#9ca3af', maxTicksLimit: 12 } },
+              y: { stacked: true, grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 }, color: '#9ca3af', precision: 0 }, beginAtZero: true }
+            }
+          }
+        });
+      }
+
+      // ── 2. Status Escalated (aggregate by ClickUp status) ────────
+      const list   = document.getElementById('tkStatusList');
+      const sBadge = document.getElementById('tkStatusBadge');
+      if (!list) return;
+
+      const inRange = (TICKET_LIST || []).filter(t => {
+        const d = t.dateISO || '';
+        return (!selectedDateStart || d >= selectedDateStart) &&
+               (!selectedDateEnd   || d <= selectedDateEnd);
+      });
+
+      const byStatus = new Map();
+      let withStatusCount = 0;
+      inRange.forEach(t => {
+        const status = (t.status || '').trim();
+        if (!status) return;
+        withStatusCount++;
+        if (!byStatus.has(status)) {
+          byStatus.set(status, { status, color: t.statusColor || '#87909e', count: 0 });
+        }
+        byStatus.get(status).count++;
+      });
+
+      if (sBadge) sBadge.textContent = `${withStatusCount.toLocaleString('id-ID')} tiket`;
+
+      if (!byStatus.size) {
+        list.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:24px 0">Belum ada status ClickUp pada periode ini</div>`;
+        return;
+      }
+
+      const ordered = Array.from(byStatus.values()).sort((a, b) => b.count - a.count);
+      list.innerHTML = ordered.map(s => {
+        const pct = withStatusCount ? ((s.count / withStatusCount) * 100).toFixed(1) : '0.0';
+        return `
+          <div style="margin-bottom:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px">
+              <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
+                <span style="width:8px;height:8px;border-radius:50%;background:${esc(s.color)};flex-shrink:0"></span>
+                <span style="font-size:13.5px;font-weight:600;color:var(--ink);text-transform:capitalize">${esc(s.status)}</span>
+                <span style="font-size:11.5px;color:var(--muted);font-weight:500">${pct}%</span>
+              </div>
+              <div style="text-align:right;line-height:1.05">
+                <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:var(--mono)">${s.count.toLocaleString('id-ID')}</div>
+                <div style="font-size:10.5px;color:var(--muted)">tiket</div>
+              </div>
+            </div>
+            <div style="height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:${esc(s.color)};border-radius:3px;transition:width .25s"></div>
+            </div>
+          </div>`;
+      }).join('');
+
+      // ── 3. Trend Tiket (TAC Feature breakdown) ───────────────────
+      const fList  = document.getElementById('tkFeatureList');
+      const fBadge = document.getElementById('tkFeatureBadge');
+      if (!fList) return;
+
+      // Hindari warna #fff/terlalu terang supaya chip terbaca
+      const _isLightHex2 = (hex) => {
+        const m = String(hex || '').replace('#','').trim();
+        if (m.length < 3) return true;
+        const full = m.length === 3 ? m.split('').map(c => c+c).join('') : m.padEnd(6,'0').substring(0,6);
+        const r = parseInt(full.substring(0,2),16);
+        const g = parseInt(full.substring(2,4),16);
+        const b = parseInt(full.substring(4,6),16);
+        if (isNaN(r) || isNaN(g) || isNaN(b)) return true;
+        return (0.299*r + 0.587*g + 0.114*b) > 205;
+      };
+
+      const byFeature = new Map();
+      let withFeatureCount = 0;
+      inRange.forEach(t => {
+        const feats = Array.isArray(t.tacFeatures) ? t.tacFeatures : [];
+        if (!feats.length) return;
+        withFeatureCount++;
+        // Hitung tiap feature; kalau multi-label, satu tiket bisa kontribusi ke beberapa baris
+        feats.forEach(f => {
+          const name = (f && f.name || '').trim();
+          if (!name) return;
+          const raw = (f && f.color) || '#6366f1';
+          const color = _isLightHex2(raw) ? '#6366f1' : raw;
+          if (!byFeature.has(name)) byFeature.set(name, { name, color, count: 0 });
+          byFeature.get(name).count++;
+        });
+      });
+
+      if (fBadge) fBadge.textContent = `${withFeatureCount.toLocaleString('id-ID')} tiket`;
+
+      if (!byFeature.size) {
+        fList.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:24px 0">Belum ada (TAC) Feature pada periode ini</div>`;
+        return;
+      }
+
+      const orderedF = Array.from(byFeature.values()).sort((a, b) => b.count - a.count);
+      // Persentase dihitung terhadap total tiket yang punya feature (bukan total semua tiket)
+      const denom = orderedF.reduce((s, v) => s + v.count, 0) || 1;
+      fList.innerHTML = orderedF.map(s => {
+        const pct = ((s.count / denom) * 100).toFixed(1);
+        return `
+          <div style="margin-bottom:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px">
+              <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
+                <span style="width:8px;height:8px;border-radius:50%;background:${esc(s.color)};flex-shrink:0"></span>
+                <span style="font-size:13.5px;font-weight:600;color:var(--ink);text-transform:capitalize">${esc(s.name)}</span>
+                <span style="font-size:11.5px;color:var(--muted);font-weight:500">${pct}%</span>
+              </div>
+              <div style="text-align:right;line-height:1.05">
+                <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:var(--mono)">${s.count.toLocaleString('id-ID')}</div>
+                <div style="font-size:10.5px;color:var(--muted)">tiket</div>
+              </div>
+            </div>
+            <div style="height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:${esc(s.color)};border-radius:3px;transition:width .25s"></div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
     function updateTicketStats() {
       const aktif = AGENTS.filter(a => a.aktif);
       // Role counts
@@ -5801,27 +6128,39 @@
       setText('tkrc-support',    aktif.filter(a => a.roleGroup === 'support').length);
       setText('tkrc-lifecycle',  aktif.filter(a => a.roleGroup === 'lifecycle').length);
 
-      // ── Ticket counts derived from TICKET_LIST (unique IDs, source of truth) ──
-      const today = todayStr();
-      const ticketsAllTime = (TICKET_LIST || []).length;
-      const ticketsToday   = (TICKET_LIST || []).filter(t => t.dateISO === today).length;
-      const ticketsInRange = (TICKET_LIST || []).filter(t =>
+      // ── Ticket counts derived from TICKET_LIST (unique IDs in date range) ──
+      const ticketsInRangeList = (TICKET_LIST || []).filter(t =>
         (!selectedDateStart || t.dateISO >= selectedDateStart) &&
         (!selectedDateEnd   || t.dateISO <= selectedDateEnd)
-      ).length;
+      );
+      const ticketsInRange = ticketsInRangeList.length;
 
-      // TAC stats (unchanged — still from message-level counter)
+      // Status yang dianggap "selesai" — case-insensitive match
+      const SOLVED_STATUSES = new Set([
+        'customer confirm solved',
+        'done from squad',
+        'approve by tac',
+      ]);
+      const ticketsOnProgress = ticketsInRangeList.filter(t => {
+        const s = String(t.status || '').toLowerCase().trim();
+        if (!s) return true; // tiket tanpa status (belum dipetakan ke ClickUp) dianggap on-progress
+        return !SOLVED_STATUSES.has(s);
+      }).length;
+
+      // TAC stats (message-level counter, follows date range)
       const pool = poolByTicketRole();
       const totalTac = pool.reduce((s, a) =>
         s + sumRange(TAC_BY_AGENT[a.number] || {}, selectedDateStart, selectedDateEnd), 0);
-      const allTimeTac = Object.values(TAC_BY_DATE).reduce((s, v) => s + v, 0);
 
-      setText('tk-total',  ticketsAllTime > 0 ? ticketsAllTime.toLocaleString('id-ID') : '—');
-      setText('tk-daily',  ticketsToday   > 0 ? ticketsToday.toLocaleString('id-ID')   : '—');
-      setText('tk-tac',    totalTac       > 0 ? totalTac.toLocaleString('id-ID')       : '—');
-      setText('tk-closed', allTimeTac     > 0 ? allTimeTac.toLocaleString('id-ID')     : '—');
+      const totalHandling = ticketsInRange + totalTac;
 
-      // Status filter counts (Tiket Dibuat = unique ticket IDs in active range)
+      // Hero numbers (semua mengikuti rentang tanggal aktif)
+      setText('tk-total',    ticketsInRange   > 0 ? ticketsInRange.toLocaleString('id-ID')    : '—'); // Escalated Eng
+      setText('tk-tac',      totalTac         > 0 ? totalTac.toLocaleString('id-ID')          : '—'); // On Handling TAC
+      setText('tk-progress', ticketsOnProgress > 0 ? ticketsOnProgress.toLocaleString('id-ID') : '—'); // Ticket On Progress
+      setText('tk-closed',   totalHandling    > 0 ? totalHandling.toLocaleString('id-ID')     : '—'); // Total Tiket Handling
+
+      // Status filter counts
       setText('tks-all',    ticketsInRange + totalTac);
       setText('tks-ticket', ticketsInRange);
       setText('tks-tac',    totalTac);
@@ -6121,9 +6460,15 @@
     // ════════════════════════════════════════════
     document.getElementById('dateChip').textContent =
       new Date().toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
-    selectedDateStart = todayStr();
-    selectedDateEnd = todayStr();
-    dp.activePreset = 'today';
+    // Initial page = Outlet Groups → Hari Ini
+    const _t0 = todayStr();
+    selectedDateStart = _t0;
+    selectedDateEnd   = _t0;
+    dp.activePreset   = 'today';
+    pageDateState.outlet.start = _t0;
+    pageDateState.outlet.end   = _t0;
+    pageDateState.outlet.preset = 'today';
+    pageDateState.outlet.initialized = true;
     analyticsWeekOffset = 0;
     updateTriggerUI();
     // Place date picker in the outlet slot (its initial home)
