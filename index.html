@@ -3027,6 +3027,432 @@
       .ta-hero-stat + .ta-hero-stat { padding-left: 0; padding-top: 14px; }
       .ta-hero-stat:last-child { border-bottom: none; padding-bottom: 0; }
     }
+
+    /* ════════ PANDUAN PAGE ════════ */
+    :root {
+      --pd-ok-bg: #f0fdf4;  --pd-ok-bd: #bbf7d0;  --pd-ok-tx: #15803d;  --pd-ok-dot: #22c55e;
+      --pd-warn-bg: #fef3c7; --pd-warn-bd: #fde68a; --pd-warn-tx: #a16207; --pd-warn-dot: #f59e0b;
+      --pd-bad-bg: #fef2f2;  --pd-bad-bd: #fecaca;  --pd-bad-tx: #b91c1c; --pd-bad-dot: #ef4444;
+      --pd-info-bg: #eff6ff; --pd-info-bd: #bfdbfe; --pd-info-tx: #1d4ed8; --pd-info-dot: #3b82f6;
+      --pd-note-bg: #fdf4ff; --pd-note-bd: #e9d5ff; --pd-note-tx: #7e22ce; --pd-note-dot: #a855f7;
+      --pd-tint:    #e8f7f5;
+      --pd-tint-2:  #f0faf6;
+    }
+    #panduanPage .pd-section-eyebrow {
+      font-size: 10.5px; font-weight: 700; color: var(--muted);
+      letter-spacing: .12em; text-transform: uppercase;
+      margin: 28px 0 12px; display: flex; align-items: center; gap: 10px;
+    }
+    #panduanPage .pd-section-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Intro — gradient hijau majoo, mirip Traffic Analytic hero */
+    #panduanPage .pd-intro {
+      background: var(--m-grad);
+      border-radius: 14px;
+      padding: 22px 26px 24px;
+      color: #fff;
+      position: relative; overflow: hidden;
+      box-shadow: 0 12px 32px -16px rgba(13, 59, 57, 0.32);
+      display: grid; grid-template-columns: 1fr auto; gap: 20px;
+      align-items: center; margin-bottom: 22px;
+    }
+    #panduanPage .pd-intro::before {
+      content: '';
+      position: absolute;
+      right: -90px; top: -90px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.18), transparent 60%);
+      pointer-events: none;
+    }
+    #panduanPage .pd-intro > * { position: relative; z-index: 1; }
+    #panduanPage .pd-intro-h { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -.015em; margin-bottom: 6px; }
+    #panduanPage .pd-intro-p { font-size: 13px; color: rgba(255,255,255,0.85); max-width: 680px; line-height: 1.6; }
+    #panduanPage .pd-intro-stats { display: flex; gap: 28px; }
+    #panduanPage .pd-intro-stat { text-align: right; }
+    #panduanPage .pd-intro-stat-v { font-family: var(--mono); font-size: 24px; font-weight: 700; color: #fff; line-height: 1.05; }
+    #panduanPage .pd-intro-stat-l { font-size: 10.5px; color: rgba(255,255,255,0.78); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; margin-top: 3px; }
+
+    /* KPI strip */
+    #panduanPage .pd-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+    #panduanPage .pd-kpi {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    #panduanPage .pd-kpi-label {
+      font-size: 10.5px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .1em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    #panduanPage .pd-kpi-label .pd-dot { width: 6px; height: 6px; border-radius: 50%; }
+    #panduanPage .pd-kpi-value { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--ink); line-height: 1.05; }
+    #panduanPage .pd-kpi-foot { font-size: 11.5px; color: var(--muted); }
+    #panduanPage .pd-kpi-foot em { color: var(--ink-2); font-style: normal; font-weight: 600; }
+
+    /* Panel wrapper */
+    #panduanPage .pd-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      overflow: hidden; margin-bottom: 4px;
+    }
+    #panduanPage .pd-panel-head {
+      padding: 16px 20px 14px; border-bottom: 1px solid var(--border);
+    }
+    #panduanPage .pd-panel-title { font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+    #panduanPage .pd-panel-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    #panduanPage .pd-panel-body { padding: 22px 20px; }
+
+    /* Flow */
+    #panduanPage .pd-flow-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; align-items: stretch; }
+    #panduanPage .pd-flow-cell { display: flex; flex-direction: column; position: relative; padding: 0 8px; }
+    #panduanPage .pd-flow-step {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 14px 12px;
+      display: flex; flex-direction: column; gap: 8px; height: 100%; position: relative;
+    }
+    #panduanPage .pd-flow-step.s-incoming { background: var(--pd-tint-2); border-color: #cfeae5; }
+    #panduanPage .pd-flow-step.s-ack,
+    #panduanPage .pd-flow-step.s-check    { background: var(--pd-info-bg); border-color: var(--pd-info-bd); }
+    #panduanPage .pd-flow-step.s-decide   { background: var(--pd-warn-bg); border-color: var(--pd-warn-bd); }
+    #panduanPage .pd-flow-step.s-getback  { background: var(--pd-note-bg); border-color: var(--pd-note-bd); }
+    #panduanPage .pd-flow-step.s-done     { background: var(--pd-ok-bg); border-color: var(--pd-ok-bd); }
+    #panduanPage .pd-flow-num { font-family: var(--mono); font-size: 10.5px; font-weight: 600; color: var(--muted); letter-spacing: .06em; }
+    #panduanPage .pd-flow-step-title { font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: -.005em; }
+    #panduanPage .pd-flow-step.s-incoming .pd-flow-step-title { color: var(--m-dark); }
+    #panduanPage .pd-flow-step.s-ack .pd-flow-step-title,
+    #panduanPage .pd-flow-step.s-check .pd-flow-step-title { color: var(--pd-info-tx); }
+    #panduanPage .pd-flow-step.s-decide .pd-flow-step-title { color: var(--pd-warn-tx); }
+    #panduanPage .pd-flow-step.s-getback .pd-flow-step-title { color: var(--pd-note-tx); }
+    #panduanPage .pd-flow-step.s-done .pd-flow-step-title { color: var(--pd-ok-tx); }
+    #panduanPage .pd-flow-step-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+    #panduanPage .pd-flow-cell + .pd-flow-cell .pd-flow-step::before {
+      content: ''; position: absolute; left: -16px; top: 50%;
+      width: 16px; height: 1.5px; background: var(--border-strong);
+    }
+    #panduanPage .pd-flow-cell + .pd-flow-cell .pd-flow-step::after {
+      content: ''; position: absolute; left: -6px; top: 50%;
+      width: 0; height: 0;
+      border-left: 5px solid var(--border-strong);
+      border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+      transform: translateY(-50%);
+    }
+
+    /* Scenarios */
+    #panduanPage .pd-scenarios { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    #panduanPage .pd-scenario {
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--surface); overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    #panduanPage .pd-scenario.ok { border-color: var(--pd-ok-bd); }
+    #panduanPage .pd-scenario.warn { border-color: var(--pd-bad-bd); }
+    #panduanPage .pd-scenario-head {
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    #panduanPage .pd-scenario.ok .pd-scenario-head { background: var(--pd-ok-bg); border-bottom-color: var(--pd-ok-bd); }
+    #panduanPage .pd-scenario.warn .pd-scenario-head { background: var(--pd-bad-bg); border-bottom-color: var(--pd-bad-bd); }
+    #panduanPage .pd-scenario-tag {
+      font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 999px;
+    }
+    #panduanPage .pd-scenario.ok .pd-scenario-tag { background: #fff; color: var(--pd-ok-tx); border: 1px solid var(--pd-ok-bd); }
+    #panduanPage .pd-scenario.warn .pd-scenario-tag { background: #fff; color: var(--pd-bad-tx); border: 1px solid var(--pd-bad-bd); }
+    #panduanPage .pd-scenario-title { font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+    #panduanPage .pd-scenario-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+    #panduanPage .pd-scenario-body { padding: 18px 20px 20px; }
+    #panduanPage .pd-step-list { display: flex; flex-direction: column; gap: 10px; }
+    #panduanPage .pd-step-row { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: flex-start; }
+    #panduanPage .pd-step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-family: var(--mono); font-size: 11px; font-weight: 700; margin-top: 1px;
+    }
+    #panduanPage .pd-scenario.ok .pd-step-num { background: var(--pd-ok-bg); color: var(--pd-ok-tx); border: 1px solid var(--pd-ok-bd); }
+    #panduanPage .pd-scenario.warn .pd-step-num { background: var(--pd-bad-bg); color: var(--pd-bad-tx); border: 1px solid var(--pd-bad-bd); }
+    #panduanPage .pd-step-text { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
+    #panduanPage .pd-step-text strong { color: var(--ink); font-weight: 600; }
+
+    /* Templates */
+    #panduanPage .pd-tmpl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    #panduanPage .pd-tmpl {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    #panduanPage .pd-tmpl-head {
+      padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border); background: var(--surface-2);
+    }
+    #panduanPage .pd-tmpl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    #panduanPage .pd-tmpl-title { font-size: 12.5px; font-weight: 700; color: var(--ink); letter-spacing: -.005em; }
+    #panduanPage .pd-tmpl-tag {
+      margin-left: auto;
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      color: var(--muted); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 2px 8px; text-transform: uppercase; letter-spacing: .06em;
+    }
+    /* Tombol Salin */
+    #panduanPage .pd-copy-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px;
+      font-family: var(--font); font-size: 11.5px; font-weight: 600;
+      color: var(--muted); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 7px;
+      cursor: pointer;
+      transition: background .12s, color .12s, border-color .12s, transform .1s;
+    }
+    #panduanPage .pd-copy-btn:hover {
+      color: var(--m-dark); border-color: var(--m-teal); background: var(--pd-tint);
+    }
+    #panduanPage .pd-copy-btn:active { transform: translateY(1px); }
+    #panduanPage .pd-copy-btn.copied {
+      color: var(--pd-ok-tx); background: var(--pd-ok-bg); border-color: var(--pd-ok-bd);
+    }
+    #panduanPage .pd-copy-btn svg { flex-shrink: 0; }
+    #panduanPage .pd-tmpl-body { padding: 16px 18px; flex: 1; }
+    #panduanPage .pd-bubble {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-left: 3px solid var(--m-teal);
+      border-radius: 4px 12px 12px 12px;
+      padding: 12px 14px;
+      font-size: 12.5px; line-height: 1.65; color: var(--ink-2);
+      white-space: pre-wrap; word-break: break-word;
+      font-family: var(--font);
+    }
+    #panduanPage .pd-bubble.ack { border-left-color: var(--pd-info-dot); }
+    #panduanPage .pd-bubble.upd { border-left-color: var(--pd-warn-dot); }
+    #panduanPage .pd-bubble.solved { border-left-color: var(--pd-ok-dot); }
+    #panduanPage .pd-bubble.esc { border-left-color: var(--pd-bad-dot); }
+    #panduanPage .pd-bubble.maint { border-left-color: var(--pd-note-dot); }
+    #panduanPage .pd-tmpl-wide { grid-column: 1 / -1; }
+    #panduanPage .pd-bubble b { color: var(--ink); font-weight: 600; }
+    #panduanPage .pd-bubble .ph {
+      color: var(--m-dark); background: var(--pd-tint);
+      border-radius: 4px; padding: 0 5px;
+      font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+    }
+    #panduanPage .pd-bubble .tkt {
+      color: var(--pd-bad-tx); background: #fff;
+      border: 1px solid var(--pd-bad-bd);
+      border-radius: 4px; padding: 0 6px;
+      font-family: var(--mono); font-size: 11.5px; font-weight: 600;
+    }
+    #panduanPage .pd-bubble-meta {
+      margin-top: 8px;
+      display: flex; justify-content: flex-end; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 10.5px; color: var(--muted-2);
+    }
+    #panduanPage .pd-bubble-meta::before { content: '✓✓'; color: var(--m-teal); font-size: 11px; }
+
+    /* Rules */
+    #panduanPage .pd-rules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    #panduanPage .pd-rule {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 18px;
+      transition: border-color .15s, transform .15s;
+    }
+    #panduanPage .pd-rule:hover { border-color: var(--m-teal); transform: translateY(-1px); }
+    #panduanPage .pd-rule-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    #panduanPage .pd-rule-ico {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: var(--pd-tint); color: var(--m-dark);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    #panduanPage .pd-rule-title { font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: -.005em; }
+    #panduanPage .pd-rule-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+    #panduanPage .pd-rule-desc em { color: var(--ink-2); font-style: normal; font-weight: 600; }
+
+    @media (max-width: 1180px) {
+      #panduanPage .pd-flow-grid { grid-template-columns: repeat(3, 1fr); row-gap: 16px; }
+      #panduanPage .pd-flow-cell + .pd-flow-cell .pd-flow-step::before,
+      #panduanPage .pd-flow-cell + .pd-flow-cell .pd-flow-step::after { display: none; }
+      #panduanPage .pd-summary { grid-template-columns: 1fr 1fr; }
+      #panduanPage .pd-rules-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 720px) {
+      #panduanPage .pd-flow-grid,
+      #panduanPage .pd-scenarios,
+      #panduanPage .pd-tmpl-grid,
+      #panduanPage .pd-rules-grid,
+      #panduanPage .pd-summary { grid-template-columns: 1fr; }
+      #panduanPage .pd-intro { grid-template-columns: 1fr; }
+      #panduanPage .pd-intro-stats { justify-content: flex-start; }
+      #panduanPage .pd-intro-stat { text-align: left; }
+    }
+
+    /* ════════ BLAST MAINTENANCE ════════ */
+    .pd-tmpl-blast-bar {
+      display: flex; align-items: center; gap: 12px; justify-content: flex-end;
+      margin-top: 14px; padding-top: 14px;
+      border-top: 1px dashed var(--border);
+    }
+    .pd-tmpl-blast-hint { flex: 1; font-size: 12px; color: var(--muted); }
+    .pd-tmpl-blast-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; font: inherit; font-size: 12.5px; font-weight: 600;
+      background: var(--m-teal); color: #fff;
+      border: 1px solid var(--m-teal); border-radius: 8px;
+      cursor: pointer; transition: background .12s, border-color .12s;
+    }
+    .pd-tmpl-blast-btn:hover { background: var(--m-dark); border-color: var(--m-dark); }
+    .pd-tmpl-blast-btn svg { width: 13px; height: 13px; }
+
+    .bl-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.45); z-index: 1100;
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .bl-overlay.open { display: flex; }
+    .bl-panel {
+      background: var(--surface); border-radius: var(--rad-lg);
+      width: 560px; max-width: calc(100vw - 48px); max-height: calc(100vh - 48px);
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,.22);
+      animation: tplSlideIn .18s ease;
+    }
+    .bl-panel-wide { width: 880px; }
+    .bl-head {
+      padding: 18px 22px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 16px; flex-shrink: 0;
+    }
+    .bl-head-eyebrow {
+      font-size: 10px; font-weight: 700; letter-spacing: .12em;
+      color: var(--muted); text-transform: uppercase; margin-bottom: 4px;
+    }
+    .bl-head-title { font-size: 17px; font-weight: 700; color: var(--ink); }
+    .bl-head-desc { font-size: 12.5px; color: var(--muted); margin-top: 4px; line-height: 1.5; max-width: 540px; }
+    .bl-close {
+      background: none; border: none; width: 30px; height: 30px;
+      cursor: pointer; color: var(--muted); font-size: 20px; line-height: 1;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .bl-close:hover { background: var(--surface-2); color: var(--ink); }
+    .bl-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+    .bl-body-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    @media (max-width: 760px) { .bl-body-2col { grid-template-columns: 1fr; } }
+    .bl-col-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .08em;
+      color: var(--muted); text-transform: uppercase; margin-bottom: 10px;
+    }
+    .bl-field { margin-bottom: 14px; }
+    .bl-field-label {
+      display: block; font-size: 12.5px; font-weight: 600;
+      color: var(--ink-2); margin-bottom: 6px;
+    }
+    .bl-field-hint { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+    .bl-input, .bl-textarea {
+      width: 100%; padding: 9px 12px;
+      font: inherit; font-size: 13px; color: var(--ink);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; transition: border-color .12s, box-shadow .12s;
+      box-sizing: border-box;
+    }
+    .bl-input:focus, .bl-textarea:focus {
+      outline: none; border-color: var(--m-teal);
+      box-shadow: 0 0 0 3px rgba(0,180,168,.15);
+    }
+    .bl-textarea { min-height: 90px; resize: vertical; font-family: var(--font); }
+    .bl-preview {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-left: 3px solid var(--pd-note-dot);
+      border-radius: 4px 12px 12px 12px;
+      padding: 12px 14px; font-size: 12.5px; line-height: 1.65; color: var(--ink-2);
+      white-space: pre-wrap; word-break: break-word; font-family: var(--font);
+      max-height: 360px; overflow-y: auto;
+    }
+    .bl-preview b { color: var(--ink); font-weight: 600; }
+    .bl-preview .ph-fill {
+      color: var(--m-dark); background: var(--pd-tint);
+      border-radius: 4px; padding: 0 5px; font-weight: 500;
+    }
+    .bl-foot {
+      padding: 14px 22px; border-top: 1px solid var(--border);
+      display: flex; gap: 10px; justify-content: flex-end; align-items: center;
+      flex-shrink: 0; background: var(--surface);
+    }
+    .bl-foot-info { margin-right: auto; font-size: 12px; color: var(--muted); }
+    .bl-btn {
+      padding: 8px 16px; font: inherit; font-size: 13px; font-weight: 600;
+      border-radius: 8px; cursor: pointer;
+      transition: background .12s, border-color .12s;
+      border: 1px solid var(--border); background: var(--surface); color: var(--ink-2);
+    }
+    .bl-btn:hover { background: var(--surface-2); }
+    .bl-btn-primary { background: var(--m-teal); color: #fff; border-color: var(--m-teal); }
+    .bl-btn-primary:hover { background: var(--m-dark); border-color: var(--m-dark); }
+    .bl-btn-danger { background: var(--pd-bad-dot); color: #fff; border-color: var(--pd-bad-dot); }
+    .bl-btn-danger:hover { filter: brightness(.92); }
+    .bl-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .bl-info-row {
+      display: flex; justify-content: space-between; padding: 10px 0;
+      font-size: 13px; border-bottom: 1px solid var(--border);
+    }
+    .bl-info-row:last-child { border-bottom: none; }
+    .bl-info-row-l { color: var(--muted); }
+    .bl-info-row-r { color: var(--ink); font-weight: 600; font-family: var(--mono); }
+    .bl-confirm-input {
+      width: 100%; padding: 11px 14px;
+      font-family: var(--mono); font-size: 14px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase; text-align: center;
+      background: var(--surface-2); border: 2px solid var(--border);
+      border-radius: 8px; margin-top: 18px;
+      transition: border-color .12s, background .12s;
+      box-sizing: border-box;
+    }
+    .bl-confirm-input.match {
+      border-color: var(--m-teal); background: rgba(0,180,168,.06); color: var(--m-dark);
+    }
+    .bl-progress-bar {
+      height: 10px; background: var(--surface-2);
+      border-radius: 999px; overflow: hidden; margin: 14px 0 8px;
+      border: 1px solid var(--border);
+    }
+    .bl-progress-fill {
+      height: 100%; background: var(--m-teal);
+      transition: width .3s ease; border-radius: 999px;
+    }
+    .bl-progress-stats {
+      display: flex; justify-content: space-between; font-size: 12px;
+      color: var(--muted); margin-bottom: 16px;
+    }
+    .bl-progress-stats strong { color: var(--ink); font-family: var(--mono); }
+    .bl-stat-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px;
+    }
+    .bl-stat-cell {
+      padding: 12px; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 8px; text-align: center;
+    }
+    .bl-stat-v { font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--ink); }
+    .bl-stat-l { font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-top: 4px; }
+    .bl-stat-cell.sent .bl-stat-v { color: var(--m-teal); }
+    .bl-stat-cell.failed .bl-stat-v { color: var(--pd-bad-dot); }
+    .bl-status-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--surface-2); color: var(--muted);
+    }
+    .bl-status-chip.running { color: var(--m-dark); border-color: var(--m-teal); background: rgba(0,180,168,.08); }
+    .bl-status-chip.completed { color: var(--pd-ok-tx); border-color: var(--pd-ok-bd); background: var(--pd-ok-bg); }
+    .bl-status-chip.failed { color: var(--pd-bad-tx); border-color: var(--pd-bad-bd); background: var(--pd-bad-bg); }
+    .bl-errors {
+      margin-top: 12px; max-height: 200px; overflow-y: auto;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--pd-bad-bg);
+    }
+    .bl-error-row {
+      padding: 8px 12px; font-size: 12px;
+      border-bottom: 1px solid var(--pd-bad-bd); color: var(--pd-bad-tx);
+    }
+    .bl-error-row:last-child { border-bottom: none; }
+    .bl-error-row b { color: var(--ink); }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -3171,6 +3597,13 @@
           <path d="M2 13V8.5M6 13V5M10 13V9M14 13V3"/>
         </svg>
         Traffic Analytic
+      </button>
+      <button class="page-nav-btn" data-dash="panduan" onclick="switchDash('panduan')">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7">
+          <path d="M3 2h8l3 3v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"/>
+          <path d="M5 7h6M5 10h6M5 13h4"/>
+        </svg>
+        Panduan
       </button>
     </div>
 
@@ -3636,8 +4069,14 @@
         </div>
         <div style="position:relative;height:260px"><canvas id="ticketTrendChart"></canvas></div>
         <div style="display:flex;gap:18px;justify-content:flex-start;margin-top:12px;font-size:12px;color:var(--muted)">
-          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:10px;background:#3b82f6;border-radius:3px"></span>Escalated Eng</span>
-          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:10px;background:#2ba99b;border-radius:3px"></span>On Handling TAC</span>
+          <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
+            <input type="checkbox" id="tkSeriesEsc" checked onchange="renderTicketTrendStatus()" style="cursor:pointer;margin:0">
+            <span style="width:14px;height:10px;background:#3b82f6;border-radius:3px"></span>Escalated Eng
+          </label>
+          <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
+            <input type="checkbox" id="tkSeriesTac" checked onchange="renderTicketTrendStatus()" style="cursor:pointer;margin:0">
+            <span style="width:14px;height:10px;background:#2ba99b;border-radius:3px"></span>On Handling TAC
+          </label>
         </div>
       </div>
 
@@ -4007,6 +4446,388 @@
 
     </div><!-- /trafficPage -->
 
+    <!-- ═══ PANDUAN PAGE ═══ -->
+    <div id="panduanPage" style="display:none">
+
+      <!-- Intro -->
+      <div class="pd-intro">
+        <div>
+          <div class="pd-intro-h">Setiap pesan masuk wajib di-handle sampai tuntas.</div>
+          <div class="pd-intro-p">
+            Panduan ini menjadi standar tim CX saat menerima laporan kendala melalui grup WhatsApp. Mulai dari acknowledge,
+            pengecekan, eskalasi (jika diperlukan), sampai follow up hasil akhir ke grup. Tujuannya: tidak ada pesan yang tertinggal,
+            setiap eskalasi punya jejak Ticket ID, dan setiap pelapor selalu menerima kabar penutup.
+          </div>
+        </div>
+        <div class="pd-intro-stats">
+          <div class="pd-intro-stat">
+            <div class="pd-intro-stat-v">6</div>
+            <div class="pd-intro-stat-l">Langkah Alur</div>
+          </div>
+          <div class="pd-intro-stat">
+            <div class="pd-intro-stat-v">2</div>
+            <div class="pd-intro-stat-l">Skenario</div>
+          </div>
+          <div class="pd-intro-stat">
+            <div class="pd-intro-stat-v">6</div>
+            <div class="pd-intro-stat-l">Template Pesan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI summary -->
+      <div class="pd-summary">
+        <div class="pd-kpi">
+          <div class="pd-kpi-label"><span class="pd-dot" style="background:var(--m-teal)"></span>Acknowledge</div>
+          <div class="pd-kpi-value">&lt; 5 mnt</div>
+          <div class="pd-kpi-foot">Wajib balas setiap pesan masuk agar tidak ter-remarks "need reply".</div>
+        </div>
+        <div class="pd-kpi">
+          <div class="pd-kpi-label"><span class="pd-dot" style="background:var(--pd-info-dot)"></span>Update Progres</div>
+          <div class="pd-kpi-value">≤ 30 mnt</div>
+          <div class="pd-kpi-foot">Bila pengecekan butuh waktu lebih lama, beri update berkala ke grup.</div>
+        </div>
+        <div class="pd-kpi">
+          <div class="pd-kpi-label"><span class="pd-dot" style="background:var(--pd-bad-dot)"></span>Eskalasi</div>
+          <div class="pd-kpi-value">Ticket ID</div>
+          <div class="pd-kpi-foot">Setiap eskalasi <em>wajib</em> mencantumkan Ticket ID di grup.</div>
+        </div>
+        <div class="pd-kpi">
+          <div class="pd-kpi-label"><span class="pd-dot" style="background:var(--pd-ok-dot)"></span>Follow up</div>
+          <div class="pd-kpi-value">100%</div>
+          <div class="pd-kpi-foot">Setiap kasus harus ditutup dengan follow up ke grup.</div>
+        </div>
+      </div>
+
+      <!-- Alur Lengkap -->
+      <div class="pd-section-eyebrow">Alur Lengkap Handling Pesan</div>
+      <div class="pd-panel">
+        <div class="pd-panel-head">
+          <div class="pd-panel-title">Flow End-to-End</div>
+          <div class="pd-panel-sub">Urutan langkah dari pesan masuk hingga kasus ditutup</div>
+        </div>
+        <div class="pd-panel-body">
+          <div class="pd-flow-grid">
+            <div class="pd-flow-cell">
+              <div class="pd-flow-step s-incoming">
+                <div class="pd-flow-num">01 · TRIGGER</div>
+                <div class="pd-flow-step-title">Pesan Masuk di Grup WA</div>
+                <div class="pd-flow-step-desc">Customer atau reporter mengirim kendala / pertanyaan ke grup WhatsApp.</div>
+              </div>
+            </div>
+            <div class="pd-flow-cell">
+              <div class="pd-flow-step s-ack">
+                <div class="pd-flow-num">02 · RESPONSE</div>
+                <div class="pd-flow-step-title">Acknowledge &amp; Reply</div>
+                <div class="pd-flow-step-desc">Balas setiap pesan masuk. Konfirmasi pesan diterima atau pengecekan sedang berjalan.</div>
+              </div>
+            </div>
+            <div class="pd-flow-cell">
+              <div class="pd-flow-step s-check">
+                <div class="pd-flow-num">03 · PROSES</div>
+                <div class="pd-flow-step-title">Pengecekan Internal</div>
+                <div class="pd-flow-step-desc">Investigasi &amp; analisis. Update progres bila durasi pengecekan memanjang.</div>
+              </div>
+            </div>
+            <div class="pd-flow-cell">
+              <div class="pd-flow-step s-decide">
+                <div class="pd-flow-num">04 · KEPUTUSAN</div>
+                <div class="pd-flow-step-title">Bisa Diselesaikan TAC?</div>
+                <div class="pd-flow-step-desc">Tentukan: tangani team TAC — atau eskalasi ke tim engineer dengan Ticket ID.</div>
+              </div>
+            </div>
+            <div class="pd-flow-cell">
+              <div class="pd-flow-step s-getback">
+                <div class="pd-flow-num">05 · FOLLOW UP</div>
+                <div class="pd-flow-step-title">Info Hasil ke Grup</div>
+                <div class="pd-flow-step-desc">Wajib informasikan hasil penanganan — baik selesai oleh team TAC maupun pasca eskalasi.</div>
+              </div>
+            </div>
+            <div class="pd-flow-cell">
+              <div class="pd-flow-step s-done">
+                <div class="pd-flow-num">06 · TUTUP</div>
+                <div class="pd-flow-step-title">Kasus Selesai</div>
+                <div class="pd-flow-step-desc">Pastikan tidak ada pesan tergantung. Pesan terakhir di grup berasal dari team internal.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skenario -->
+      <div class="pd-section-eyebrow">Panduan Per Skenario</div>
+      <div class="pd-scenarios">
+
+        <div class="pd-scenario ok">
+          <div class="pd-scenario-head">
+            <span class="pd-scenario-tag">Skenario A</span>
+            <div>
+              <div class="pd-scenario-title">Solved Tanpa Eskalasi</div>
+              <div class="pd-scenario-sub">Kendala dapat diselesaikan langsung oleh team internal</div>
+            </div>
+          </div>
+          <div class="pd-scenario-body">
+            <div class="pd-step-list">
+              <div class="pd-step-row">
+                <div class="pd-step-num">1</div>
+                <div class="pd-step-text"><strong>Balas pesan masuk</strong> — segera acknowledge bahwa pesan diterima dan pengecekan sedang berjalan.</div>
+              </div>
+              <div class="pd-step-row">
+                <div class="pd-step-num">2</div>
+                <div class="pd-step-text"><strong>Lakukan pengecekan</strong> — investigasi kendala oleh team TAC. Update progres jika durasi pengecekan lama.</div>
+              </div>
+              <div class="pd-step-row">
+                <div class="pd-step-num">3</div>
+                <div class="pd-step-text"><strong>Selesaikan kendala</strong> — tangani dan pastikan kendala sudah resolved.</div>
+              </div>
+              <div class="pd-step-row">
+                <div class="pd-step-num">4</div>
+                <div class="pd-step-text"><strong>Follow Up ke grup</strong> — informasikan kendala sudah selesai ditangani secara internal beserta kronologi singkat &amp; solusi.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pd-scenario warn">
+          <div class="pd-scenario-head">
+            <span class="pd-scenario-tag">Skenario B</span>
+            <div>
+              <div class="pd-scenario-title">Perlu Eskalasi</div>
+              <div class="pd-scenario-sub">Kendala memerlukan penanganan tim lain — wajib lampirkan Ticket ID</div>
+            </div>
+          </div>
+          <div class="pd-scenario-body">
+            <div class="pd-step-list">
+              <div class="pd-step-row">
+                <div class="pd-step-num">1</div>
+                <div class="pd-step-text"><strong>Balas pesan masuk</strong> — acknowledge bahwa pengecekan sedang dilakukan.</div>
+              </div>
+              <div class="pd-step-row">
+                <div class="pd-step-num">2</div>
+                <div class="pd-step-text"><strong>Lakukan pengecekan awal</strong> — identifikasi bahwa kendala butuh penanganan tim lain.</div>
+              </div>
+              <div class="pd-step-row">
+                <div class="pd-step-num">3</div>
+                <div class="pd-step-text"><strong>Eskalasi + Ticket ID</strong> — buat tiket eskalasi dan <strong>lampirkan Ticket ID</strong> di grup sebagai referensi tracking.</div>
+              </div>
+              <div class="pd-step-row">
+                <div class="pd-step-num">4</div>
+                <div class="pd-step-text"><strong>Informasikan status eskalasi</strong> — kabari grup bahwa kendala sedang dieskalasi beserta Ticket ID.</div>
+              </div>
+              <div class="pd-step-row">
+                <div class="pd-step-num">5</div>
+                <div class="pd-step-text"><strong>Follow Up setelah eskalasi selesai</strong> — begitu ticket done dari engineer, informasikan kembali ke grup beserta status &amp; resolusi.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Templates -->
+      <div class="pd-section-eyebrow">Template Pesan WhatsApp</div>
+      <div class="pd-tmpl-grid">
+
+        <div class="pd-tmpl">
+          <div class="pd-tmpl-head">
+            <span class="pd-tmpl-dot" style="background:var(--pd-info-dot)"></span>
+            <div class="pd-tmpl-title">On Handling</div>
+            <span class="pd-tmpl-tag">Template 01</span>
+            <button class="pd-copy-btn" onclick="pdCopy(this)" title="Salin pesan"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg>Salin</button>
+          </div>
+          <div class="pd-tmpl-body">
+<div class="pd-bubble ack">Halo Kak/ <span class="ph">[Nama Outlet]</span>
+
+Mohon maaf sebelumnya, terkait dengan kendala <span class="ph">[deskripsi singkat kendala]</span> akan kami lakukan pengecekan terlebih dahulu.</div>
+            <div class="pd-bubble-meta">Terkirim</div>
+          </div>
+        </div>
+
+        <div class="pd-tmpl">
+          <div class="pd-tmpl-head">
+            <span class="pd-tmpl-dot" style="background:var(--pd-warn-dot)"></span>
+            <div class="pd-tmpl-title">Update Progres (jika lama / butuh data)</div>
+            <span class="pd-tmpl-tag">Template 02</span>
+            <button class="pd-copy-btn" onclick="pdCopy(this)" title="Salin pesan"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg>Salin</button>
+          </div>
+          <div class="pd-tmpl-body">
+<div class="pd-bubble upd">Halo Kak/ <span class="ph">[Nama Outlet]</span>,
+
+Pengecekan masih dalam proses ya.
+Kami masih investigasi terkait <span class="ph">[deskripsi singkat]</span>.
+
+Estimasi: <span class="ph">[waktu]</span>
+Akan kami update kembali setelah ada informasi lebih lanjut 🙏</div>
+            <div class="pd-bubble-meta">Terkirim</div>
+          </div>
+        </div>
+
+        <div class="pd-tmpl">
+          <div class="pd-tmpl-head">
+            <span class="pd-tmpl-dot" style="background:var(--pd-ok-dot)"></span>
+            <div class="pd-tmpl-title">Follow Up — Solved Tanpa Eskalasi</div>
+            <span class="pd-tmpl-tag">Template 03</span>
+            <button class="pd-copy-btn" onclick="pdCopy(this)" title="Salin pesan"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg>Salin</button>
+          </div>
+          <div class="pd-tmpl-body">
+<div class="pd-bubble solved">Halo Kak/ <span class="ph">[Nama Outlet]</span>
+
+<b>Izin menginformasikan update</b>
+
+Kendala terkait <span class="ph">[deskripsi singkat]</span> saat ini sudah solved dengan informasi diatas ya.
+Jika terdapat pertanyaan atau kendala pada operasional lainnya dapat di informasikan kembali pada grup.
+
+Terima kasih</div>
+            <div class="pd-bubble-meta">Terkirim</div>
+          </div>
+        </div>
+
+        <div class="pd-tmpl">
+          <div class="pd-tmpl-head">
+            <span class="pd-tmpl-dot" style="background:var(--pd-bad-dot)"></span>
+            <div class="pd-tmpl-title">Update Eskalasi</div>
+            <span class="pd-tmpl-tag">Template 04</span>
+            <button class="pd-copy-btn" onclick="pdCopy(this)" title="Salin pesan"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg>Salin</button>
+          </div>
+          <div class="pd-tmpl-body">
+<div class="pd-bubble esc">Halo Kak/ <span class="ph">[Nama Outlet]</span>
+
+Setelah dilakukan pengecekan lebih lanjut, kendala terkait <span class="ph">[deskripsi singkat]</span> memerlukan penanganan lebih lanjut.
+
+<b>Ticket ID:</b> <span class="tkt">#[TICKET-ID]</span>
+
+Kami akan update kembali setelah ada perkembangan, untuk estimasinya kami maksimalkan kak. 🙏</div>
+            <div class="pd-bubble-meta">Terkirim</div>
+          </div>
+        </div>
+
+        <div class="pd-tmpl">
+          <div class="pd-tmpl-head">
+            <span class="pd-tmpl-dot" style="background:var(--pd-ok-dot)"></span>
+            <div class="pd-tmpl-title">Follow Up Eskalasi — Resolved</div>
+            <span class="pd-tmpl-tag">Template 05</span>
+            <button class="pd-copy-btn" onclick="pdCopy(this)" title="Salin pesan"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg>Salin</button>
+          </div>
+          <div class="pd-tmpl-body">
+<div class="pd-bubble solved">Halo Kak/ <span class="ph">[Nama Outlet]</span>
+
+<b>Izin menginformasikan update</b>
+
+Kendala terkait <span class="ph">[deskripsi singkat]</span> pada <span class="tkt">#[TICKET-ID]</span> sudah selesai di proses.
+Mohon dilakukan pengecekan kembali. Jika terdapat pertanyaan atau kendala pada operasional lainnya dapat di informasikan kembali pada grup.
+
+Terima kasih 🙏</div>
+            <div class="pd-bubble-meta">Terkirim</div>
+          </div>
+        </div>
+
+        <div class="pd-tmpl pd-tmpl-wide">
+          <div class="pd-tmpl-head">
+            <span class="pd-tmpl-dot" style="background:var(--pd-note-dot)"></span>
+            <div class="pd-tmpl-title">Pengumuman Maintenance Sistem</div>
+            <span class="pd-tmpl-tag">Template 06</span>
+            <button class="pd-copy-btn" onclick="pdCopy(this)" title="Salin pesan"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg>Salin</button>
+          </div>
+          <div class="pd-tmpl-body">
+<div class="pd-bubble maint">Halo majoopreneurs 👋
+
+Kami informasikan bahwa akan dilakukan maintenance sistem pada:
+
+🗓️ <b>Hari/Tanggal:</b> <span class="ph">[isi hari dan tanggal]</span>
+🕐 <b>Waktu:</b> <span class="ph">[isi waktu dan estimasi maintenance]</span>
+
+Selama proses maintenance, akan terjadi downtime pada sistem. Dampaknya sebagai berikut:
+
+• <span class="ph">[Isi sesuai impact maintenance]</span>
+• <span class="ph">[Isi sesuai impact maintenance]</span>
+
+Mohon maaf atas ketidaknyamanan yang ditimbulkan. Tim kami berupaya agar proses ini berjalan seefisien mungkin guna meminimalkan gangguan pada operasional Anda.
+
+Terima kasih atas pengertian dan kerja samanya 🙏
+
+Salam,
+<b>Tim majoo</b></div>
+            <div class="pd-bubble-meta">Terkirim</div>
+            <div class="pd-tmpl-blast-bar">
+              <div class="pd-tmpl-blast-hint">Kirim pengumuman ini ke <b>semua grup customer</b> sekaligus.</div>
+              <button class="pd-tmpl-blast-btn" onclick="openBlastCompose()">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8l13-6-3 13-4-5-6-2z"/></svg>
+                Kirim ke Semua Grup
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Ketentuan Penting -->
+      <div class="pd-section-eyebrow">Ketentuan Penting</div>
+      <div class="pd-rules-grid">
+
+        <div class="pd-rule">
+          <div class="pd-rule-head">
+            <span class="pd-rule-ico">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 1 3 9h4l-1 6 6-8H8l1-6Z" stroke-linejoin="round"/></svg>
+            </span>
+            <div class="pd-rule-title">Balas Setiap Pesan</div>
+          </div>
+          <div class="pd-rule-desc">Setiap pesan masuk ke grup <em>wajib</em> dibalas. Pastikan last conversation berasal dari team internal agar tidak ter-remarks "need reply".</div>
+        </div>
+
+        <div class="pd-rule">
+          <div class="pd-rule-head">
+            <span class="pd-rule-ico">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v2a1.5 1.5 0 0 0 0 3v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-2a1.5 1.5 0 0 0 0-3z"/><path d="M8 4v8" stroke-dasharray="1 1.5"/></svg>
+            </span>
+            <div class="pd-rule-title">Ticket ID Wajib Dilampirkan</div>
+          </div>
+          <div class="pd-rule-desc">Setiap eskalasi <em>wajib</em> menyertakan Ticket ID di grup sebagai referensi tracking dan memudahkan follow-up.</div>
+        </div>
+
+        <div class="pd-rule">
+          <div class="pd-rule-head">
+            <span class="pd-rule-ico">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5h7l3 3v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/><path d="M5 8h5M5 10.5h3"/></svg>
+            </span>
+            <div class="pd-rule-title">Follow Up Selalu Dilakukan</div>
+          </div>
+          <div class="pd-rule-desc">Baik selesai mandiri maupun via eskalasi, team internal <em>wajib</em> memberikan follow up status akhir ke grup.</div>
+        </div>
+
+        <div class="pd-rule">
+          <div class="pd-rule-head">
+            <span class="pd-rule-ico">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 2.5v3M8 10.5v3M2.5 8h3M10.5 8h3M4 4l2 2M10 10l2 2M4 12l2-2M10 6l2-2"/></svg>
+            </span>
+            <div class="pd-rule-title">Update Progres Berkala</div>
+          </div>
+          <div class="pd-rule-desc">Jika penanganan memerlukan waktu lama, informasikan progres berkala agar pelapor tidak menunggu tanpa kabar.</div>
+        </div>
+
+        <div class="pd-rule">
+          <div class="pd-rule-head">
+            <span class="pd-rule-ico">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="6" r="2.5"/><path d="M3 14c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5"/></svg>
+            </span>
+            <div class="pd-rule-title">Identifikasi Diri</div>
+          </div>
+          <div class="pd-rule-desc">Sertakan nama atau identitas saat membalas agar pelapor tahu siapa yang sedang menangani kendala mereka.</div>
+        </div>
+
+        <div class="pd-rule">
+          <div class="pd-rule-head">
+            <span class="pd-rule-ico">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 2h7l3 3v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"/><path d="M5 7h6M5 10h6M5 13h4"/></svg>
+            </span>
+            <div class="pd-rule-title">Kronologi Jelas</div>
+          </div>
+          <div class="pd-rule-desc">Follow up wajib menyertakan ringkasan: deskripsi kendala, root cause, dan solusi yang dilakukan — singkat dan jelas.</div>
+        </div>
+
+      </div>
+
+    </div><!-- /panduanPage -->
+
     <!-- Footer -->
     <div class="footer">
       <div class="footer-l">
@@ -4038,7 +4859,7 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlyIsRkqcr0OuUr_Yu-wB9sugkirG9P2T7fMdKd9tkHy4bQBLOqJXmL7EeolXDRg0o/exec';
     const ALLOWED_DOMAIN  = 'majoo.id';
     const SESSION_KEY     = 'majoo_cx_auth';
-    const SESSION_TTL_MS  = 24 * 60 * 60 * 1000; // 24 hours
+    const SESSION_TTL_MS  = 7 * 24 * 60 * 60 * 1000; // 7 days
 
     // ── Auth check on load ──
     function checkAuth() {
@@ -4482,16 +5303,23 @@
       document.getElementById('teamPage').style.display     = page === 'team'    ? '' : 'none';
       document.getElementById('ticketPage').style.display   = page === 'ticket'  ? '' : 'none';
       document.getElementById('trafficPage').style.display  = page === 'traffic' ? '' : 'none';
+      document.getElementById('panduanPage').style.display  = page === 'panduan' ? '' : 'none';
       document.querySelectorAll('.page-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.dash === page));
 
-      // Move the single date-picker into the active slot
+      // Move the single date-picker into the active slot.
+      // Panduan tidak butuh date filter → sembunyikan dpWrap.
       const dpWrap = document.getElementById('dpWrap');
-      const slotId = page === 'team' ? 'teamDpSlot'
-                   : page === 'ticket' ? 'ticketDpSlot'
-                   : page === 'traffic' ? 'trafficDpSlot'
-                   : 'outletDpSlot';
-      const slot = document.getElementById(slotId);
-      if (dpWrap && slot && !slot.contains(dpWrap)) slot.appendChild(dpWrap);
+      if (page === 'panduan') {
+        if (dpWrap) dpWrap.style.display = 'none';
+      } else {
+        if (dpWrap) dpWrap.style.display = '';
+        const slotId = page === 'team' ? 'teamDpSlot'
+                     : page === 'ticket' ? 'ticketDpSlot'
+                     : page === 'traffic' ? 'trafficDpSlot'
+                     : 'outletDpSlot';
+        const slot = document.getElementById(slotId);
+        if (dpWrap && slot && !slot.contains(dpWrap)) slot.appendChild(dpWrap);
+      }
       // Update header branding
       if (page === 'team') {
         document.getElementById('brandEyebrow').textContent = 'TEAM PRODUCTIVITY';
@@ -4508,6 +5336,11 @@
         document.getElementById('brandTitle').textContent = 'Volume Traffic Monitoring';
         document.getElementById('brandSub').textContent = 'Visualisasi inbound & outbound · per group outlet';
         document.getElementById('brandPills').style.display = '';
+      } else if (page === 'panduan') {
+        document.getElementById('brandEyebrow').textContent = 'INTERNAL SOP · WHATSAPP HANDLING';
+        document.getElementById('brandTitle').textContent = 'Panduan Handling Grup WhatsApp';
+        document.getElementById('brandSub').textContent = 'Standar operasional penanganan pesan masuk, eskalasi, dan follow up di grup WhatsApp internal tim';
+        document.getElementById('brandPills').style.display = 'none';
       } else {
         document.getElementById('brandEyebrow').textContent = 'DATABASE GROUPS';
         document.getElementById('brandTitle').textContent = 'Dashboard Outlet';
@@ -4518,6 +5351,7 @@
       if (page === 'team')    { updateTeamStats(); renderTeam(); }
       else if (page === 'ticket')  { updateTicketStats(); renderTickets(); renderTicketTrendStatus(); renderOutletTacList(); renderTicketIdList(); }
       else if (page === 'traffic') { renderTraffic(); }
+      else if (page === 'panduan') { /* static — no render needed */ }
       else { updateStats(); render(); }
     }
 
@@ -5099,6 +5933,7 @@
       document.getElementById('teamPage').style.display     = activeDash === 'team'    ? '' : 'none';
       document.getElementById('ticketPage').style.display   = activeDash === 'ticket'  ? '' : 'none';
       document.getElementById('trafficPage').style.display  = activeDash === 'traffic' ? '' : 'none';
+      document.getElementById('panduanPage').style.display  = activeDash === 'panduan' ? '' : 'none';
       const _dpEl   = document.getElementById('dpWrap');
       const _slotId = activeDash === 'team' ? 'teamDpSlot'
                      : activeDash === 'ticket' ? 'ticketDpSlot'
@@ -5956,8 +6791,12 @@
 
       const ticketSeries = days.map(d => ticketByDate[d] || 0);
       const tacSeries    = days.map(d => (TAC_BY_DATE && TAC_BY_DATE[d]) || 0);
-      const totalTickets = ticketSeries.reduce((s, v) => s + v, 0)
-                         + tacSeries.reduce((s, v) => s + v, 0);
+
+      const showEsc = document.getElementById('tkSeriesEsc')?.checked !== false;
+      const showTac = document.getElementById('tkSeriesTac')?.checked !== false;
+
+      const totalTickets = (showEsc ? ticketSeries.reduce((s, v) => s + v, 0) : 0)
+                         + (showTac ? tacSeries.reduce((s, v) => s + v, 0) : 0);
 
       const tBadge = document.getElementById('tkTrendBadge');
       if (tBadge) tBadge.textContent = `● ${totalTickets.toLocaleString('id-ID')} tiket`;
@@ -5969,17 +6808,54 @@
           const dt = new Date(d + 'T00:00:00');
           return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
         });
+
+        // Plugin: gambar total angka di atas tiap bar stack
+        const totalLabelsPlugin = {
+          id: 'tkTotalLabels',
+          afterDatasetsDraw(chart) {
+            const { ctx } = chart;
+            ctx.save();
+            ctx.font = '600 11px ' + (getComputedStyle(document.body).fontFamily || 'system-ui');
+            ctx.fillStyle = '#374151';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            const n = chart.data.labels.length;
+            for (let i = 0; i < n; i++) {
+              let total = 0;
+              let topY = null;
+              let xPos = null;
+              chart.data.datasets.forEach((ds, di) => {
+                if (!chart.isDatasetVisible(di)) return;
+                const v = +ds.data[i] || 0;
+                total += v;
+                const meta = chart.getDatasetMeta(di);
+                const bar = meta.data[i];
+                if (bar && v > 0) {
+                  if (topY === null || bar.y < topY) topY = bar.y;
+                  if (xPos === null) xPos = bar.x;
+                }
+              });
+              if (total > 0 && topY !== null && xPos !== null) {
+                ctx.fillText(String(total), xPos, topY - 4);
+              }
+            }
+            ctx.restore();
+          }
+        };
+
         _ticketTrendChart = new Chart(ctx, {
           type: 'bar',
           data: {
             labels,
             datasets: [
-              { label: 'Escalated Eng',   data: ticketSeries, backgroundColor: '#3b82f6', borderRadius: 4, maxBarThickness: 28, stack: 'tickets' },
-              { label: 'On Handling TAC', data: tacSeries,    backgroundColor: '#2ba99b', borderRadius: 4, maxBarThickness: 28, stack: 'tickets' },
+              { label: 'Escalated Eng',   data: ticketSeries, backgroundColor: '#3b82f6', borderRadius: 4, maxBarThickness: 28, stack: 'tickets', hidden: !showEsc },
+              { label: 'On Handling TAC', data: tacSeries,    backgroundColor: '#2ba99b', borderRadius: 4, maxBarThickness: 28, stack: 'tickets', hidden: !showTac },
             ]
           },
+          plugins: [totalLabelsPlugin],
           options: {
             responsive: true, maintainAspectRatio: false,
+            layout: { padding: { top: 22 } },
             plugins: {
               legend: { display: false },
               tooltip: {
@@ -5994,7 +6870,7 @@
               }
             },
             scales: {
-              x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 }, color: '#9ca3af', maxTicksLimit: 12 } },
+              x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 }, color: '#9ca3af', autoSkip: false, maxRotation: 90, minRotation: days.length > 14 ? 60 : 0 } },
               y: { stacked: true, grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 }, color: '#9ca3af', precision: 0 }, beginAtZero: true }
             }
           }
@@ -6321,6 +7197,83 @@
       return `<span class="s-needreply"><span class="dot"></span>Perlu Dibalas</span><button class="dismiss-btn" onclick="dismissOutlet(this,decodeURIComponent('${encodeURIComponent(key)}'),${inboundToday});event.stopPropagation();" title="Tandai tidak perlu dibalas">✕ Selesai</button>`;
     }
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    // ─── Copy Template (Panduan page) ──────────────────────────
+    // CATATAN: nama function khusus `pdCopy` (bukan `copyTpl`) karena `copyTpl`
+    // sudah dipakai modal Template Konfirmasi legacy dengan signature berbeda.
+    // Ambil teks dari .pd-bubble (innerText preserve line breaks), tulis ke clipboard.
+    function pdCopy(btn) {
+      if (!btn) return;
+      const tmpl = btn.closest('.pd-tmpl');
+      if (!tmpl) return;
+      const bubble = tmpl.querySelector('.pd-bubble');
+      if (!bubble) return;
+
+      // Pakai innerText (visible text + line breaks). textContent fallback.
+      let text = bubble.innerText || bubble.textContent || '';
+      text = text.replace(/\s+$/g, '').replace(/[ ]/g, ' '); // strip trailing ws + nbsp→space
+      if (!text) { console.warn('copyTpl: empty bubble text'); return; }
+
+      const originalHtml = btn.innerHTML;
+      const showCopied = () => {
+        btn.classList.add('copied');
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg>Tersalin`;
+        setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = originalHtml; }, 1600);
+      };
+      const showError = (reason) => {
+        console.warn('copyTpl failed:', reason);
+        btn.innerHTML = `Gagal salin`;
+        setTimeout(() => { btn.innerHTML = originalHtml; }, 1600);
+      };
+
+      // Fallback: textarea yang benar-benar di DOM & dapat di-select.
+      // CATATAN: opacity:0 + position fixed sering bikin execCommand fail di Safari/Firefox.
+      // Pakai contentEditable=true + readonly false supaya select benar-benar tertangkap.
+      const fallbackCopy = () => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        // Pastikan visible-enough untuk diselect tapi tidak ganggu layout
+        ta.style.position = 'fixed';
+        ta.style.top = '0';
+        ta.style.left = '0';
+        ta.style.width = '1px';
+        ta.style.height = '1px';
+        ta.style.padding = '0';
+        ta.style.border = 'none';
+        ta.style.outline = 'none';
+        ta.style.boxShadow = 'none';
+        ta.style.background = 'transparent';
+        ta.setAttribute('readonly', '');
+        document.body.appendChild(ta);
+
+        // iOS: gunakan setSelectionRange. Desktop: select() saja sudah cukup.
+        const prevActive = document.activeElement;
+        ta.focus();
+        ta.select();
+        try { ta.setSelectionRange(0, text.length); } catch (e) {}
+
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+
+        document.body.removeChild(ta);
+        if (prevActive && typeof prevActive.focus === 'function') {
+          try { prevActive.focus(); } catch (e) {}
+        }
+        return ok;
+      };
+
+      // Coba Clipboard API dulu (tidak peduli secureContext — biar reject sendiri kalau ditolak).
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(text).then(showCopied).catch(err => {
+          // Kalau gagal, coba fallback
+          if (fallbackCopy()) showCopied();
+          else showError(err);
+        });
+      } else {
+        if (fallbackCopy()) showCopied();
+        else showError('no clipboard API + execCommand failed');
+      }
+    }
     function numH(n, col) { return n > 0 ? `<span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(${col})">${n.toLocaleString('id-ID')}</span>` : `<span style="color:var(--muted-2);font-size:12.5px">—</span>`; }
     function initials(name) { return name.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase(); }
 
@@ -6565,20 +7518,283 @@
       });
     }
     // Close on overlay click
-    document.getElementById('tplOverlay').addEventListener('click', function(e) {
-      if (e.target === this) closeTplModal();
+    const _tplOv = document.getElementById('tplOverlay');
+    if (_tplOv) {
+      _tplOv.addEventListener('click', function(e) {
+        if (e.target === this) closeTplModal();
+      });
+    }
+
+    // ════════════════════════════════════════════
+    //  BLAST MAINTENANCE
+    // ════════════════════════════════════════════
+    const BLAST_TEMPLATE_TEXT = [
+      'Halo majoopreneurs 👋',
+      '',
+      'Kami informasikan bahwa akan dilakukan maintenance sistem pada:',
+      '',
+      '🗓️ Hari/Tanggal: {hari_tanggal}',
+      '🕐 Waktu: {waktu}',
+      '',
+      'Selama proses maintenance, akan terjadi downtime pada sistem. Dampaknya sebagai berikut:',
+      '',
+      '{dampak}',
+      '',
+      'Mohon maaf atas ketidaknyamanan yang ditimbulkan. Tim kami berupaya agar proses ini berjalan seefisien mungkin guna meminimalkan gangguan pada operasional Anda.',
+      '',
+      'Terima kasih atas pengertian dan kerja samanya 🙏',
+      '',
+      'Salam,',
+      'Tim majoo'
+    ].join('\n');
+
+    const blastState = { jobId: null, pollTimer: null };
+
+    function blastEscapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c]));
+    }
+
+    function getBlastUserEmail() {
+      try {
+        const sess = JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
+        return sess.email || '';
+      } catch { return ''; }
+    }
+
+    function getBlastFields() {
+      return {
+        hari_tanggal: (document.getElementById('blHariTgl')?.value || '').trim(),
+        waktu: (document.getElementById('blWaktu')?.value || '').trim(),
+        dampak: (document.getElementById('blDampak')?.value || ''),
+      };
+    }
+
+    function buildBlastBody() {
+      const f = getBlastFields();
+      const lines = f.dampak.split('\n').map(s => s.trim()).filter(Boolean);
+      const dampakText = lines.length
+        ? lines.map(l => '• ' + l).join('\n')
+        : '• [isi dampak maintenance]';
+      return BLAST_TEMPLATE_TEXT
+        .replace('{hari_tanggal}', f.hari_tanggal || '[isi hari dan tanggal]')
+        .replace('{waktu}', f.waktu || '[isi waktu dan estimasi maintenance]')
+        .replace('{dampak}', dampakText);
+    }
+
+    function buildBlastPreviewHtml() {
+      const f = getBlastFields();
+      const lines = f.dampak.split('\n').map(s => s.trim()).filter(Boolean);
+      const ph = (text) => `<span class="ph-fill">${blastEscapeHtml(text)}</span>`;
+      const dampakHtml = lines.length
+        ? lines.map(l => '• ' + ph(l)).join('\n')
+        : '• ' + ph('[isi dampak maintenance]');
+      const tpl = [
+        'Halo majoopreneurs 👋',
+        '',
+        'Kami informasikan bahwa akan dilakukan maintenance sistem pada:',
+        '',
+        '🗓️ <b>Hari/Tanggal:</b> {hari_tanggal}',
+        '🕐 <b>Waktu:</b> {waktu}',
+        '',
+        'Selama proses maintenance, akan terjadi downtime pada sistem. Dampaknya sebagai berikut:',
+        '',
+        '{dampak}',
+        '',
+        'Mohon maaf atas ketidaknyamanan yang ditimbulkan. Tim kami berupaya agar proses ini berjalan seefisien mungkin guna meminimalkan gangguan pada operasional Anda.',
+        '',
+        'Terima kasih atas pengertian dan kerja samanya 🙏',
+        '',
+        'Salam,',
+        '<b>Tim majoo</b>'
+      ].join('\n');
+      return tpl
+        .replace('{hari_tanggal}', f.hari_tanggal ? ph(f.hari_tanggal) : ph('[isi hari dan tanggal]'))
+        .replace('{waktu}', f.waktu ? ph(f.waktu) : ph('[isi waktu dan estimasi maintenance]'))
+        .replace('{dampak}', dampakHtml);
+    }
+
+    function updateBlastPreview() {
+      const el = document.getElementById('blPreview');
+      if (el) el.innerHTML = buildBlastPreviewHtml();
+    }
+
+    function openBlastModalEl(id) {
+      document.getElementById(id)?.classList.add('open');
+    }
+    function closeBlastModal(which) {
+      const map = { compose: 'blOverlayCompose', confirm: 'blOverlayConfirm', progress: 'blOverlayProgress' };
+      document.getElementById(map[which])?.classList.remove('open');
+      if (which === 'progress' && blastState.pollTimer) {
+        clearInterval(blastState.pollTimer);
+        blastState.pollTimer = null;
+      }
+    }
+
+    function openBlastCompose() {
+      ['blHariTgl','blWaktu','blDampak','blConfirmInput'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const cBtn = document.getElementById('blConfirmBtn');
+      if (cBtn) cBtn.disabled = true;
+      const eEl = document.getElementById('blConfirmEmail');
+      if (eEl) eEl.textContent = getBlastUserEmail() || '-';
+      updateBlastPreview();
+      openBlastModalEl('blOverlayCompose');
+    }
+
+    function openBlastConfirm() {
+      const f = getBlastFields();
+      if (!f.hari_tanggal || !f.waktu || !f.dampak.trim()) {
+        alert('Mohon isi semua field (Hari/Tanggal, Waktu, Dampak).');
+        return;
+      }
+      closeBlastModal('compose');
+      openBlastModalEl('blOverlayConfirm');
+      setTimeout(() => document.getElementById('blConfirmInput')?.focus(), 100);
+    }
+
+    function checkBlastConfirm() {
+      const input = document.getElementById('blConfirmInput');
+      const btn = document.getElementById('blConfirmBtn');
+      const match = (input.value || '').trim().toUpperCase() === 'KIRIM';
+      btn.disabled = !match;
+      input.classList.toggle('match', match);
+    }
+
+    async function executeBlast() {
+      const btn = document.getElementById('blConfirmBtn');
+      btn.disabled = true;
+      btn.textContent = 'Mengirim…';
+      try {
+        const email = getBlastUserEmail();
+        const body = buildBlastBody();
+        const url = `${APPS_SCRIPT_URL}?action=startBlast`
+          + `&email=${encodeURIComponent(email)}`
+          + `&body=${encodeURIComponent(body)}`
+          + `&sentBy=${encodeURIComponent(email)}`
+          + `&targetMode=all`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        blastState.jobId = data.jobId;
+        closeBlastModal('confirm');
+        openBlastProgress(data);
+      } catch (err) {
+        alert('Gagal start blast: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'Kirim Sekarang';
+      }
+    }
+
+    function openBlastProgress(initialData) {
+      document.getElementById('blProgJobId').textContent = initialData.jobId || '-';
+      const senderTxt = initialData.senderNumber ? `Pengirim: ${initialData.senderNumber}` : '';
+      const etaTxt = initialData.etaSeconds ? `ETA ~${Math.ceil(initialData.etaSeconds / 60)} menit` : '';
+      document.getElementById('blProgFootInfo').textContent = [senderTxt, etaTxt].filter(Boolean).join(' · ');
+      renderBlastProgress({
+        jobId: initialData.jobId,
+        status: 'running',
+        total: initialData.total || 0,
+        sent: 0, failed: 0, queued: initialData.total || 0,
+        errors: [],
+      });
+      openBlastModalEl('blOverlayProgress');
+      startBlastPolling();
+    }
+
+    function startBlastPolling() {
+      if (blastState.pollTimer) clearInterval(blastState.pollTimer);
+      const poll = async () => {
+        if (!blastState.jobId) return;
+        try {
+          const email = getBlastUserEmail();
+          const url = `${APPS_SCRIPT_URL}?action=getBlastProgress`
+            + `&email=${encodeURIComponent(email)}`
+            + `&jobId=${encodeURIComponent(blastState.jobId)}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data.error) { console.warn('progress error:', data.error); return; }
+          renderBlastProgress(data);
+          if (data.status === 'completed' || data.status === 'cancelled' || data.status === 'failed') {
+            clearInterval(blastState.pollTimer);
+            blastState.pollTimer = null;
+          }
+        } catch (e) {
+          console.warn('poll fail:', e.message);
+        }
+      };
+      poll();
+      blastState.pollTimer = setInterval(poll, 5000);
+    }
+
+    function renderBlastProgress(s) {
+      const total = s.total || 0;
+      const done = (s.sent || 0) + (s.failed || 0);
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      document.getElementById('blProgFill').style.width = pct + '%';
+      document.getElementById('blProgPercent').textContent = pct + '%';
+      document.getElementById('blStatTotal').textContent = total;
+      document.getElementById('blStatSent').textContent = s.sent || 0;
+      document.getElementById('blStatFailed').textContent = s.failed || 0;
+      document.getElementById('blStatQueued').textContent = s.queued || 0;
+
+      const chip = document.getElementById('blProgStatusChip');
+      chip.className = 'bl-status-chip ' + (s.status || 'running');
+      chip.textContent = s.status || 'running';
+
+      const cancelBtn = document.getElementById('blCancelBtn');
+      cancelBtn.style.display = (s.status === 'running') ? '' : 'none';
+
+      const remaining = s.queued || 0;
+      document.getElementById('blProgEta').textContent =
+        (remaining > 0 && s.status === 'running')
+          ? `~${Math.ceil((remaining * 30) / 60)} menit tersisa` : '';
+
+      const desc = document.getElementById('blProgDesc');
+      if (s.status === 'completed')      desc.textContent = `Selesai. ${s.sent} terkirim, ${s.failed} gagal.`;
+      else if (s.status === 'cancelled') desc.textContent = `Dibatalkan di posisi ${done}/${total}.`;
+      else if (s.status === 'failed')    desc.textContent = 'Job gagal — cek terminal Node.js untuk detail.';
+      else desc.textContent = 'Mengirim pesan ke grup. Tab boleh ditutup, blast tetap jalan di server.';
+
+      const errWrap = document.getElementById('blErrorsWrap');
+      const errBox = document.getElementById('blErrors');
+      if (s.errors && s.errors.length) {
+        errWrap.style.display = '';
+        errBox.innerHTML = s.errors.slice(-10).map(e =>
+          `<div class="bl-error-row"><b>${blastEscapeHtml(e.outletName || '(no name)')}</b> — ${blastEscapeHtml(e.errorMsg || 'unknown error')}</div>`
+        ).join('');
+      } else {
+        errWrap.style.display = 'none';
+      }
+    }
+
+    async function cancelBlast() {
+      if (!blastState.jobId) return;
+      if (!confirm('Yakin batalkan blast yang sedang jalan?')) return;
+      try {
+        const email = getBlastUserEmail();
+        const url = `${APPS_SCRIPT_URL}?action=cancelBlast`
+          + `&email=${encodeURIComponent(email)}`
+          + `&jobId=${encodeURIComponent(blastState.jobId)}`;
+        const res = await fetch(url, { method: 'POST' });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+      } catch (e) {
+        alert('Gagal cancel: ' + e.message);
+      }
+    }
+
+    ['blOverlayCompose','blOverlayConfirm','blOverlayProgress'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+      });
     });
 
   </script>
-
-  <!-- Template Konfirmasi FAB -->
-  <button class="tpl-fab" onclick="openTplModal()">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2 3h12v8H6l-4 3z"/>
-    </svg>
-    Template Konfirmasi
-    <span class="tpl-fab-badge">4</span>
-  </button>
 
   <!-- Template Modal -->
   <div class="tpl-overlay" id="tplOverlay">
@@ -6597,6 +7813,125 @@
       <div class="tpl-foot">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
         Gunakan bahasa yang santun & konsisten. Pastikan ID tiket benar sebelum dikirim ke grup.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ BLAST MAINTENANCE — COMPOSE ═══ -->
+  <div class="bl-overlay" id="blOverlayCompose">
+    <div class="bl-panel bl-panel-wide">
+      <div class="bl-head">
+        <div>
+          <div class="bl-head-eyebrow">Blast Maintenance · Template 06</div>
+          <div class="bl-head-title">Susun Pengumuman Maintenance</div>
+          <div class="bl-head-desc">Isi tanggal, waktu, dan dampak. Preview di kanan update otomatis.</div>
+        </div>
+        <button class="bl-close" onclick="closeBlastModal('compose')">×</button>
+      </div>
+      <div class="bl-body bl-body-2col">
+        <div>
+          <div class="bl-col-label">Form Isian</div>
+          <div class="bl-field">
+            <label class="bl-field-label">Hari / Tanggal</label>
+            <input id="blHariTgl" class="bl-input" type="text" placeholder="Senin, 2 Juni 2026" oninput="updateBlastPreview()" />
+          </div>
+          <div class="bl-field">
+            <label class="bl-field-label">Waktu</label>
+            <input id="blWaktu" class="bl-input" type="text" placeholder="23:00 - 02:00 WIB (~3 jam)" oninput="updateBlastPreview()" />
+          </div>
+          <div class="bl-field">
+            <label class="bl-field-label">Dampak Maintenance</label>
+            <textarea id="blDampak" class="bl-textarea" rows="5" placeholder="1 baris = 1 bullet poin. Contoh:&#10;Akses aplikasi POS tidak tersedia&#10;Sinkronisasi cloud tertunda" oninput="updateBlastPreview()"></textarea>
+            <div class="bl-field-hint">Setiap baris akan jadi 1 bullet "•" di pesan.</div>
+          </div>
+        </div>
+        <div>
+          <div class="bl-col-label">Preview Pesan</div>
+          <div id="blPreview" class="bl-preview"></div>
+        </div>
+      </div>
+      <div class="bl-foot">
+        <button class="bl-btn" onclick="closeBlastModal('compose')">Batal</button>
+        <button class="bl-btn bl-btn-primary" onclick="openBlastConfirm()">Lanjut →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ BLAST MAINTENANCE — CONFIRM ═══ -->
+  <div class="bl-overlay" id="blOverlayConfirm">
+    <div class="bl-panel">
+      <div class="bl-head">
+        <div>
+          <div class="bl-head-eyebrow">Konfirmasi Blast</div>
+          <div class="bl-head-title">Verifikasi Sebelum Kirim</div>
+        </div>
+        <button class="bl-close" onclick="closeBlastModal('confirm')">×</button>
+      </div>
+      <div class="bl-body">
+        <div class="bl-info-row">
+          <span class="bl-info-row-l">Target grup</span>
+          <span class="bl-info-row-r">Semua grup customer aktif</span>
+        </div>
+        <div class="bl-info-row">
+          <span class="bl-info-row-l">Pengirim</span>
+          <span class="bl-info-row-r">Nomor yang scan QR</span>
+        </div>
+        <div class="bl-info-row">
+          <span class="bl-info-row-l">Delay per pesan</span>
+          <span class="bl-info-row-r">±30 detik</span>
+        </div>
+        <div class="bl-info-row">
+          <span class="bl-info-row-l">Login sebagai</span>
+          <span id="blConfirmEmail" class="bl-info-row-r"></span>
+        </div>
+        <div style="margin-top:18px; font-size:12.5px; color:var(--ink-2); line-height:1.6;">
+          Pastikan Node.js service jalan & URL Cloudflare sudah ter-update di sheet
+          <span class="ph-fill">BlastConfig!A1</span>.
+          Ketik <b>KIRIM</b> di bawah untuk eksekusi.
+        </div>
+        <input id="blConfirmInput" class="bl-confirm-input" type="text" placeholder="ketik KIRIM" oninput="checkBlastConfirm()" autocomplete="off" />
+      </div>
+      <div class="bl-foot">
+        <button class="bl-btn" onclick="closeBlastModal('confirm')">← Kembali</button>
+        <button id="blConfirmBtn" class="bl-btn bl-btn-danger" onclick="executeBlast()" disabled>Kirim Sekarang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ BLAST MAINTENANCE — PROGRESS ═══ -->
+  <div class="bl-overlay" id="blOverlayProgress">
+    <div class="bl-panel bl-panel-wide">
+      <div class="bl-head">
+        <div>
+          <div class="bl-head-eyebrow">Job <span id="blProgJobId" style="font-family:var(--mono);"></span></div>
+          <div class="bl-head-title">Status Blast <span id="blProgStatusChip" class="bl-status-chip running" style="margin-left:8px; font-size:11px;">running</span></div>
+          <div class="bl-head-desc" id="blProgDesc">Mengirim pesan ke grup. Tab boleh ditutup, blast tetap jalan di server.</div>
+        </div>
+        <button class="bl-close" onclick="closeBlastModal('progress')">×</button>
+      </div>
+      <div class="bl-body">
+        <div class="bl-progress-bar">
+          <div id="blProgFill" class="bl-progress-fill" style="width:0%"></div>
+        </div>
+        <div class="bl-progress-stats">
+          <span><strong id="blProgPercent">0%</strong> selesai</span>
+          <span id="blProgEta"></span>
+        </div>
+        <div class="bl-stat-row">
+          <div class="bl-stat-cell"><div class="bl-stat-v" id="blStatTotal">0</div><div class="bl-stat-l">Total</div></div>
+          <div class="bl-stat-cell sent"><div class="bl-stat-v" id="blStatSent">0</div><div class="bl-stat-l">Sent</div></div>
+          <div class="bl-stat-cell failed"><div class="bl-stat-v" id="blStatFailed">0</div><div class="bl-stat-l">Failed</div></div>
+          <div class="bl-stat-cell"><div class="bl-stat-v" id="blStatQueued">0</div><div class="bl-stat-l">Queued</div></div>
+        </div>
+        <div id="blErrorsWrap" style="display:none;">
+          <div class="bl-col-label">Error Terbaru</div>
+          <div id="blErrors" class="bl-errors"></div>
+        </div>
+      </div>
+      <div class="bl-foot">
+        <div class="bl-foot-info" id="blProgFootInfo"></div>
+        <button id="blCancelBtn" class="bl-btn bl-btn-danger" onclick="cancelBlast()">Batalkan Blast</button>
+        <button class="bl-btn" onclick="closeBlastModal('progress')">Tutup</button>
       </div>
     </div>
   </div>
