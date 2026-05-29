@@ -3453,6 +3453,726 @@
     }
     .bl-error-row:last-child { border-bottom: none; }
     .bl-error-row b { color: var(--ink); }
+
+    /* ════════════════════════════════════════════
+       ESKALASI KE TLTC — button + modal + slide-in panel
+       ════════════════════════════════════════════ */
+    .esk-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font); font-size: 12px; font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #2dbdb6 0%, #6ec9a8 100%);
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px 7px 11px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(45, 189, 182, 0.28);
+      transition: all .15s ease;
+      white-space: nowrap;
+    }
+    .esk-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(45, 189, 182, 0.40); }
+    .esk-btn:active { transform: translateY(0); }
+    .esk-btn svg { display: block; }
+
+    /* Badge button: Request Masuk (only on workorder page) */
+    .esk-badge-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--font); font-size: 12px; font-weight: 600;
+      color: var(--m-dark);
+      background: var(--m-tint);
+      border: 1px solid #b8e5e1;
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all .15s ease;
+      white-space: nowrap;
+    }
+    .esk-badge-btn:hover { background: #d3f0ed; }
+    .esk-badge-btn .esk-badge-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      background: var(--m-teal); color: #fff;
+      border-radius: 999px;
+      font-size: 11px; font-weight: 700; font-family: var(--mono);
+    }
+    .esk-badge-btn .esk-badge-count.zero { background: var(--muted-2); }
+
+    /* Modal */
+    .esk-modal-bg {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55);
+      display: none; align-items: center; justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(2px);
+    }
+    .esk-modal-bg.open { display: flex; }
+    .esk-modal {
+      background: #fff; border-radius: 14px;
+      width: 440px; max-width: 92vw;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      animation: eskModalIn .18s ease-out;
+    }
+    @keyframes eskModalIn {
+      from { opacity: 0; transform: translateY(8px) scale(.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .esk-modal-head {
+      padding: 18px 20px 14px;
+      background: linear-gradient(135deg, #2dbdb6 0%, #6ec9a8 100%);
+      color: #fff;
+    }
+    .esk-modal-head h3 { margin: 0; font-size: 16px; font-weight: 700; }
+    .esk-modal-head p  { margin: 4px 0 0; font-size: 12px; opacity: .92; }
+    .esk-modal-body { padding: 18px 20px; }
+    .esk-field { margin-bottom: 14px; }
+    .esk-field label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .3px;
+      margin-bottom: 5px;
+    }
+    .esk-field input, .esk-field select {
+      width: 100%; box-sizing: border-box;
+      font-family: var(--font); font-size: 13px; color: var(--ink);
+      padding: 9px 11px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: #fff;
+      transition: border-color .15s;
+    }
+    .esk-field input:focus, .esk-field select:focus {
+      outline: none; border-color: var(--m-teal);
+      box-shadow: 0 0 0 3px rgba(45, 189, 182, 0.12);
+    }
+    .esk-modal-foot {
+      padding: 12px 20px 18px;
+      display: flex; gap: 10px; justify-content: flex-end;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .esk-btn-cancel, .esk-btn-submit {
+      font-family: var(--font); font-size: 13px; font-weight: 600;
+      padding: 9px 16px; border-radius: 8px; cursor: pointer;
+      border: 1px solid transparent; transition: all .15s;
+    }
+    .esk-btn-cancel { background: #fff; color: var(--muted); border-color: var(--border); }
+    .esk-btn-cancel:hover { background: var(--surface-2); color: var(--ink); }
+    .esk-btn-submit {
+      background: linear-gradient(135deg, #2dbdb6 0%, #6ec9a8 100%);
+      color: #fff;
+    }
+    .esk-btn-submit:hover { filter: brightness(1.05); }
+    .esk-btn-submit:disabled { opacity: .6; cursor: not-allowed; }
+    .esk-error {
+      font-size: 12px; color: #be123c;
+      background: #fff1f2; border: 1px solid #fecdd3;
+      padding: 8px 11px; border-radius: 6px;
+      margin-bottom: 12px; display: none;
+    }
+    .esk-error.show { display: block; }
+    .esk-success {
+      font-size: 12px; color: #047857;
+      background: #ecfdf5; border: 1px solid #a7f3d0;
+      padding: 8px 11px; border-radius: 6px;
+      margin-bottom: 12px; display: none;
+    }
+    .esk-success.show { display: block; }
+    .esk-success b { font-family: var(--mono); }
+
+    /* Toast notification */
+    .esk-toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #0f172a; color: #fff;
+      padding: 12px 18px; border-radius: 10px;
+      font-family: var(--font); font-size: 13px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.25);
+      z-index: 10001;
+      display: flex; align-items: center; gap: 10px;
+      opacity: 0; transform: translateY(12px);
+      transition: opacity .22s, transform .22s;
+      pointer-events: none;
+    }
+    .esk-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .esk-toast .esk-toast-id { font-family: var(--mono); color: #6ec9a8; font-weight: 700; }
+
+    /* Slide-in panel: Request Masuk */
+    .esk-panel-bg {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.35);
+      display: none; z-index: 9998;
+    }
+    .esk-panel-bg.open { display: block; }
+    .esk-panel {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 460px; max-width: 92vw;
+      background: var(--bg, #f8fafc);
+      box-shadow: -12px 0 40px rgba(0,0,0,0.12);
+      z-index: 9999;
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .26s cubic-bezier(.16,1,.3,1);
+    }
+    .esk-panel.open { transform: translateX(0); }
+    .esk-panel-head {
+      padding: 18px 20px;
+      background: var(--m-grad);
+      color: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .esk-panel-head h3 { margin: 0; font-size: 16px; font-weight: 700; }
+    .esk-panel-head p  { margin: 3px 0 0; font-size: 11px; opacity: .9; }
+    .esk-panel-close {
+      background: rgba(255,255,255,.18); border: none;
+      color: #fff; width: 30px; height: 30px;
+      border-radius: 50%; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .esk-panel-close:hover { background: rgba(255,255,255,.32); }
+    .esk-panel-filters {
+      padding: 12px 20px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .esk-panel-filter {
+      font-family: var(--font); font-size: 11px; font-weight: 600;
+      color: var(--muted);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 11px; cursor: pointer;
+      transition: all .15s;
+    }
+    .esk-panel-filter:hover { background: var(--surface-2); }
+    .esk-panel-filter.active {
+      background: var(--m-dark); color: #fff; border-color: var(--m-dark);
+    }
+    .esk-panel-body {
+      flex: 1; overflow-y: auto;
+      padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .esk-panel-empty {
+      text-align: center; color: var(--muted);
+      font-size: 13px; padding: 40px 20px;
+    }
+    .esk-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px;
+      transition: box-shadow .15s, border-color .15s;
+    }
+    .esk-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); border-color: var(--border-strong); }
+    .esk-card-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .esk-card-id {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      color: var(--m-dark); letter-spacing: .3px;
+    }
+    .esk-pill {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 999px; letter-spacing: .4px;
+    }
+    .esk-pill-new      { background: #dbeafe; color: #1e40af; }
+    .esk-pill-progress { background: #fef3c7; color: #92400e; }
+    .esk-pill-done     { background: #d1fae5; color: #065f46; }
+    .esk-card-outlet {
+      font-size: 14px; font-weight: 700; color: var(--ink);
+      margin-bottom: 2px;
+    }
+    .esk-card-type {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .esk-type-training { background: #ede9fe; color: #5b21b6; }
+    .esk-type-visit    { background: #fce7f3; color: #9d174d; }
+    .esk-card-info {
+      display: grid; grid-template-columns: auto 1fr; gap: 4px 10px;
+      font-size: 12px; color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .esk-card-info b { color: var(--ink); font-weight: 600; }
+    .esk-card-meta {
+      font-size: 11px; color: var(--muted-2);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+      margin-bottom: 10px;
+    }
+    .esk-card-meta b { color: var(--muted); font-weight: 600; font-family: var(--mono); }
+    .esk-card-actions { display: flex; gap: 6px; }
+    .esk-status-btn {
+      flex: 1;
+      font-family: var(--font); font-size: 11px; font-weight: 600;
+      padding: 7px 8px; border-radius: 6px;
+      border: 1px solid var(--border); background: #fff;
+      color: var(--muted); cursor: pointer;
+      transition: all .15s;
+    }
+    .esk-status-btn:hover { background: var(--surface-2); color: var(--ink); }
+    .esk-status-btn.active {
+      background: var(--m-dark); color: #fff; border-color: var(--m-dark);
+    }
+    .esk-status-btn:disabled { opacity: .5; cursor: wait; }
+
+    /* ════════════════════════════════════════════
+       DAILY TRACKING PAGE (scoped with #dailyPage)
+       ════════════════════════════════════════════ */
+    #dailyPage .dt-section {
+      margin-bottom: 22px;
+    }
+    #dailyPage .dt-section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px; padding: 0 2px;
+    }
+    #dailyPage .dt-section-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .14em;
+    }
+    #dailyPage .dt-section-eyebrow::before {
+      content: ''; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--m-teal); flex-shrink: 0;
+    }
+    #dailyPage .dt-section-eyebrow .dt-section-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; padding: 0;
+      background: var(--m-tint); color: var(--m-dark);
+      border-radius: 999px;
+      font-size: 10px; font-weight: 800;
+      margin-left: 2px;
+    }
+    /* Hide "On Handling TAC" checkbox when ticketTrendPanel sits inside dailyPage */
+    #dailyPage .tk-series-tac-wrap { display: none !important; }
+
+    /* ════════════════════════════════════════════
+       WORKORDER TLTC PAGE (scoped with #workorderPage)
+       ════════════════════════════════════════════ */
+    /* Hero green gradient */
+    #workorderPage .wt-hero {
+      background: var(--m-grad);
+      border-radius: 16px; padding: 22px 28px 24px;
+      color: #fff; margin-bottom: 22px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 4px 18px rgba(13,59,57,.08);
+    }
+    #workorderPage .wt-hero::before {
+      content: ''; position: absolute; right: -80px; top: -80px;
+      width: 280px; height: 280px;
+      background: radial-gradient(circle at center, rgba(255,255,255,.18), transparent 60%);
+      pointer-events: none;
+    }
+    #workorderPage .wt-hero::after {
+      content: ''; position: absolute; right: 30px; top: -30px;
+      width: 140px; height: 140px; border: 14px solid rgba(255,255,255,.10);
+      border-radius: 50%; pointer-events: none;
+    }
+    #workorderPage .wt-hero-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 18px; position: relative; z-index: 1;
+      font-size: 11.5px; font-weight: 600; letter-spacing: .06em;
+      flex-wrap: wrap; gap: 8px;
+    }
+    #workorderPage .wt-hero-head-l { display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; opacity: .95; }
+    #workorderPage .wt-hero-head-l::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.55); display: inline-block; }
+    #workorderPage .wt-hero-head-r { display: inline-flex; align-items: center; gap: 7px; opacity: .88; }
+    #workorderPage .wt-hero-head-r::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.65); display: inline-block; }
+
+    #workorderPage .wt-stats {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 0; position: relative; z-index: 1;
+    }
+    #workorderPage .wt-stat {
+      padding: 4px 18px; cursor: pointer; transition: opacity .15s;
+      border-right: 1px solid rgba(255,255,255,.18);
+      position: relative;
+    }
+    #workorderPage .wt-stat:last-child { border-right: none; padding-right: 0; }
+    #workorderPage .wt-stat:first-child { padding-left: 0; }
+    #workorderPage .wt-stat:hover { opacity: .88; }
+    #workorderPage .wt-stat-label {
+      font-size: 10.5px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; opacity: .92;
+      position: relative; padding-left: 14px; display: inline-block;
+    }
+    #workorderPage .wt-stat-label::before {
+      content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+      width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.45);
+    }
+    #workorderPage .wt-stat-label::after {
+      content: ''; position: absolute; left: 1px; top: 50%; transform: translateY(-50%);
+      width: 6px; height: 6px; border-radius: 50%; background: #fff; opacity: 0; transition: opacity .15s;
+    }
+    #workorderPage .wt-stat.active .wt-stat-label::after { opacity: 1; }
+    #workorderPage .wt-stat-num {
+      font-family: var(--mono); font-size: 32px; font-weight: 700;
+      letter-spacing: -.03em; line-height: 1; margin-top: 10px;
+    }
+    #workorderPage .wt-stat-desc { font-size: 11px; opacity: .82; margin-top: 8px; line-height: 1.35; }
+    #workorderPage .wt-stat-expand {
+      position: absolute; top: 0; right: 6px;
+      border: none; background: rgba(255,255,255,.12); color: #fff;
+      cursor: pointer; padding: 4px 6px; border-radius: 6px;
+      display: inline-flex; align-items: center;
+      transition: background .15s, transform .2s;
+    }
+    #workorderPage .wt-stat-expand:hover { background: rgba(255,255,255,.22); }
+    #workorderPage .wt-stat.expanded .wt-stat-expand svg { transform: rotate(180deg); }
+    #workorderPage .wt-stat:last-child .wt-stat-expand { right: 0; }
+    #workorderPage .wt-stat-breakdown {
+      margin-top: 12px; padding-top: 10px;
+      border-top: 1px dashed rgba(255,255,255,.28);
+      display: none;
+    }
+    #workorderPage .wt-stat.expanded .wt-stat-breakdown { display: block; }
+    #workorderPage .wt-substat {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; padding: 5px 0;
+      font-size: 11.5px; cursor: pointer;
+      opacity: .88; transition: opacity .15s;
+    }
+    #workorderPage .wt-substat:hover { opacity: 1; }
+    #workorderPage .wt-substat.active { font-weight: 700; opacity: 1; }
+    #workorderPage .wt-substat-label { display: inline-flex; align-items: center; gap: 6px; }
+    #workorderPage .wt-substat-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,.7); flex-shrink: 0;
+    }
+    #workorderPage .wt-substat.active .wt-substat-dot { background: #fff; }
+    #workorderPage .wt-substat-num { font-family: var(--mono); font-weight: 600; }
+    @media (max-width: 1280px) {
+      #workorderPage .wt-stats { grid-template-columns: repeat(4, 1fr); row-gap: 22px; }
+      #workorderPage .wt-stat:nth-child(4) { border-right: none; padding-right: 0; }
+      #workorderPage .wt-stat:nth-child(5) { padding-left: 0; }
+    }
+    @media (max-width: 768px) {
+      #workorderPage .wt-stats { grid-template-columns: repeat(2, 1fr); }
+      #workorderPage .wt-stat { border-right: none !important; padding: 4px 0 !important; }
+    }
+
+    /* Chart panel */
+    #workorderPage .wt-chart-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 22px; margin-bottom: 18px;
+    }
+    #workorderPage .wt-chart-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 14px; gap: 12px; flex-wrap: wrap;
+    }
+    #workorderPage .wt-chart-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+    #workorderPage .wt-chart-sub { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+    #workorderPage .wt-chart-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--m-tint); color: var(--m-dark);
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 600;
+    }
+    #workorderPage .wt-chart-dp {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 12px; margin-bottom: 14px;
+    }
+    #workorderPage .wt-chart-dp-presets { display: inline-flex; gap: 5px; flex-wrap: wrap; }
+    #workorderPage .wt-chart-dp-preset {
+      border: 1.5px solid var(--border); background: #fff;
+      color: var(--muted); font-family: var(--font);
+      font-size: 11.5px; font-weight: 500;
+      padding: 4px 11px; border-radius: 999px; cursor: pointer;
+      transition: all .15s;
+    }
+    #workorderPage .wt-chart-dp-preset:hover { border-color: #ccc; color: var(--ink); }
+    #workorderPage .wt-chart-dp-preset.active {
+      background: var(--m-teal); color: #fff;
+      border-color: var(--m-teal); font-weight: 600;
+    }
+    #workorderPage .wt-chart-dp-range {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11.5px; color: var(--muted); margin-left: auto;
+    }
+    #workorderPage .wt-chart-dp-input {
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 4px 8px; font-family: var(--font); font-size: 11.5px;
+      color: var(--ink); background: #fff; outline: none;
+    }
+    #workorderPage .wt-chart-dp-input:focus { border-color: var(--m-teal); box-shadow: 0 0 0 3px rgba(45,189,182,.15); }
+    #workorderPage .wt-chart-dp-label {
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .05em;
+    }
+    #workorderPage .wt-chart-canvas { position: relative; height: 280px; }
+    #workorderPage .wt-chart-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      margin-top: 14px; font-size: 12px; color: var(--muted);
+    }
+    #workorderPage .wt-chart-legend label {
+      display: inline-flex; align-items: center; gap: 6px;
+      cursor: pointer; user-select: none;
+    }
+    #workorderPage .wt-chart-legend input[type="checkbox"] {
+      cursor: pointer; margin: 0; accent-color: var(--m-teal);
+    }
+    #workorderPage .wt-legend-swatch {
+      width: 14px; height: 10px; border-radius: 3px;
+      display: inline-block; flex-shrink: 0;
+    }
+
+    /* Outlet list panel */
+    #workorderPage .wt-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    #workorderPage .wt-panel-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; gap: 16px; flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+    }
+    #workorderPage .wt-panel-title { font-size: 14.5px; font-weight: 600; color: var(--ink); }
+    #workorderPage .wt-panel-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    #workorderPage .wt-filter-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--m-tint); color: var(--m-dark);
+      padding: 3px 9px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 600; margin-left: 8px;
+    }
+    #workorderPage .wt-filter-chip-x {
+      border: none; background: transparent; color: inherit;
+      cursor: pointer; padding: 0 0 0 2px; font-size: 14px; line-height: 1;
+    }
+    #workorderPage .wt-panel-actions { display: inline-flex; gap: 10px; align-items: center; }
+    #workorderPage .wt-search-wrap { position: relative; display: inline-flex; align-items: center; }
+    #workorderPage .wt-search-input {
+      padding: 7px 12px 7px 32px;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-family: var(--font); font-size: 12.5px;
+      color: var(--ink); background: #fff;
+      outline: none; min-width: 240px;
+      transition: border-color .15s;
+    }
+    #workorderPage .wt-search-input:focus { border-color: var(--m-teal); box-shadow: 0 0 0 3px rgba(45,189,182,.15); }
+    #workorderPage .wt-search-icon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
+    }
+    #workorderPage .wt-btn-reset {
+      border: 1px solid var(--border); background: #fff;
+      color: var(--muted); font-family: var(--font); font-size: 12.5px;
+      padding: 7px 14px; border-radius: 8px; cursor: pointer;
+      transition: all .15s;
+    }
+    #workorderPage .wt-btn-reset:hover { color: var(--ink); border-color: var(--border-strong); }
+    #workorderPage .wt-table-wrap { overflow-x: auto; }
+    #workorderPage .wt-dt {
+      width: 100%; border-collapse: collapse;
+      font-size: 12.5px; min-width: 1900px;
+    }
+    #workorderPage .wt-dt thead th {
+      text-align: left; padding: 11px 12px;
+      background: var(--surface-2);
+      font-size: 10.5px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .04em;
+      color: var(--muted); white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 1;
+    }
+    #workorderPage .wt-dt tbody td {
+      padding: 11px 12px; border-bottom: 1px solid var(--border);
+      color: var(--ink-2); vertical-align: top; white-space: nowrap;
+    }
+    #workorderPage .wt-dt tbody tr:hover { background: var(--surface-2); }
+    #workorderPage .wt-dt tbody td.wt-col-outlet { font-weight: 600; color: var(--ink); }
+    #workorderPage .wt-dt tbody td.wt-col-inv { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+    #workorderPage .wt-dt tbody td.wt-col-date { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+
+    #workorderPage .wt-status-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    #workorderPage .wt-sp-backlog  { background: #f1f5f9; color: #475569; }
+    #workorderPage .wt-sp-onproc   { background: #eff6ff; color: #1d4ed8; }
+    #workorderPage .wt-sp-bsales   { background: #fff7ed; color: #c2410c; }
+    #workorderPage .wt-sp-needfu   { background: #fefce8; color: #a16207; }
+    #workorderPage .wt-sp-closed   { background: #fef2f2; color: #b91c1c; }
+    #workorderPage .wt-sp-done     { background: #f0fdf4; color: #15803d; }
+
+    #workorderPage .wt-link-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      color: var(--m-teal); text-decoration: none;
+      font-size: 12px; font-weight: 500;
+    }
+    #workorderPage .wt-link-btn:hover { text-decoration: underline; }
+
+    #workorderPage .wt-empty-state {
+      text-align: center; padding: 56px 20px;
+      color: var(--muted); font-size: 13px;
+    }
+
+    /* Pagination */
+    #workorderPage .wt-pag-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 18px; gap: 12px; flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    #workorderPage .wt-pag-left, #workorderPage .wt-pag-right { display: inline-flex; align-items: center; gap: 10px; }
+    #workorderPage .wt-pag-size-label { font-size: 12.5px; color: var(--muted); }
+    #workorderPage .wt-pag-size-select {
+      font-size: 12.5px; font-family: var(--font);
+      padding: 4px 26px 4px 10px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: #fff; color: var(--ink-2); cursor: pointer;
+      outline: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2378716c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 8px center;
+    }
+    #workorderPage .wt-pag-size-select:focus { border-color: var(--m-teal); }
+    #workorderPage .wt-pag-info { font-size: 12px; color: var(--muted); }
+    #workorderPage .wt-pag-nav { display: inline-flex; gap: 4px; }
+    #workorderPage .wt-pag-btn {
+      min-width: 32px; height: 32px; padding: 0 8px;
+      border: 1px solid var(--border); background: #fff;
+      border-radius: 6px; cursor: pointer; font-size: 12.5px;
+      color: var(--ink-2); font-family: var(--font);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+    #workorderPage .wt-pag-btn:hover:not(:disabled) { background: var(--surface-2); border-color: var(--border-strong); }
+    #workorderPage .wt-pag-btn.active { background: var(--m-teal); color: #fff; border-color: var(--m-teal); font-weight: 600; }
+    #workorderPage .wt-pag-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Section label divider */
+    #workorderPage .wt-section-label {
+      display: flex; align-items: center; gap: 14px;
+      margin: 28px 0 14px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    #workorderPage .wt-section-label::before,
+    #workorderPage .wt-section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* TLTC Leaderboard */
+    #workorderPage .wt-tltc-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    #workorderPage .wt-tltc-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 18px 22px; gap: 12px;
+    }
+    #workorderPage .wt-tltc-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+    #workorderPage .wt-tltc-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    #workorderPage .wt-tltc-badge {
+      display: inline-flex; align-items: center;
+      background: var(--m-tint); color: var(--m-dark);
+      padding: 4px 11px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 600; white-space: nowrap;
+    }
+    #workorderPage .wt-tltc-list { padding: 0; }
+    #workorderPage .wt-tltc-row {
+      display: grid;
+      grid-template-columns: 28px 36px minmax(160px, 1fr) minmax(220px, 2fr) 60px;
+      gap: 14px; padding: 12px 22px;
+      align-items: center; border-top: 1px solid var(--border);
+    }
+    #workorderPage .wt-tltc-rank {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 12.5px; font-weight: 700; font-family: var(--mono);
+    }
+    #workorderPage .wt-tltc-rank.rank-1 { background: #fef3c7; color: #a16207; }
+    #workorderPage .wt-tltc-rank.rank-2 { background: #e5e7eb; color: #475569; }
+    #workorderPage .wt-tltc-rank.rank-3 { background: #fed7aa; color: #c2410c; }
+    #workorderPage .wt-tltc-rank.rank-other { background: var(--surface-2); color: var(--muted); }
+    #workorderPage .wt-tltc-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--m-grad);
+      display: grid; place-items: center;
+      color: #fff; font-size: 12.5px; font-weight: 700; letter-spacing: .02em;
+    }
+    #workorderPage .wt-tltc-meta { min-width: 0; }
+    #workorderPage .wt-tltc-name {
+      font-size: 13.5px; font-weight: 600; color: var(--ink);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #workorderPage .wt-tltc-role { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+    #workorderPage .wt-tltc-bar-wrap { display: flex; align-items: center; gap: 12px; }
+    #workorderPage .wt-tltc-bar-track {
+      flex: 1; height: 7px; border-radius: 6px;
+      background: var(--surface-2); overflow: hidden; min-width: 120px;
+    }
+    #workorderPage .wt-tltc-bar-fill {
+      height: 100%; background: var(--m-grad);
+      border-radius: 6px; transition: width .35s ease;
+    }
+    #workorderPage .wt-tltc-pct {
+      font-size: 12px; color: var(--muted); font-family: var(--mono);
+      min-width: 48px; text-align: right;
+    }
+    #workorderPage .wt-tltc-count { text-align: right; line-height: 1.1; }
+    #workorderPage .wt-tltc-count-num { font-size: 18px; font-weight: 700; color: var(--ink); font-family: var(--mono); }
+    #workorderPage .wt-tltc-count-label { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+    #workorderPage .wt-tltc-empty {
+      text-align: center; padding: 36px 20px;
+      color: var(--muted); font-size: 13px;
+    }
+    @media (max-width: 900px) {
+      #workorderPage .wt-tltc-row { grid-template-columns: 28px 36px 1fr auto; gap: 12px; }
+      #workorderPage .wt-tltc-bar-wrap { grid-column: 1 / -1; padding-left: 78px; }
+    }
+
+    /* Activity Feed */
+    #workorderPage .wt-feed-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    #workorderPage .wt-feed-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 18px 22px; gap: 12px;
+    }
+    #workorderPage .wt-feed-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+    #workorderPage .wt-feed-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    #workorderPage .wt-feed-live {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--m-tint); color: var(--m-dark);
+      padding: 4px 11px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 600;
+    }
+    #workorderPage .wt-feed-live::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: #22c55e; flex-shrink: 0;
+      animation: wtFeedPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes wtFeedPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: .45; transform: scale(.85); }
+    }
+    #workorderPage .wt-feed-list { padding: 0; }
+    #workorderPage .wt-feed-item {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: 14px; padding: 14px 22px;
+      align-items: flex-start; border-top: 1px solid var(--border);
+    }
+    #workorderPage .wt-feed-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    #workorderPage .wt-feed-icon.created  { background: #f0fdf4; color: #15803d; }
+    #workorderPage .wt-feed-icon.followup { background: #fefce8; color: #a16207; }
+    #workorderPage .wt-feed-icon.backlog  { background: #f1f5f9; color: #475569; }
+    #workorderPage .wt-feed-icon.update   { background: #eff6ff; color: #1d4ed8; }
+    #workorderPage .wt-feed-body { min-width: 0; }
+    #workorderPage .wt-feed-text { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+    #workorderPage .wt-feed-text b { color: var(--ink); font-weight: 600; }
+    #workorderPage .wt-feed-caption {
+      font-size: 10.5px; color: var(--muted);
+      margin-top: 5px; letter-spacing: .05em;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    #workorderPage .wt-feed-cap-type { font-weight: 700; text-transform: uppercase; color: var(--ink-2); }
+    #workorderPage .wt-feed-time { font-size: 11.5px; color: var(--muted); white-space: nowrap; padding-top: 2px; }
+    #workorderPage .wt-feed-empty { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 13px; }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -3561,6 +4281,91 @@
         <span class="chip plain" id="dateChip">—</span>
         <span class="chip loading" id="syncChip">Memuat data…</span>
         <button class="retry-btn" onclick="loadData()" id="retryBtn" style="display:none">↺ Coba lagi</button>
+        <button class="esk-btn" id="eskBtn" onclick="openEskalasiModal()" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M8 3v10M3 8h10"/>
+          </svg>
+          Eskalasi ke TLTC
+        </button>
+        <button class="esk-badge-btn" id="eskBadgeBtn" onclick="openRequestPanel()" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7">
+            <path d="M2.5 5.5h11v7a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1z"/>
+            <path d="M5.5 5.5V3.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2"/>
+          </svg>
+          Request Masuk
+          <span class="esk-badge-count zero" id="eskBadgeCount">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════ ESKALASI KE TLTC — MODAL FORM ══════ -->
+    <div class="esk-modal-bg" id="eskModalBg" onclick="if(event.target===this)closeEskalasiModal()">
+      <div class="esk-modal">
+        <div class="esk-modal-head">
+          <h3>Eskalasi ke TLTC</h3>
+          <p>Form request training atau visit kendala outlet</p>
+        </div>
+        <div class="esk-modal-body">
+          <div class="esk-error" id="eskError"></div>
+          <div class="esk-success" id="eskSuccess"></div>
+          <div class="esk-field">
+            <label>Nama Outlet</label>
+            <input type="text" id="eskOutletName" placeholder="cth. Warung Sejahtera Cab. Bandung" autocomplete="off">
+          </div>
+          <div class="esk-field">
+            <label>PIC Outlet</label>
+            <input type="text" id="eskPicOutlet" placeholder="cth. Budi Santoso" autocomplete="off">
+          </div>
+          <div class="esk-field">
+            <label>Nomer Telepon</label>
+            <input type="tel" id="eskPhone" placeholder="cth. 081234567890" autocomplete="off">
+          </div>
+          <div class="esk-field">
+            <label>Type Request</label>
+            <select id="eskTypeRequest">
+              <option value="">— Pilih type request —</option>
+              <option value="Request Training">Request Training</option>
+              <option value="Request Visit Kendala">Request Visit Kendala</option>
+            </select>
+          </div>
+        </div>
+        <div class="esk-modal-foot">
+          <button class="esk-btn-cancel" onclick="closeEskalasiModal()">Batal</button>
+          <button class="esk-btn-submit" id="eskSubmitBtn" onclick="submitEskalasi()">Kirim Request</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ TOAST NOTIF ══════ -->
+    <div class="esk-toast" id="eskToast">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#6ec9a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 8l3.5 3.5L13 4.5"/>
+      </svg>
+      <span id="eskToastMsg">Request berhasil dikirim.</span>
+    </div>
+
+    <!-- ══════ SLIDE-IN PANEL: REQUEST MASUK ══════ -->
+    <div class="esk-panel-bg" id="eskPanelBg" onclick="closeRequestPanel()"></div>
+    <div class="esk-panel" id="eskPanel">
+      <div class="esk-panel-head">
+        <div>
+          <h3>Request Masuk</h3>
+          <p id="eskPanelSubtitle">Eskalasi dari tim CX</p>
+        </div>
+        <button class="esk-panel-close" onclick="closeRequestPanel()" title="Tutup">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M4 4l8 8M12 4l-8 8"/>
+          </svg>
+        </button>
+      </div>
+      <div class="esk-panel-filters">
+        <button class="esk-panel-filter active" data-rfilter="all" onclick="setRequestFilter('all')">Semua</button>
+        <button class="esk-panel-filter" data-rfilter="New" onclick="setRequestFilter('New')">New</button>
+        <button class="esk-panel-filter" data-rfilter="Progress" onclick="setRequestFilter('Progress')">Progress</button>
+        <button class="esk-panel-filter" data-rfilter="Done" onclick="setRequestFilter('Done')">Done</button>
+      </div>
+      <div class="esk-panel-body" id="eskPanelBody">
+        <div class="esk-panel-empty">Memuat…</div>
       </div>
     </div>
 
@@ -3597,6 +4402,21 @@
           <path d="M2 13V8.5M6 13V5M10 13V9M14 13V3"/>
         </svg>
         Traffic Analytic
+      </button>
+      <button class="page-nav-btn" data-dash="daily" onclick="switchDash('daily')">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="12" height="11" rx="1.5"/>
+          <path d="M2 6h12M5.5 2v2M10.5 2v2"/>
+          <path d="M5 9h2M5 11.5h2M9 9h2M9 11.5h2"/>
+        </svg>
+        Daily Tracking
+      </button>
+      <button class="page-nav-btn" data-dash="workorder" onclick="switchDash('workorder')">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7">
+          <path d="M4 2h6a1 1 0 0 1 1 1v1h2a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h2V3a1 1 0 0 1 1-1Z"/>
+          <path d="M5 8h6M5 11h4"/>
+        </svg>
+        Workoder TLTC
       </button>
       <button class="page-nav-btn" data-dash="panduan" onclick="switchDash('panduan')">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7">
@@ -4059,11 +4879,11 @@
       <div id="ticketDpSlot"></div>
 
       <!-- Traffic Tiket Harian (full-width stacked bar chart) -->
-      <div class="analytics-panel" style="margin-bottom:18px">
+      <div class="analytics-panel" id="ticketTrendPanel" style="margin-bottom:18px">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
           <div>
-            <div class="analytics-panel-title">Traffic Tiket Harian</div>
-            <div class="analytics-panel-sub">Tiket dibuat vs diselesaikan · per hari</div>
+            <div class="analytics-panel-title" id="ticketTrendPanelTitle">Traffic Tiket Harian</div>
+            <div class="analytics-panel-sub" id="ticketTrendPanelSub">Tiket dibuat vs diselesaikan · per hari</div>
           </div>
           <span class="analytics-badge" id="tkTrendBadge">— tiket</span>
         </div>
@@ -4073,7 +4893,7 @@
             <input type="checkbox" id="tkSeriesEsc" checked onchange="renderTicketTrendStatus()" style="cursor:pointer;margin:0">
             <span style="width:14px;height:10px;background:#3b82f6;border-radius:3px"></span>Escalated Eng
           </label>
-          <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
+          <label class="tk-series-tac-wrap" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
             <input type="checkbox" id="tkSeriesTac" checked onchange="renderTicketTrendStatus()" style="cursor:pointer;margin:0">
             <span style="width:14px;height:10px;background:#2ba99b;border-radius:3px"></span>On Handling TAC
           </label>
@@ -4355,7 +5175,7 @@
       </div>
 
       <!-- Stacked Bar Chart · Per Chat (jumlah pesan per hari) -->
-      <div class="ta-chart-panel">
+      <div class="ta-chart-panel" id="trafficChatPanel">
         <div class="ta-chart-head">
           <div>
             <div class="ta-chart-title">Traffic Harian per Chat</div>
@@ -4375,7 +5195,7 @@
       </div>
 
       <!-- Stacked Bar Chart · Per Group (jumlah outlet aktif per hari) -->
-      <div class="ta-chart-panel" style="margin-top:20px">
+      <div class="ta-chart-panel" id="trafficGroupPanel" style="margin-top:20px">
         <div class="ta-chart-head">
           <div>
             <div class="ta-chart-title">Traffic Harian per Group</div>
@@ -4445,6 +5265,238 @@
       </div>
 
     </div><!-- /trafficPage -->
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- DAILY TRACKING PAGE                                    -->
+    <!-- 4 panel di-relocate dari Traffic Analytic & Tickets:   -->
+    <!--   1. trafficGroupPanel  (Traffic Harian per Group)     -->
+    <!--   2. trafficChatPanel   (Traffic Harian per Chat)      -->
+    <!--   3. ticketTrendPanel   (Traffic Tiket Harian)         -->
+    <!--   4. ticketIdPanel      (Daftar Ticket ID)             -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="dailyPage" style="display:none">
+
+      <!-- Date Picker Slot -->
+      <div id="dailyDpSlot"></div>
+
+      <!-- Section 1: Traffic Harian per Group -->
+      <div class="dt-section">
+        <div class="dt-section-head">
+          <span class="dt-section-eyebrow"><span class="dt-section-num">1</span> Traffic Harian per Group</span>
+        </div>
+        <div id="dailySlotGroup"></div>
+      </div>
+
+      <!-- Section 2: Traffic Harian per Chat -->
+      <div class="dt-section">
+        <div class="dt-section-head">
+          <span class="dt-section-eyebrow"><span class="dt-section-num">2</span> Traffic Harian per Chat</span>
+        </div>
+        <div id="dailySlotChat"></div>
+      </div>
+
+      <!-- Section 3: Traffic Tiket Harian (Escalated Only) -->
+      <div class="dt-section">
+        <div class="dt-section-head">
+          <span class="dt-section-eyebrow"><span class="dt-section-num">3</span> Traffic Tiket Harian (Escalated Only)</span>
+        </div>
+        <div id="dailySlotTrend"></div>
+      </div>
+
+      <!-- Section 4: Daftar Ticket ID -->
+      <div class="dt-section">
+        <div class="dt-section-head">
+          <span class="dt-section-eyebrow"><span class="dt-section-num">4</span> Daftar Ticket ID</span>
+        </div>
+        <div id="dailySlotId"></div>
+      </div>
+
+    </div><!-- /dailyPage -->
+
+    <!-- ═══ WORKORDER TLTC PAGE ═══ -->
+    <div id="workorderPage" style="display:none">
+
+      <!-- Date Picker Slot -->
+      <div id="workorderDpSlot"></div>
+
+      <!-- KPI Hero (green gradient) -->
+      <div class="wt-hero">
+        <div class="wt-hero-head">
+          <span class="wt-hero-head-l">ONBOARDING FUNNEL · PERIODE AKTIF</span>
+          <span class="wt-hero-head-r" id="wtHeroRight">Premium Services · Semua Channel · Bulan Ini</span>
+        </div>
+        <div class="wt-stats" id="wtStats">
+          <div class="wt-stat active" data-status="total">
+            <div class="wt-stat-label">TOTAL DATA</div>
+            <div class="wt-stat-num" id="wtKpiTotal">—</div>
+            <div class="wt-stat-desc">Data All Invoice Premium Services</div>
+          </div>
+          <div class="wt-stat" data-status="backlog">
+            <div class="wt-stat-label">BACKLOG</div>
+            <div class="wt-stat-num" id="wtKpiBacklog">—</div>
+            <div class="wt-stat-desc">Data yang perlu di follow up</div>
+          </div>
+          <div class="wt-stat" data-status="onprocess">
+            <div class="wt-stat-label">ONPROCESS FU</div>
+            <div class="wt-stat-num" id="wtKpiOnproc">—</div>
+            <div class="wt-stat-desc">Sedang follow-up</div>
+          </div>
+          <div class="wt-stat" data-status="backlog_sales" id="wtBSalesCard">
+            <button class="wt-stat-expand" onclick="wtToggleBSales(event)" title="Lihat breakdown">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="transition:transform .2s">
+                <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="wt-stat-label">BACKLOG SALES</div>
+            <div class="wt-stat-num" id="wtKpiBSales">—</div>
+            <div class="wt-stat-desc">Not Respond + No Invalid + No Sales</div>
+            <div class="wt-stat-breakdown">
+              <div class="wt-substat" data-sub="not_respond" onclick="wtSetSubFilter(event,'not_respond')">
+                <span class="wt-substat-label"><span class="wt-substat-dot"></span>Not Respond</span>
+                <span class="wt-substat-num" id="wtKpiNotRespond">—</span>
+              </div>
+              <div class="wt-substat" data-sub="no_invalid" onclick="wtSetSubFilter(event,'no_invalid')">
+                <span class="wt-substat-label"><span class="wt-substat-dot"></span>No Invalid</span>
+                <span class="wt-substat-num" id="wtKpiNoInvalid">—</span>
+              </div>
+              <div class="wt-substat" data-sub="no_sales" onclick="wtSetSubFilter(event,'no_sales')">
+                <span class="wt-substat-label"><span class="wt-substat-dot"></span>No Sales</span>
+                <span class="wt-substat-num" id="wtKpiNoSales">—</span>
+              </div>
+            </div>
+          </div>
+          <div class="wt-stat" data-status="need_fu">
+            <div class="wt-stat-label">FINAL ATTEMPT</div>
+            <div class="wt-stat-num" id="wtKpiNeedFU">—</div>
+            <div class="wt-stat-desc">Butuh follow-up tahap final</div>
+          </div>
+          <div class="wt-stat" data-status="closed">
+            <div class="wt-stat-label">CLOSED</div>
+            <div class="wt-stat-num" id="wtKpiClosed">—</div>
+            <div class="wt-stat-desc">Data follow up final yang di closed</div>
+          </div>
+          <div class="wt-stat" data-status="done">
+            <div class="wt-stat-label">DONE</div>
+            <div class="wt-stat-num" id="wtKpiDone">—</div>
+            <div class="wt-stat-desc">Done Created Group</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Traffic Chart Panel -->
+      <div class="wt-chart-panel">
+        <div class="wt-chart-head">
+          <div>
+            <div class="wt-chart-title">Traffic Invoice Premium Services · Harian</div>
+            <div class="wt-chart-sub">Invoice paid per hari · breakdown per status</div>
+          </div>
+          <span class="wt-chart-badge" id="wtChartBadge">— invoice</span>
+        </div>
+        <div class="wt-chart-dp">
+          <span class="wt-chart-dp-label">Periode Chart</span>
+          <div class="wt-chart-dp-presets" id="wtChartDpPresets">
+            <button class="wt-chart-dp-preset" data-preset="today">Hari Ini</button>
+            <button class="wt-chart-dp-preset" data-preset="7d">7 Hari</button>
+            <button class="wt-chart-dp-preset" data-preset="30d">30 Hari</button>
+            <button class="wt-chart-dp-preset active" data-preset="month">Bulan Ini</button>
+            <button class="wt-chart-dp-preset" data-preset="all">All</button>
+          </div>
+          <div class="wt-chart-dp-range">
+            <input type="date" id="wtChartDpStart" class="wt-chart-dp-input" />
+            <span>—</span>
+            <input type="date" id="wtChartDpEnd" class="wt-chart-dp-input" />
+          </div>
+        </div>
+        <div class="wt-chart-canvas"><canvas id="wtDailyChart"></canvas></div>
+        <div class="wt-chart-legend" id="wtChartLegend">
+          <label><input type="checkbox" data-series="backlog" checked><span class="wt-legend-swatch" style="background:#cbd5e1"></span>Backlog</label>
+          <label><input type="checkbox" data-series="onprocess" checked><span class="wt-legend-swatch" style="background:#93c5fd"></span>Onprocess FU</label>
+          <label><input type="checkbox" data-series="backlog_sales" checked><span class="wt-legend-swatch" style="background:#fdba74"></span>Backlog Sales</label>
+          <label><input type="checkbox" data-series="need_fu" checked><span class="wt-legend-swatch" style="background:#fcd34d"></span>Final Attempt</label>
+          <label><input type="checkbox" data-series="closed" checked><span class="wt-legend-swatch" style="background:#fca5a5"></span>Closed</label>
+          <label><input type="checkbox" data-series="done" checked><span class="wt-legend-swatch" style="background:#86efac"></span>Done</label>
+        </div>
+      </div>
+
+      <!-- Outlet List Panel -->
+      <div class="wt-panel">
+        <div class="wt-panel-head">
+          <div>
+            <div class="wt-panel-title">
+              Daftar Outlet
+              <span id="wtFilterChipWrap"></span>
+            </div>
+            <div class="wt-panel-sub" id="wtPanelSub">— outlet</div>
+          </div>
+          <div class="wt-panel-actions">
+            <div class="wt-search-wrap">
+              <span class="wt-search-icon">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7">
+                  <circle cx="6.5" cy="6.5" r="5.5"/><line x1="11" y1="11" x2="15" y2="15"/>
+                </svg>
+              </span>
+              <input class="wt-search-input" id="wtSearchInput" type="text" placeholder="Cari outlet / INV / owner / sales…" />
+            </div>
+            <button class="wt-btn-reset" onclick="wtResetAll()">Reset Filter</button>
+          </div>
+        </div>
+        <div class="wt-table-wrap">
+          <table class="wt-dt">
+            <thead>
+              <tr>
+                <th>Outlet Name</th><th>Channel</th><th>RSM</th><th>TL</th><th>SALES</th>
+                <th>Date</th><th>Region</th><th>Leads_Code</th><th>INV_Code</th>
+                <th>Bundle_Name</th><th>TlTC Handled</th><th>Cek Invoice</th><th>Owner Name</th>
+                <th>Contact</th><th>Update Gform</th><th>FINAL STATUS</th><th>Evidence</th>
+                <th>WA Group</th><th>Hyper Link</th>
+              </tr>
+            </thead>
+            <tbody id="wtTbody"></tbody>
+          </table>
+        </div>
+        <div class="wt-pag-bar">
+          <div class="wt-pag-left">
+            <span class="wt-pag-size-label">Tampilkan</span>
+            <select class="wt-pag-size-select" id="wtPageSize">
+              <option value="10" selected>10</option><option value="25">25</option>
+              <option value="50">50</option><option value="100">100</option>
+            </select>
+            <span class="wt-pag-size-label">per halaman</span>
+          </div>
+          <div class="wt-pag-right">
+            <span class="wt-pag-info" id="wtPagInfo">—</span>
+            <div class="wt-pag-nav" id="wtPagNav"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TLTC Leaderboard -->
+      <div class="wt-section-label">TOTAL GRUP BERDASARKAN TLTC HANDLED</div>
+      <div class="wt-tltc-panel">
+        <div class="wt-tltc-head">
+          <div>
+            <div class="wt-tltc-title">Total Group Assigned to TLTC</div>
+            <div class="wt-tltc-sub">Jumlah grup WA berhasil dibuat (Done Created Group) per handler — periode aktif</div>
+          </div>
+          <span class="wt-tltc-badge" id="wtTltcBadge">— grup · — handler</span>
+        </div>
+        <div class="wt-tltc-list" id="wtTltcList"></div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="wt-section-label">AKTIVITAS TERBARU</div>
+      <div class="wt-feed-panel">
+        <div class="wt-feed-head">
+          <div>
+            <div class="wt-feed-title">Activity Feed</div>
+            <div class="wt-feed-sub">Top 10 update terbaru · grup created / follow up / backlog / status update</div>
+          </div>
+          <span class="wt-feed-live">Live</span>
+        </div>
+        <div class="wt-feed-list" id="wtFeedList"></div>
+      </div>
+
+    </div><!-- /workorderPage -->
 
     <!-- ═══ PANDUAN PAGE ═══ -->
     <div id="panduanPage" style="display:none">
@@ -4990,10 +6042,15 @@ Salam,
     // Team / Ticket / Traffic share satu state (default: 30 Hari Terakhir).
     //   bucket: 'outlet' → outlet; 'shared' → team|ticket|traffic
     const pageDateState = {
-      outlet: { start: '', end: '', preset: 'today',  initialized: false },
-      shared: { start: '', end: '', preset: '30days', initialized: false },
+      outlet:    { start: '', end: '', preset: 'today',     initialized: false },
+      shared:    { start: '', end: '', preset: '30days',    initialized: false },
+      workorder: { start: '', end: '', preset: 'thismonth', initialized: false },
     };
-    const dateBucketOf = (page) => page === 'outlet' ? 'outlet' : 'shared';
+    const dateBucketOf = (page) => {
+      if (page === 'outlet')    return 'outlet';
+      if (page === 'workorder') return 'workorder';
+      return 'shared';
+    };
     let curPage = 1, pageSize = 10;
 
     // ── Dismissed Need Reply ──
@@ -5138,6 +6195,8 @@ Salam,
       if (activeDash === 'team')   { updateTeamStats(); renderTeam(); }
       if (activeDash === 'ticket') { updateTicketStats(); renderTickets(); renderTicketTrendStatus(); renderOutletTacList(); renderTicketIdList(); }
       if (activeDash === 'traffic') { renderTraffic(); }
+      if (activeDash === 'daily')  { renderDaily(); }
+      if (activeDash === 'workorder') { renderWorkorder(); }
       closePicker();
     }
     function shiftPickerMonth(delta) {
@@ -5287,6 +6346,11 @@ Salam,
         const t = todayStr();
         if (st.preset === '30days') {
           st.start = addDays(t, -29); st.end = t;
+        } else if (st.preset === 'thismonth') {
+          const d = new Date(t + 'T00:00:00');
+          const firstDay = new Date(d.getFullYear(), d.getMonth(), 1);
+          const lastDay  = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+          st.start = localDate(firstDay); st.end = localDate(lastDay);
         } else {
           st.start = t; st.end = t;
         }
@@ -5299,12 +6363,20 @@ Salam,
         updateTriggerUI();
       }
 
-      document.getElementById('outletPage').style.display   = page === 'outlet'  ? '' : 'none';
-      document.getElementById('teamPage').style.display     = page === 'team'    ? '' : 'none';
-      document.getElementById('ticketPage').style.display   = page === 'ticket'  ? '' : 'none';
-      document.getElementById('trafficPage').style.display  = page === 'traffic' ? '' : 'none';
-      document.getElementById('panduanPage').style.display  = page === 'panduan' ? '' : 'none';
+      document.getElementById('outletPage').style.display     = page === 'outlet'    ? '' : 'none';
+      document.getElementById('teamPage').style.display       = page === 'team'      ? '' : 'none';
+      document.getElementById('ticketPage').style.display     = page === 'ticket'    ? '' : 'none';
+      document.getElementById('trafficPage').style.display    = page === 'traffic'   ? '' : 'none';
+      document.getElementById('dailyPage').style.display      = page === 'daily'     ? '' : 'none';
+      document.getElementById('workorderPage').style.display  = page === 'workorder' ? '' : 'none';
+      document.getElementById('panduanPage').style.display    = page === 'panduan'   ? '' : 'none';
       document.querySelectorAll('.page-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.dash === page));
+
+      // Show/hide Eskalasi button & Request Masuk badge per page
+      if (typeof applyEskBtnVisibility === 'function') applyEskBtnVisibility();
+
+      // Relocate 4 movable panels between Daily Tracking and their home pages
+      if (typeof routeDailyPanels === 'function') routeDailyPanels(page);
 
       // Move the single date-picker into the active slot.
       // Panduan tidak butuh date filter → sembunyikan dpWrap.
@@ -5316,6 +6388,8 @@ Salam,
         const slotId = page === 'team' ? 'teamDpSlot'
                      : page === 'ticket' ? 'ticketDpSlot'
                      : page === 'traffic' ? 'trafficDpSlot'
+                     : page === 'daily' ? 'dailyDpSlot'
+                     : page === 'workorder' ? 'workorderDpSlot'
                      : 'outletDpSlot';
         const slot = document.getElementById(slotId);
         if (dpWrap && slot && !slot.contains(dpWrap)) slot.appendChild(dpWrap);
@@ -5336,6 +6410,16 @@ Salam,
         document.getElementById('brandTitle').textContent = 'Volume Traffic Monitoring';
         document.getElementById('brandSub').textContent = 'Visualisasi inbound & outbound · per group outlet';
         document.getElementById('brandPills').style.display = '';
+      } else if (page === 'daily') {
+        document.getElementById('brandEyebrow').textContent = 'DAILY TRACKING';
+        document.getElementById('brandTitle').textContent = 'Daily Traffic & Ticket Tracking';
+        document.getElementById('brandSub').textContent = 'Pantauan harian · traffic per group, per chat, tiket escalated, dan daftar ticket ID';
+        document.getElementById('brandPills').style.display = 'none';
+      } else if (page === 'workorder') {
+        document.getElementById('brandEyebrow').textContent = 'WORKORDER · TLTC';
+        document.getElementById('brandTitle').textContent = 'Onboarding Funnel · Premium Services';
+        document.getElementById('brandSub').textContent = 'Tracking workorder TLTC — invoice → kontak → attempt → create WA group';
+        document.getElementById('brandPills').style.display = 'none';
       } else if (page === 'panduan') {
         document.getElementById('brandEyebrow').textContent = 'INTERNAL SOP · WHATSAPP HANDLING';
         document.getElementById('brandTitle').textContent = 'Panduan Handling Grup WhatsApp';
@@ -5351,6 +6435,8 @@ Salam,
       if (page === 'team')    { updateTeamStats(); renderTeam(); }
       else if (page === 'ticket')  { updateTicketStats(); renderTickets(); renderTicketTrendStatus(); renderOutletTacList(); renderTicketIdList(); }
       else if (page === 'traffic') { renderTraffic(); }
+      else if (page === 'daily')   { renderDaily(); }
+      else if (page === 'workorder') { ensureWorkorderLoaded().then(() => renderWorkorder()); }
       else if (page === 'panduan') { /* static — no render needed */ }
       else { updateStats(); render(); }
     }
@@ -5929,15 +7015,19 @@ Salam,
 
     async function loadData() {
       // Ensure correct page is visible and date picker is in the right slot
-      document.getElementById('outletPage').style.display   = activeDash === 'outlet'  ? '' : 'none';
-      document.getElementById('teamPage').style.display     = activeDash === 'team'    ? '' : 'none';
-      document.getElementById('ticketPage').style.display   = activeDash === 'ticket'  ? '' : 'none';
-      document.getElementById('trafficPage').style.display  = activeDash === 'traffic' ? '' : 'none';
-      document.getElementById('panduanPage').style.display  = activeDash === 'panduan' ? '' : 'none';
+      document.getElementById('outletPage').style.display     = activeDash === 'outlet'    ? '' : 'none';
+      document.getElementById('teamPage').style.display       = activeDash === 'team'      ? '' : 'none';
+      document.getElementById('ticketPage').style.display     = activeDash === 'ticket'    ? '' : 'none';
+      document.getElementById('trafficPage').style.display    = activeDash === 'traffic'   ? '' : 'none';
+      document.getElementById('dailyPage').style.display      = activeDash === 'daily'     ? '' : 'none';
+      document.getElementById('workorderPage').style.display  = activeDash === 'workorder' ? '' : 'none';
+      document.getElementById('panduanPage').style.display    = activeDash === 'panduan'   ? '' : 'none';
       const _dpEl   = document.getElementById('dpWrap');
       const _slotId = activeDash === 'team' ? 'teamDpSlot'
                      : activeDash === 'ticket' ? 'ticketDpSlot'
                      : activeDash === 'traffic' ? 'trafficDpSlot'
+                     : activeDash === 'daily' ? 'dailyDpSlot'
+                     : activeDash === 'workorder' ? 'workorderDpSlot'
                      : 'outletDpSlot';
       const _slotEl = document.getElementById(_slotId);
       if (_dpEl && _slotEl && !_slotEl.contains(_dpEl)) _slotEl.appendChild(_dpEl);
@@ -5987,6 +7077,8 @@ Salam,
         if (activeDash === 'team')    { updateTeamStats(); renderTeam(); }
         if (activeDash === 'ticket')  { updateTicketStats(); renderTickets(); renderTicketTrendStatus(); renderOutletTacList(); renderTicketIdList(); }
         if (activeDash === 'traffic') { renderTraffic(); }
+        if (activeDash === 'daily')   { renderDaily(); }
+        if (activeDash === 'workorder') { ensureWorkorderLoaded().then(() => renderWorkorder()); }
         setChip('live', '✓ Live · ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
         document.getElementById('footerL').textContent = `Data dari Google Drive · ${OUTLETS.length} outlet · ${new Date().toLocaleString('id-ID')}`;
       } catch (err) {
@@ -7793,6 +8885,1061 @@ Salam,
         if (e.target === this) this.classList.remove('open');
       });
     });
+
+    /* ════════════════════════════════════════════
+       WORKORDER TLTC PAGE
+       ════════════════════════════════════════════ */
+    // Live data endpoint (Apps Script — see WORKORDER_FETCH.gs)
+    const WORKORDER_DATA_URL = APPS_SCRIPT_URL + '?action=workorder';
+    let WORKORDER_DATA = [];
+    let _wtLoaded = false, _wtLoadingPromise = null;
+
+    const wtState = {
+      // Chart-only date range (independen dari date picker halaman)
+      chartPreset: 'month', chartRangeStart: null, chartRangeEnd: null,
+      statusFilter: 'total', subFilter: null,
+      search: '', pageSize: 10, page: 1,
+    };
+
+    async function ensureWorkorderLoaded() {
+      if (_wtLoaded) return;
+      if (_wtLoadingPromise) return _wtLoadingPromise;
+      _wtLoadingPromise = (async () => {
+        try {
+          const res = await fetch(WORKORDER_DATA_URL);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const json = await res.json();
+          if (Array.isArray(json)) WORKORDER_DATA = json;
+          else if (json && Array.isArray(json.records)) WORKORDER_DATA = json.records;
+          else WORKORDER_DATA = [];
+          _wtLoaded = true;
+        } catch (err) {
+          console.warn('Workorder live fetch failed:', err.message);
+          WORKORDER_DATA = []; _wtLoaded = true;
+        } finally {
+          _wtLoadingPromise = null;
+        }
+      })();
+      return _wtLoadingPromise;
+    }
+
+    // ── Helpers ──
+    function wtParseDate(s) {
+      if (!s) return null;
+      const m = String(s).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (!m) return null;
+      return new Date(+m[3], +m[1]-1, +m[2]);
+    }
+    function wtYmd(d) {
+      if (!d) return '';
+      const y = d.getFullYear(); const mo = String(d.getMonth()+1).padStart(2,'0'); const da = String(d.getDate()).padStart(2,'0');
+      return `${y}-${mo}-${da}`;
+    }
+    function wtParseInputDate(v) {
+      if (!v) return null;
+      const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!m) return null;
+      return new Date(+m[1], +m[2]-1, +m[3]);
+    }
+    function wtParseLogTs(s) {
+      if (!s) return null;
+      const m = String(s).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+      if (!m) return null;
+      return new Date(+m[3], +m[1]-1, +m[2], +(m[4]||0), +(m[5]||0), +(m[6]||0));
+    }
+    function wtFmtDate(s) {
+      const d = wtParseDate(s); if (!d) return s || '';
+      return d.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+    }
+    function wtPickOutletName(r) {
+      return (r.gform_name && String(r.gform_name).trim()) ? r.gform_name : (r.outlet_name || '—');
+    }
+    function wtStatusBucket(fs) {
+      const s = (fs||'').trim();
+      if (!s) return 'backlog';
+      const low = s.toLowerCase();
+      if (low.includes('done created group')) return 'done';
+      if (low.includes('need follow up final attempt')) return 'need_fu';
+      if (low.includes('closed')) return 'closed';
+      if (low.includes('onprocess fu')) return 'onprocess';
+      if (low.includes('not respond') || low.includes('no invalid') || low.includes('no sales')) return 'backlog_sales';
+      return 'other';
+    }
+    function wtSalesSubBucket(fs) {
+      const low = (fs||'').toLowerCase();
+      if (low.includes('not respond'))  return 'not_respond';
+      if (low.includes('no invalid'))   return 'no_invalid';
+      if (low.includes('no sales'))     return 'no_sales';
+      return null;
+    }
+    function wtDedupInv(rows) {
+      const seen = new Set(); const out = [];
+      for (const r of rows) {
+        const k = (r.inv_code || '').trim();
+        if (!k) { out.push(r); continue; }
+        if (seen.has(k)) continue;
+        seen.add(k); out.push(r);
+      }
+      return out;
+    }
+    function wtFilterByDate(rows) {
+      if (!selectedDateStart && !selectedDateEnd) return rows;
+      return rows.filter(r => {
+        const d = wtParseDate(r.date); if (!d) return false;
+        const ds = wtYmd(d);
+        if (selectedDateStart && ds < selectedDateStart) return false;
+        if (selectedDateEnd   && ds > selectedDateEnd)   return false;
+        return true;
+      });
+    }
+    function wtFilterByStatus(rows) {
+      const sf = wtState.statusFilter;
+      if (sf === 'total') return rows;
+      return rows.filter(r => {
+        const b = wtStatusBucket(r.final_status);
+        if (sf === 'backlog_sales' && b === 'backlog_sales') {
+          if (wtState.subFilter) return wtSalesSubBucket(r.final_status) === wtState.subFilter;
+          return true;
+        }
+        return b === sf;
+      });
+    }
+    function wtFilterBySearch(rows) {
+      const q = wtState.search.trim().toLowerCase();
+      if (!q) return rows;
+      return rows.filter(r => {
+        return [wtPickOutletName(r), r.inv_code, r.owner_name, r.sales, r.tltc_handled, r.region, r.rsm, r.tl]
+          .some(v => (v||'').toString().toLowerCase().includes(q));
+      });
+    }
+    function wtEscapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function wtEachDay(start, end) {
+      const out = [];
+      if (!start || !end) return out;
+      const cur = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+      const last = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+      while (cur <= last) {
+        out.push(wtYmd(cur));
+        cur.setDate(cur.getDate() + 1);
+      }
+      return out;
+    }
+    function wtGetInitials(name) {
+      const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return '?';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    function wtFeedNow() { return new Date(); }
+    function wtRelativeTime(d) {
+      if (!d) return '—';
+      const now = wtFeedNow();
+      const diff = Math.max(0, (now.getTime() - d.getTime()) / 1000);
+      if (diff < 60)     return 'baru saja';
+      if (diff < 3600)   return `${Math.floor(diff/60)} min ago`;
+      if (diff < 86400)  return `${Math.floor(diff/3600)} jam ago`;
+      if (diff < 604800) return `${Math.floor(diff/86400)} hari ago`;
+      if (diff < 2592000) return `${Math.floor(diff/604800)} minggu ago`;
+      if (diff < 31536000) return `${Math.floor(diff/2592000)} bulan ago`;
+      return `${Math.floor(diff/31536000)} tahun ago`;
+    }
+
+    // ── Main render orchestrator ──
+    function renderWorkorder() {
+      const inRange = wtFilterByDate(wtDedupInv(WORKORDER_DATA || []));
+
+      // KPI counts
+      const counts = {
+        total: inRange.length,
+        backlog: 0, onprocess: 0, backlog_sales: 0,
+        need_fu: 0, closed: 0, done: 0,
+        not_respond: 0, no_invalid: 0, no_sales: 0,
+      };
+      inRange.forEach(r => {
+        const b = wtStatusBucket(r.final_status);
+        if (counts[b] !== undefined) counts[b]++;
+        if (b === 'backlog_sales') {
+          const sb = wtSalesSubBucket(r.final_status);
+          if (sb) counts[sb]++;
+        }
+      });
+      const setNum = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v.toLocaleString('id-ID'); };
+      setNum('wtKpiTotal', counts.total);
+      setNum('wtKpiBacklog', counts.backlog);
+      setNum('wtKpiOnproc', counts.onprocess);
+      setNum('wtKpiBSales', counts.backlog_sales);
+      setNum('wtKpiNeedFU', counts.need_fu);
+      setNum('wtKpiClosed', counts.closed);
+      setNum('wtKpiDone', counts.done);
+      setNum('wtKpiNotRespond', counts.not_respond);
+      setNum('wtKpiNoInvalid', counts.no_invalid);
+      setNum('wtKpiNoSales', counts.no_sales);
+
+      // Active states
+      document.querySelectorAll('#workorderPage .wt-stat').forEach(c => c.classList.toggle('active', c.dataset.status === wtState.statusFilter));
+      document.querySelectorAll('#workorderPage .wt-substat').forEach(c => c.classList.toggle('active', c.dataset.sub === wtState.subFilter));
+
+      // Header dynamic
+      const periodeMap = {
+        today:'Hari Ini', yesterday:'Kemarin', '7days':'7 Hari Terakhir',
+        '30days':'30 Hari Terakhir', thisweek:'Minggu Ini', lastweek:'Minggu Lalu',
+        thismonth:'Bulan Ini', lastmonth:'Bulan Lalu',
+      };
+      const periodeLabel = periodeMap[dp.activePreset] || 'Periode Kustom';
+      const headRight = document.getElementById('wtHeroRight');
+      if (headRight) headRight.textContent = `Premium Services · Semua Channel · ${periodeLabel}`;
+
+      // Chart (chart picker independen)
+      wtRenderDailyChart();
+
+      // TLTC leaderboard
+      wtRenderTltcLeaderboard(inRange);
+
+      // Filter pipeline: status + search
+      const filtered = wtFilterBySearch(wtFilterByStatus(inRange));
+
+      // Filter chip
+      const chipMap = {
+        total: null, backlog: 'Backlog', onprocess: 'Onprocess FU',
+        backlog_sales: 'Backlog Sales', need_fu: 'Final Attempt',
+        closed: 'Closed', done: 'Done',
+      };
+      const subMap = { not_respond:'Not Respond', no_invalid:'No Invalid', no_sales:'No Sales' };
+      let chip = '';
+      if (wtState.statusFilter !== 'total') {
+        const label = chipMap[wtState.statusFilter] || wtState.statusFilter;
+        const sub = wtState.subFilter ? ` · ${subMap[wtState.subFilter]}` : '';
+        chip = `<span class="wt-filter-chip">${label}${sub}<button class="wt-filter-chip-x" onclick="wtResetStatusFilter()">×</button></span>`;
+      }
+      const chipWrap = document.getElementById('wtFilterChipWrap');
+      if (chipWrap) chipWrap.innerHTML = chip;
+
+      // Panel sub
+      const sub = document.getElementById('wtPanelSub');
+      if (sub) sub.textContent = `${filtered.length.toLocaleString('id-ID')} dari ${counts.total.toLocaleString('id-ID')} outlet`;
+
+      // Pagination
+      const total = filtered.length;
+      const pages = Math.max(1, Math.ceil(total / wtState.pageSize));
+      if (wtState.page > pages) wtState.page = pages;
+      const startIdx = (wtState.page - 1) * wtState.pageSize;
+      const pageRows = filtered.slice(startIdx, startIdx + wtState.pageSize);
+
+      const tbody = document.getElementById('wtTbody');
+      if (tbody) {
+        if (!pageRows.length) {
+          tbody.innerHTML = `<tr><td colspan="19"><div class="wt-empty-state">Tidak ada data sesuai filter</div></td></tr>`;
+        } else {
+          tbody.innerHTML = pageRows.map(r => wtRowHtml(r)).join('');
+        }
+      }
+      wtRenderPagination(total, pages, startIdx, pageRows.length);
+
+      // Activity feed
+      wtRenderFeed();
+    }
+
+    function wtRowHtml(r) {
+      const name = wtEscapeHtml(wtPickOutletName(r));
+      const bucket = wtStatusBucket(r.final_status);
+      const pillClass = ({
+        backlog:'wt-sp-backlog', onprocess:'wt-sp-onproc', backlog_sales:'wt-sp-bsales',
+        need_fu:'wt-sp-needfu', closed:'wt-sp-closed', done:'wt-sp-done', other:'wt-sp-backlog',
+      })[bucket];
+      const fs = r.final_status ? wtEscapeHtml(r.final_status) : '<span style="color:#94a3b8">— blank —</span>';
+      const pill = r.final_status
+        ? `<span class="wt-status-pill ${pillClass}">${fs}</span>`
+        : `<span class="wt-status-pill wt-sp-backlog">— blank —</span>`;
+      const cek = r.cek_inv ? `<a class="wt-link-btn" href="${wtEscapeHtml(r.cek_inv)}" target="_blank">Cek</a>` : '—';
+      const ev  = r.evidence_final ? `<a class="wt-link-btn" href="${wtEscapeHtml(r.evidence_final)}" target="_blank">Lihat</a>` : '—';
+      const wa  = r.wa_link ? `<a class="wt-link-btn" href="${wtEscapeHtml(r.wa_link)}" target="_blank">Buka</a>` : '—';
+      const hl  = r.hyper_link ? `<a class="wt-link-btn" href="${wtEscapeHtml(r.hyper_link)}" target="_blank">Open Link</a>` : '—';
+      const leads = r.leads_code ? `<span class="wt-col-inv">${wtEscapeHtml(r.leads_code)}</span>` : '<span style="color:#cbd5e1">—</span>';
+      const bundle = r.bundle_name ? wtEscapeHtml(r.bundle_name)
+                    : (r.paket ? wtEscapeHtml(r.paket) : '<span style="color:#cbd5e1">—</span>');
+      return `<tr>
+        <td class="wt-col-outlet">${name}</td>
+        <td>${wtEscapeHtml(r.channel)}</td>
+        <td>${wtEscapeHtml(r.rsm) || '—'}</td>
+        <td>${wtEscapeHtml(r.tl) || '—'}</td>
+        <td>${wtEscapeHtml(r.sales) || '—'}</td>
+        <td class="wt-col-date">${wtFmtDate(r.date)}</td>
+        <td>${wtEscapeHtml(r.region)}</td>
+        <td>${leads}</td>
+        <td class="wt-col-inv">${wtEscapeHtml(r.inv_code)}</td>
+        <td>${bundle}</td>
+        <td>${wtEscapeHtml(r.tltc_handled) || '—'}</td>
+        <td>${cek}</td>
+        <td>${wtEscapeHtml(r.owner_name) || '—'}</td>
+        <td>${wtEscapeHtml(r.contact) || '—'}</td>
+        <td>${wtEscapeHtml(r.update_gform) || '—'}</td>
+        <td>${pill}</td>
+        <td>${ev}</td>
+        <td>${wa}</td>
+        <td>${hl}</td>
+      </tr>`;
+    }
+
+    function wtRenderPagination(total, pages, startIdx, shown) {
+      const info = document.getElementById('wtPagInfo');
+      if (info) info.textContent = total
+        ? `${(startIdx+1).toLocaleString('id-ID')}–${(startIdx + shown).toLocaleString('id-ID')} dari ${total.toLocaleString('id-ID')}`
+        : '0 dari 0';
+      const nav = document.getElementById('wtPagNav');
+      if (!nav) return;
+      const cur = wtState.page;
+      const btns = [];
+      btns.push(`<button class="wt-pag-btn" ${cur<=1?'disabled':''} onclick="wtGoPage(${cur-1})">‹</button>`);
+      const win = new Set([1, pages, cur-1, cur, cur+1]);
+      const sorted = [...win].filter(n => n>=1 && n<=pages).sort((a,b)=>a-b);
+      let prev = 0;
+      sorted.forEach(n => {
+        if (n - prev > 1) btns.push(`<span style="padding:0 4px;color:var(--muted)">…</span>`);
+        btns.push(`<button class="wt-pag-btn ${n===cur?'active':''}" onclick="wtGoPage(${n})">${n}</button>`);
+        prev = n;
+      });
+      btns.push(`<button class="wt-pag-btn" ${cur>=pages?'disabled':''} onclick="wtGoPage(${cur+1})">›</button>`);
+      nav.innerHTML = btns.join('');
+    }
+    function wtGoPage(n) { wtState.page = n; renderWorkorder(); }
+
+    // ── Chart (with own date picker) ──
+    let _wtChart = null;
+    const WT_CHART_SERIES = [
+      { key: 'backlog',       label: 'Backlog',                color: '#cbd5e1' },
+      { key: 'onprocess',     label: 'Onprocess FU',           color: '#93c5fd' },
+      { key: 'backlog_sales', label: 'Backlog Sales',          color: '#fdba74' },
+      { key: 'need_fu',       label: 'Final Attempt',          color: '#fcd34d' },
+      { key: 'closed',        label: 'Closed',                 color: '#fca5a5' },
+      { key: 'done',          label: 'Done',                   color: '#86efac' },
+    ];
+    function wtApplyChartPreset(preset) {
+      wtState.chartPreset = preset;
+      const today = new Date(); today.setHours(0,0,0,0);
+      let start = null, end = today;
+      if (preset === 'today') start = today;
+      else if (preset === '7d')  { start = new Date(today); start.setDate(start.getDate() - 6); }
+      else if (preset === '30d') { start = new Date(today); start.setDate(start.getDate() - 29); }
+      else if (preset === 'month') {
+        start = new Date(today.getFullYear(), today.getMonth(), 1);
+        end   = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      }
+      else if (preset === 'all') { start = null; end = null; }
+      wtState.chartRangeStart = start;
+      wtState.chartRangeEnd   = end;
+      const s1 = document.getElementById('wtChartDpStart');
+      const s2 = document.getElementById('wtChartDpEnd');
+      if (s1) s1.value = start ? wtYmd(start) : '';
+      if (s2) s2.value = end ? wtYmd(end) : '';
+      document.querySelectorAll('#workorderPage .wt-chart-dp-preset').forEach(b => b.classList.toggle('active', b.dataset.preset === preset));
+      wtRenderDailyChart();
+    }
+    function wtRenderDailyChart() {
+      const canvas = document.getElementById('wtDailyChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      const fullData = wtDedupInv(WORKORDER_DATA || []);
+      let start = wtState.chartRangeStart, end = wtState.chartRangeEnd;
+      if (!start || !end) {
+        const dates = fullData.map(r => wtParseDate(r.date)).filter(Boolean).sort((a,b) => a-b);
+        if (!dates.length) {
+          if (_wtChart) { _wtChart.destroy(); _wtChart = null; }
+          const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height);
+          const badge = document.getElementById('wtChartBadge'); if (badge) badge.textContent = '0 invoice';
+          return;
+        }
+        start = dates[0]; end = dates[dates.length - 1];
+      }
+      const days = wtEachDay(start, end);
+      const buckets = {};
+      days.forEach(d => { buckets[d] = Object.fromEntries(WT_CHART_SERIES.map(s => [s.key, 0])); });
+      fullData.forEach(r => {
+        const d = wtParseDate(r.date); if (!d) return;
+        const key = wtYmd(d); if (!buckets[key]) return;
+        const b = wtStatusBucket(r.final_status);
+        if (buckets[key][b] !== undefined) buckets[key][b]++;
+      });
+      const checks = {};
+      document.querySelectorAll('#wtChartLegend input[type="checkbox"]').forEach(cb => {
+        checks[cb.dataset.series] = cb.checked;
+      });
+      const datasets = WT_CHART_SERIES.map(s => ({
+        label: s.label,
+        data: days.map(d => buckets[d][s.key] || 0),
+        backgroundColor: s.color,
+        borderRadius: 3, maxBarThickness: 28, stack: 'invoice',
+        hidden: checks[s.key] === false,
+      }));
+      const labels = days.map(d => {
+        const dt = new Date(d + 'T00:00:00');
+        return dt.toLocaleDateString('id-ID', { day:'numeric', month:'short' });
+      });
+      let total = 0;
+      WT_CHART_SERIES.forEach(s => {
+        if (checks[s.key] === false) return;
+        days.forEach(d => { total += buckets[d][s.key] || 0; });
+      });
+      const badge = document.getElementById('wtChartBadge');
+      if (badge) badge.textContent = `${total.toLocaleString('id-ID')} invoice`;
+      const totalLabelsPlugin = {
+        id: 'wtTotalLabels',
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          ctx.save();
+          ctx.font = '600 11px ' + (getComputedStyle(document.body).fontFamily || 'system-ui');
+          ctx.fillStyle = '#374151';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          const n = chart.data.labels.length;
+          for (let i = 0; i < n; i++) {
+            let sum = 0, topY = null, xPos = null;
+            chart.data.datasets.forEach((ds, di) => {
+              if (!chart.isDatasetVisible(di)) return;
+              const v = +ds.data[i] || 0;
+              sum += v;
+              const meta = chart.getDatasetMeta(di);
+              const bar = meta.data[i];
+              if (bar && v > 0) {
+                if (topY === null || bar.y < topY) topY = bar.y;
+                if (xPos === null) xPos = bar.x;
+              }
+            });
+            if (sum > 0 && topY !== null && xPos !== null) {
+              ctx.fillText(String(sum), xPos, topY - 4);
+            }
+          }
+          ctx.restore();
+        }
+      };
+      if (_wtChart) { _wtChart.destroy(); _wtChart = null; }
+      _wtChart = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: { labels, datasets },
+        plugins: [totalLabelsPlugin],
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          layout: { padding: { top: 22 } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              mode: 'index',
+              callbacks: {
+                label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('id-ID')}`,
+                footer: items => 'Total: ' + items.reduce((s, it) => s + (it.parsed.y || 0), 0).toLocaleString('id-ID'),
+              }
+            }
+          },
+          scales: {
+            x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 }, color: '#9ca3af', autoSkip: false, maxRotation: 90, minRotation: days.length > 14 ? 60 : 0 } },
+            y: { stacked: true, grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 }, color: '#9ca3af', precision: 0 }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // ── TLTC Leaderboard ──
+    function wtRenderTltcLeaderboard(inRange) {
+      const list = document.getElementById('wtTltcList');
+      const badge = document.getElementById('wtTltcBadge');
+      if (!list) return;
+      const doneRows = inRange.filter(r => (r.final_status || '').toLowerCase().includes('done created group'));
+      const counts = new Map();
+      doneRows.forEach(r => {
+        const k = (r.tltc_handled || '').trim();
+        if (!k) return;
+        counts.set(k, (counts.get(k) || 0) + 1);
+      });
+      const total = [...counts.values()].reduce((s, v) => s + v, 0);
+      const ranked = [...counts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+      if (badge) badge.textContent = `${total.toLocaleString('id-ID')} grup · ${ranked.length} handler`;
+      if (!ranked.length) {
+        list.innerHTML = '<div class="wt-tltc-empty">Belum ada grup WA yang dibuat pada periode ini</div>';
+        return;
+      }
+      list.innerHTML = ranked.map((r, i) => {
+        const rank = i + 1;
+        const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-other';
+        const pct = total ? ((r.count / total) * 100).toFixed(1) : '0.0';
+        return `<div class="wt-tltc-row">
+          <div class="wt-tltc-rank ${rankClass}">${rank}</div>
+          <div class="wt-tltc-avatar">${wtEscapeHtml(wtGetInitials(r.name))}</div>
+          <div class="wt-tltc-meta">
+            <div class="wt-tltc-name">${wtEscapeHtml(r.name)}</div>
+            <div class="wt-tltc-role">TlTC Handled</div>
+          </div>
+          <div class="wt-tltc-bar-wrap">
+            <div class="wt-tltc-bar-track"><div class="wt-tltc-bar-fill" style="width:${pct}%"></div></div>
+            <div class="wt-tltc-pct">${pct}%</div>
+          </div>
+          <div class="wt-tltc-count">
+            <div class="wt-tltc-count-num">${r.count.toLocaleString('id-ID')}</div>
+            <div class="wt-tltc-count-label">grup</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Activity Feed ──
+    const WT_FEED_ICONS = {
+      created:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+      followup: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+      backlog:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
+      update:   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+    };
+    const WT_FEED_TYPE_LABEL = { created:'CREATED', followup:'FOLLOW UP', backlog:'BACKLOG', update:'UPDATE' };
+
+    function wtBuildEvents() {
+      const events = [];
+      (WORKORDER_DATA || []).forEach(r => {
+        const outlet = wtPickOutletName(r);
+        const tltc = (r.tltc_handled || '').trim() || '—';
+        const kota = (r.kota || '').trim();
+        const inv = (r.inv_code || '').trim();
+        const logStatus = (r.log_status || '').trim();
+        const logStLow  = logStatus.toLowerCase();
+        const ts = wtParseLogTs(r.log_ts);
+        if (!ts) return;
+        let ev = null;
+        if (logStLow.includes('done created group') && r.wa_link) {
+          ev = { type:'created', ts, textHtml:`<b>${wtEscapeHtml(tltc)}</b> membuat grup baru untuk <b>${wtEscapeHtml(outlet)}</b>`, captionExtra: kota || outlet };
+        } else if (logStLow.includes('need follow up final attempt - final attempt')) {
+          ev = { type:'followup', ts, textHtml:`<b>${wtEscapeHtml(tltc)}</b> memiliki data yang perlu di follow up final`, captionExtra: outlet };
+        } else if (!logStatus) {
+          ev = { type:'backlog', ts, textHtml:`Ada backlog baru: <b>${wtEscapeHtml(inv || outlet)}</b>`, captionExtra: outlet };
+        } else {
+          ev = { type:'update', ts, textHtml:`<b>${wtEscapeHtml(tltc)}</b> baru saja mengupdate status menjadi <b>${wtEscapeHtml(logStatus)}</b>`, captionExtra: outlet };
+        }
+        if (ev) events.push(ev);
+      });
+      events.sort((a, b) => b.ts.getTime() - a.ts.getTime());
+      return events.slice(0, 10);
+    }
+    function wtRenderFeed() {
+      const list = document.getElementById('wtFeedList');
+      if (!list) return;
+      const events = wtBuildEvents();
+      if (!events.length) {
+        list.innerHTML = '<div class="wt-feed-empty">Belum ada aktivitas</div>';
+        return;
+      }
+      list.innerHTML = events.map(e => `
+        <div class="wt-feed-item">
+          <div class="wt-feed-icon ${e.type}">${WT_FEED_ICONS[e.type]}</div>
+          <div class="wt-feed-body">
+            <div class="wt-feed-text">${e.textHtml}</div>
+            <div class="wt-feed-caption">
+              <span class="wt-feed-cap-type">${WT_FEED_TYPE_LABEL[e.type]}</span>
+              ${e.captionExtra ? `· ${wtEscapeHtml(e.captionExtra)}` : ''}
+            </div>
+          </div>
+          <div class="wt-feed-time">${wtRelativeTime(e.ts)}</div>
+        </div>
+      `).join('');
+    }
+
+    // ── KPI interactions ──
+    function wtToggleBSales(e) {
+      e.stopPropagation();
+      document.getElementById('wtBSalesCard')?.classList.toggle('expanded');
+    }
+    function wtSetSubFilter(e, sub) {
+      e.stopPropagation();
+      wtState.statusFilter = 'backlog_sales';
+      wtState.subFilter = (wtState.subFilter === sub) ? null : sub;
+      wtState.page = 1; renderWorkorder();
+    }
+    function wtResetStatusFilter() {
+      wtState.statusFilter = 'total'; wtState.subFilter = null;
+      wtState.page = 1; renderWorkorder();
+    }
+    function wtResetAll() {
+      wtState.statusFilter = 'total'; wtState.subFilter = null;
+      wtState.search = '';
+      const si = document.getElementById('wtSearchInput'); if (si) si.value = '';
+      // Reset page picker → "thismonth" via existing preset infra
+      if (typeof setPreset === 'function') setPreset('thismonth');
+      wtState.page = 1;
+      renderWorkorder();
+    }
+
+    // ── Event listeners (attached once on DOMContentLoaded) ──
+    (function wtAttachListeners() {
+      const init = () => {
+        const stats = document.getElementById('wtStats');
+        if (stats) stats.addEventListener('click', e => {
+          if (e.target.closest('.wt-stat-expand') || e.target.closest('.wt-substat')) return;
+          const card = e.target.closest('.wt-stat'); if (!card) return;
+          const st = card.dataset.status;
+          wtState.statusFilter = st;
+          if (st !== 'backlog_sales') wtState.subFilter = null;
+          wtState.page = 1; renderWorkorder();
+        });
+        const si = document.getElementById('wtSearchInput');
+        if (si) si.addEventListener('input', e => { wtState.search = e.target.value; wtState.page = 1; renderWorkorder(); });
+        const ps = document.getElementById('wtPageSize');
+        if (ps) ps.addEventListener('change', e => { wtState.pageSize = +e.target.value; wtState.page = 1; renderWorkorder(); });
+        const cl = document.getElementById('wtChartLegend');
+        if (cl) cl.addEventListener('change', e => { if (e.target.matches('input[type="checkbox"]')) wtRenderDailyChart(); });
+        const cp = document.getElementById('wtChartDpPresets');
+        if (cp) cp.addEventListener('click', e => {
+          const btn = e.target.closest('.wt-chart-dp-preset'); if (!btn) return;
+          wtApplyChartPreset(btn.dataset.preset);
+        });
+        const cs = document.getElementById('wtChartDpStart');
+        if (cs) cs.addEventListener('change', e => {
+          wtState.chartRangeStart = wtParseInputDate(e.target.value); wtState.chartPreset = 'custom';
+          document.querySelectorAll('#workorderPage .wt-chart-dp-preset').forEach(b => b.classList.remove('active'));
+          wtRenderDailyChart();
+        });
+        const ce = document.getElementById('wtChartDpEnd');
+        if (ce) ce.addEventListener('change', e => {
+          wtState.chartRangeEnd = wtParseInputDate(e.target.value); wtState.chartPreset = 'custom';
+          document.querySelectorAll('#workorderPage .wt-chart-dp-preset').forEach(b => b.classList.remove('active'));
+          wtRenderDailyChart();
+        });
+        // Init chart preset (Bulan Ini)
+        wtApplyChartPreset('month');
+      };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+      else init();
+    })();
+
+    // ════════════════════════════════════════════════════════════════════
+    //  ESKALASI KE TLTC — modal form + slide-in panel Request Masuk
+    // ════════════════════════════════════════════════════════════════════
+    (function() {
+      const TAC_REQ_URL = APPS_SCRIPT_URL + '?action=listRequests';
+      const POLL_MS = 30000; // 30 detik
+      let pollTimer = null;
+      let panelFilter = 'all';
+      let isLoading = false;
+      let isSubmitting = false;
+      let isUpdating = {}; // ticketId → bool
+
+      const tacReqState = {
+        items: [],
+        lastFetched: 0,
+      };
+
+      // ── Helpers ──
+      function getUserEmail() {
+        try {
+          const sess = JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
+          return (sess.email || '').toLowerCase();
+        } catch (e) { return ''; }
+      }
+
+      function showToast(msg, ticketId) {
+        const toast = document.getElementById('eskToast');
+        const m = document.getElementById('eskToastMsg');
+        if (ticketId) {
+          m.innerHTML = msg + ' Tiket: <span class="esk-toast-id">' + ticketId + '</span>';
+        } else {
+          m.textContent = msg;
+        }
+        toast.classList.add('show');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => toast.classList.remove('show'), 3800);
+      }
+
+      // ── Visibility per page ──
+      window.applyEskBtnVisibility = function() {
+        const page = (typeof activeDash !== 'undefined') ? activeDash : 'outlet';
+        const eskBtn = document.getElementById('eskBtn');
+        const badgeBtn = document.getElementById('eskBadgeBtn');
+
+        // Tombol "+ Eskalasi ke TLTC" — tampil di semua page kecuali workorder & panduan
+        const showEsk = (page !== 'workorder' && page !== 'panduan');
+        if (eskBtn) eskBtn.style.display = showEsk ? '' : 'none';
+
+        // Badge "Request Masuk (N)" — hanya tampil di workorder
+        const showBadge = (page === 'workorder');
+        if (badgeBtn) badgeBtn.style.display = showBadge ? '' : 'none';
+
+        // Mulai/stop polling berdasar page
+        if (showBadge) {
+          startRequestPolling();
+        } else {
+          stopRequestPolling();
+        }
+      };
+
+      // ── Modal: open/close + submit ──
+      window.openEskalasiModal = function() {
+        document.getElementById('eskError').classList.remove('show');
+        document.getElementById('eskSuccess').classList.remove('show');
+        document.getElementById('eskOutletName').value = '';
+        document.getElementById('eskPicOutlet').value = '';
+        document.getElementById('eskPhone').value = '';
+        document.getElementById('eskTypeRequest').value = '';
+        document.getElementById('eskModalBg').classList.add('open');
+        setTimeout(() => document.getElementById('eskOutletName').focus(), 80);
+      };
+
+      window.closeEskalasiModal = function() {
+        document.getElementById('eskModalBg').classList.remove('open');
+      };
+
+      window.submitEskalasi = async function() {
+        if (isSubmitting) return;
+        const errEl = document.getElementById('eskError');
+        const okEl  = document.getElementById('eskSuccess');
+        errEl.classList.remove('show');
+        okEl.classList.remove('show');
+
+        const outletName  = document.getElementById('eskOutletName').value.trim();
+        const picOutlet   = document.getElementById('eskPicOutlet').value.trim();
+        const phone       = document.getElementById('eskPhone').value.trim();
+        const typeRequest = document.getElementById('eskTypeRequest').value;
+        const email       = getUserEmail();
+
+        if (!outletName)  { errEl.textContent = 'Nama Outlet wajib diisi.'; errEl.classList.add('show'); return; }
+        if (!picOutlet)   { errEl.textContent = 'PIC Outlet wajib diisi.'; errEl.classList.add('show'); return; }
+        if (!phone)       { errEl.textContent = 'Nomer Telepon wajib diisi.'; errEl.classList.add('show'); return; }
+        if (!typeRequest) { errEl.textContent = 'Type Request wajib dipilih.'; errEl.classList.add('show'); return; }
+        if (!email)       { errEl.textContent = 'Sesi login tidak terdeteksi. Silakan login ulang.'; errEl.classList.add('show'); return; }
+
+        const btn = document.getElementById('eskSubmitBtn');
+        isSubmitting = true;
+        btn.disabled = true;
+        btn.textContent = 'Mengirim…';
+
+        try {
+          // Apps Script Web App: jangan set Content-Type (biar dianggap simple request
+          // dan tidak preflight CORS). Body JSON di-baca dari e.postData.contents.
+          const res = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+              action: 'createRequest',
+              outletName: outletName,
+              picOutlet: picOutlet,
+              phone: phone,
+              typeRequest: typeRequest,
+              email: email,
+            }),
+          });
+          const data = await res.json();
+          if (!data.ok) {
+            errEl.textContent = data.error || 'Gagal menyimpan request.';
+            errEl.classList.add('show');
+            return;
+          }
+          // Sukses
+          okEl.innerHTML = 'Request berhasil dikirim. Tiket: <b>' + data.record.ticketId + '</b>';
+          okEl.classList.add('show');
+          showToast('Request berhasil dikirim.', data.record.ticketId);
+
+          // Push ke state cache lokal (newest first) + update badge
+          tacReqState.items.unshift(data.record);
+          updateBadgeCount();
+
+          // Auto-close modal setelah 1.4s
+          setTimeout(() => {
+            window.closeEskalasiModal();
+            // Refresh server-side fetch (untuk sync data terbaru)
+            loadTacRequests(true);
+          }, 1400);
+        } catch (err) {
+          errEl.textContent = 'Gagal terhubung ke server. Coba lagi.';
+          errEl.classList.add('show');
+        } finally {
+          isSubmitting = false;
+          btn.disabled = false;
+          btn.textContent = 'Kirim Request';
+        }
+      };
+
+      // ── Slide-in panel ──
+      window.openRequestPanel = function() {
+        document.getElementById('eskPanelBg').classList.add('open');
+        document.getElementById('eskPanel').classList.add('open');
+        loadTacRequests(true);
+      };
+
+      window.closeRequestPanel = function() {
+        document.getElementById('eskPanelBg').classList.remove('open');
+        document.getElementById('eskPanel').classList.remove('open');
+      };
+
+      window.setRequestFilter = function(f) {
+        panelFilter = f;
+        document.querySelectorAll('.esk-panel-filter').forEach(b => {
+          b.classList.toggle('active', b.dataset.rfilter === f);
+        });
+        renderRequestPanel();
+      };
+
+      // ── Fetch + render ──
+      async function loadTacRequests(force) {
+        if (isLoading && !force) return;
+        isLoading = true;
+        try {
+          const res = await fetch(TAC_REQ_URL, { cache: 'no-store' });
+          const data = await res.json();
+          if (data && data.ok && Array.isArray(data.items)) {
+            tacReqState.items = data.items;
+            tacReqState.lastFetched = Date.now();
+            updateBadgeCount();
+            // Hanya re-render kalau panel sedang terbuka
+            if (document.getElementById('eskPanel').classList.contains('open')) {
+              renderRequestPanel();
+            }
+          }
+        } catch (err) {
+          console.warn('[TAC Req] fetch error:', err);
+        } finally {
+          isLoading = false;
+        }
+      }
+
+      function updateBadgeCount() {
+        const open = tacReqState.items.filter(r => r.status !== 'Done').length;
+        const el = document.getElementById('eskBadgeCount');
+        if (el) {
+          el.textContent = open;
+          el.classList.toggle('zero', open === 0);
+        }
+      }
+
+      function renderRequestPanel() {
+        const body = document.getElementById('eskPanelBody');
+        let items = tacReqState.items;
+        if (panelFilter !== 'all') {
+          items = items.filter(r => r.status === panelFilter);
+        }
+        if (!items.length) {
+          body.innerHTML = '<div class="esk-panel-empty">' +
+            (panelFilter === 'all' ? 'Belum ada request masuk.' : 'Tidak ada request dengan status ' + panelFilter + '.') +
+            '</div>';
+          document.getElementById('eskPanelSubtitle').textContent =
+            tacReqState.items.length + ' total · ' +
+            tacReqState.items.filter(r => r.status !== 'Done').length + ' belum done';
+          return;
+        }
+        document.getElementById('eskPanelSubtitle').textContent =
+          tacReqState.items.length + ' total · ' +
+          tacReqState.items.filter(r => r.status !== 'Done').length + ' belum done';
+
+        const html = items.map(r => renderCard(r)).join('');
+        body.innerHTML = html;
+      }
+
+      function renderCard(r) {
+        const statusKey = (r.status || 'New').toLowerCase();
+        const pillClass = statusKey === 'progress' ? 'esk-pill-progress'
+                        : statusKey === 'done'     ? 'esk-pill-done'
+                        : 'esk-pill-new';
+        const typeClass = r.typeRequest === 'Request Training' ? 'esk-type-training' : 'esk-type-visit';
+        const updating = !!isUpdating[r.ticketId];
+        const btn = (label) => {
+          const active = (r.status === label) ? ' active' : '';
+          const dis = updating ? ' disabled' : '';
+          return '<button class="esk-status-btn' + active + '" ' + dis +
+                 ' onclick="updateRequestStatus(\'' + r.ticketId + '\',\'' + label + '\')">' +
+                 label + '</button>';
+        };
+        return '' +
+          '<div class="esk-card" data-ticket="' + r.ticketId + '">' +
+            '<div class="esk-card-top">' +
+              '<span class="esk-card-id">' + r.ticketId + '</span>' +
+              '<span class="esk-pill ' + pillClass + '">' + (r.status || 'New') + '</span>' +
+            '</div>' +
+            '<div class="esk-card-outlet">' + esc(r.outletName) + '</div>' +
+            '<span class="esk-card-type ' + typeClass + '">' + esc(r.typeRequest) + '</span>' +
+            '<div class="esk-card-info">' +
+              '<span>PIC:</span><b>' + esc(r.picOutlet) + '</b>' +
+              '<span>Telp:</span><b>' + esc(r.phone) + '</b>' +
+              '<span>Pengirim:</span><b>' + esc(r.email) + '</b>' +
+            '</div>' +
+            '<div class="esk-card-meta">' +
+              'Dibuat: <b>' + esc(r.createdAt) + '</b>' +
+              (r.updatedAt && r.updatedAt !== r.createdAt
+                ? ' · Update: <b>' + esc(r.updatedAt) + '</b>'
+                : '') +
+            '</div>' +
+            '<div class="esk-card-actions">' +
+              btn('New') + btn('Progress') + btn('Done') +
+            '</div>' +
+          '</div>';
+      }
+
+      function esc(s) {
+        return String(s || '').replace(/[&<>"']/g, c => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+      }
+
+      // ── Update status ──
+      window.updateRequestStatus = async function(ticketId, status) {
+        if (isUpdating[ticketId]) return;
+        const email = getUserEmail();
+        if (!email) { alert('Sesi login tidak terdeteksi.'); return; }
+
+        // Optimistic update
+        const idx = tacReqState.items.findIndex(r => r.ticketId === ticketId);
+        const prevStatus = idx >= 0 ? tacReqState.items[idx].status : null;
+        if (idx >= 0) tacReqState.items[idx].status = status;
+        isUpdating[ticketId] = true;
+        renderRequestPanel();
+        updateBadgeCount();
+
+        try {
+          const res = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+              action: 'updateRequestStatus',
+              ticketId: ticketId,
+              status: status,
+              email: email,
+            }),
+          });
+          const data = await res.json();
+          if (!data.ok) {
+            // Rollback
+            if (idx >= 0 && prevStatus !== null) tacReqState.items[idx].status = prevStatus;
+            showToast('Gagal update status: ' + (data.error || 'unknown'));
+          } else {
+            // Sync ke canonical record dari server
+            if (idx >= 0) tacReqState.items[idx] = data.record;
+            showToast('Status ' + ticketId + ' → ' + status);
+          }
+        } catch (err) {
+          if (idx >= 0 && prevStatus !== null) tacReqState.items[idx].status = prevStatus;
+          showToast('Gagal update: koneksi error.');
+        } finally {
+          delete isUpdating[ticketId];
+          renderRequestPanel();
+          updateBadgeCount();
+        }
+      };
+
+      // ── Polling ──
+      function startRequestPolling() {
+        // Initial fetch jika belum pernah
+        if (!tacReqState.lastFetched) loadTacRequests(true);
+        if (pollTimer) return;
+        pollTimer = setInterval(() => loadTacRequests(false), POLL_MS);
+      }
+      function stopRequestPolling() {
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      }
+
+      // ── Escape key untuk close modal/panel ──
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (document.getElementById('eskModalBg').classList.contains('open')) {
+            window.closeEskalasiModal();
+          } else if (document.getElementById('eskPanel').classList.contains('open')) {
+            window.closeRequestPanel();
+          }
+        }
+      });
+
+      // ── Init ──
+      function eskInit() {
+        // Initial visibility (default activeDash = 'outlet' → show button)
+        window.applyEskBtnVisibility();
+        // Prefetch sekali biar badge count cepat update kalau user pindah ke workorder
+        loadTacRequests(true);
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', eskInit);
+      } else {
+        eskInit();
+      }
+    })();
+
+    // ════════════════════════════════════════════════════════════════════
+    //  DAILY TRACKING — panel relocator + render dispatcher
+    //  4 panel di-relocate dari halaman asli ke Daily Tracking saat aktif,
+    //  dan dikembalikan ke posisi semula saat user pindah halaman lain.
+    //  Tidak menyentuh render logic — pakai render functions existing.
+    // ════════════════════════════════════════════════════════════════════
+    (function() {
+      // Panel ID → slot ID di Daily Tracking
+      const PANEL_TO_DAILY_SLOT = {
+        trafficGroupPanel: 'dailySlotGroup',
+        trafficChatPanel:  'dailySlotChat',
+        ticketTrendPanel:  'dailySlotTrend',
+        ticketIdPanel:     'dailySlotId',
+      };
+
+      // Cache lokasi asal tiap panel (parent + nextSibling) — direkam saat
+      // pertama kali ketemu, supaya bisa dikembalikan ke posisi tepat.
+      const panelHomes = {};
+
+      function rememberHome(panelId) {
+        if (panelHomes[panelId]) return;
+        const el = document.getElementById(panelId);
+        if (!el || !el.parentNode) return;
+        panelHomes[panelId] = {
+          parent: el.parentNode,
+          nextSibling: el.nextSibling,
+        };
+      }
+
+      function moveToDailySlot(panelId) {
+        const el = document.getElementById(panelId);
+        const slot = document.getElementById(PANEL_TO_DAILY_SLOT[panelId]);
+        if (!el || !slot) return;
+        if (slot.contains(el)) return;
+        slot.appendChild(el);
+      }
+
+      function moveToHome(panelId) {
+        const el = document.getElementById(panelId);
+        const home = panelHomes[panelId];
+        if (!el || !home || !home.parent) return;
+        if (home.parent.contains(el) && el.nextSibling === home.nextSibling) return;
+        if (home.nextSibling && home.nextSibling.parentNode === home.parent) {
+          home.parent.insertBefore(el, home.nextSibling);
+        } else {
+          home.parent.appendChild(el);
+        }
+      }
+
+      // Public — dipanggil dari switchDash
+      window.routeDailyPanels = function(page) {
+        // Pastikan home position sudah ke-cache
+        Object.keys(PANEL_TO_DAILY_SLOT).forEach(rememberHome);
+
+        if (page === 'daily') {
+          Object.keys(PANEL_TO_DAILY_SLOT).forEach(moveToDailySlot);
+        } else {
+          Object.keys(PANEL_TO_DAILY_SLOT).forEach(moveToHome);
+        }
+      };
+
+      // Public — render Daily Tracking page.
+      // Pakai render functions existing (zero duplikasi logic).
+      // - renderTraffic() menggambar trafficChatPanel + trafficGroupPanel (canvas-nya
+      //   sudah dipindah ke Daily Tracking lewat routeDailyPanels)
+      // - renderTicketTrendStatus() menggambar ticketTrendPanel — tapi
+      //   sebelumnya pastikan TAC checkbox di-uncheck supaya "Escalated Only".
+      // - renderTicketIdList() menggambar ticketIdPanel
+      window.renderDaily = function() {
+        // Force "Escalated Only" untuk Traffic Tiket Harian
+        const tacCb = document.getElementById('tkSeriesTac');
+        if (tacCb && tacCb.checked) tacCb.checked = false;
+        const escCb = document.getElementById('tkSeriesEsc');
+        if (escCb && !escCb.checked) escCb.checked = true;
+
+        try { if (typeof renderTraffic === 'function')           renderTraffic(); }           catch (e) { console.warn('renderTraffic:', e); }
+        try { if (typeof renderTicketTrendStatus === 'function') renderTicketTrendStatus(); } catch (e) { console.warn('renderTicketTrendStatus:', e); }
+        try { if (typeof renderTicketIdList === 'function')      renderTicketIdList(); }      catch (e) { console.warn('renderTicketIdList:', e); }
+      };
+
+      // Init — pre-cache home positions saat DOM ready
+      function dtInit() {
+        Object.keys(PANEL_TO_DAILY_SLOT).forEach(rememberHome);
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', dtInit);
+      } else {
+        dtInit();
+      }
+    })();
 
   </script>
 
