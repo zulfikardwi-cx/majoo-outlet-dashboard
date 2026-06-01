@@ -1620,8 +1620,9 @@
       grid-template-columns: repeat(4, 1fr);
     }
 
+    /* Angka KPI seragam di semua halaman (sebelumnya 30px khusus 4-kolom) */
     .hero-row-4 .hero-stat-num {
-      font-size: 30px;
+      font-size: 38px;
     }
 
     /* ── Role filter (Team page) ── */
@@ -2007,11 +2008,52 @@
     .login-resend span { color:var(--m-teal); cursor:pointer; font-weight:500; }
     .login-resend span:hover { text-decoration:underline; }
     .login-blocked-icon { font-size:40px; text-align:center; margin-bottom:16px; }
+    /* ── Daily Tracking — per-section hero + picker ── */
+    .dt-pick-row { display:flex; justify-content:flex-end; margin-bottom:12px; }
+    .dt-hero {
+      background: var(--m-grad);
+      border-radius: var(--rad-lg);
+      padding: 22px 26px 24px;
+      color:#fff; position:relative; overflow:hidden;
+      margin-bottom:16px;
+      box-shadow: 0 12px 32px -16px rgba(13,59,57,.32);
+    }
+    .dt-hero::before {
+      content:''; position:absolute; right:-90px; top:-90px;
+      width:320px; height:320px; border-radius:50%;
+      background: radial-gradient(circle at center, rgba(255,255,255,.16), transparent 60%);
+      pointer-events:none;
+    }
+    .dt-hero-row { display:grid; grid-template-columns: 1.15fr 1fr 1fr 1fr; gap:4px; position:relative; z-index:1; }
+    .dt-hero-stat { padding:0 24px 0 0; border-right:1px solid rgba(255,255,255,.18); }
+    .dt-hero-stat + .dt-hero-stat { padding-left:24px; }
+    .dt-hero-stat:last-child { border-right:none; padding-right:0; }
+    .dt-hero-stat-label {
+      font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+      opacity:.95; margin-bottom:10px; display:inline-flex; align-items:center; gap:8px;
+    }
+    .dt-hero-stat-label::before { content:''; width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.65); }
+    .dt-hero-stat[data-k="total"] .dt-hero-stat-label::before { background:#fff; }
+    .dt-hero-stat[data-k="enterprise"] .dt-hero-stat-label::before,
+    .dt-hero-stat[data-k="inbound"] .dt-hero-stat-label::before,
+    .dt-hero-stat[data-k="escalated"] .dt-hero-stat-label::before { background:#bfdbfe; }
+    .dt-hero-stat[data-k="premium"] .dt-hero-stat-label::before,
+    .dt-hero-stat[data-k="outbound"] .dt-hero-stat-label::before,
+    .dt-hero-stat[data-k="tac"] .dt-hero-stat-label::before { background:#e9d5ff; }
+    .dt-hero-stat[data-k="project"] .dt-hero-stat-label::before,
+    .dt-hero-stat[data-k="avg"] .dt-hero-stat-label::before { background:#bbf7d0; }
+    .dt-hero-stat-num { font-family:var(--mono); font-size:38px; font-weight:700; letter-spacing:-.04em; line-height:1; color:#fff; }
+    .dt-hero-stat-sub { font-size:11.5px; color:rgba(255,255,255,.78); margin-top:8px; }
+    @media (max-width:880px){
+      .dt-hero-row { grid-template-columns:1fr 1fr; gap:16px; }
+      .dt-hero-stat { border-right:none; padding:0; }
+    }
+
     /* ── Ticket Hero ── */
-    .ticket-hero { background:linear-gradient(135deg,#1a8078 0%,#2ba99b 45%,#5eca6e 100%); border-radius:14px; padding:28px 32px; margin-bottom:20px; }
+    .ticket-hero { background:var(--m-grad); border-radius:14px; padding:28px 32px; margin-bottom:20px; }
     .ticket-stat { flex:1; padding:0 24px; border-right:1px solid rgba(255,255,255,0.2); }
     .ticket-stat-label { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; letter-spacing:.06em; color:rgba(255,255,255,0.75); margin-bottom:10px; }
-    .ticket-stat-num { font-size:52px; font-weight:800; color:#fff; line-height:1; margin-bottom:6px; }
+    .ticket-stat-num { font-size:38px; font-weight:700; color:#fff; line-height:1; margin-bottom:6px; }
     .ticket-stat-sub { font-size:11.5px; color:rgba(255,255,255,0.65); }
     /* Ticket status filter buttons */
     .tk-status-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; border:1.5px solid var(--border); background:#fff; font-size:12.5px; font-weight:500; color:var(--muted); cursor:pointer; transition:all .15s; }
@@ -2587,13 +2629,13 @@
     .ta-hero-stat[data-k="project"] .ta-hero-stat-label::before { background: #bbf7d0; }
     .ta-hero-stat-num {
       font-family: var(--mono);
-      font-size: 44px;
-      font-weight: 800;
+      font-size: 38px;
+      font-weight: 700;
       letter-spacing: -.04em;
       line-height: 1;
       color: #fff;
     }
-    .ta-hero-stat[data-k="total"] .ta-hero-stat-num { font-size: 50px; }
+    .ta-hero-stat[data-k="total"] .ta-hero-stat-num { font-size: 38px; }
     .ta-hero-stat-sub {
       font-size: 11.5px;
       color: rgba(255,255,255,0.78);
@@ -3803,7 +3845,7 @@
     }
     #workorderPage .wt-stat.active .wt-stat-label::after { opacity: 1; }
     #workorderPage .wt-stat-num {
-      font-family: var(--mono); font-size: 32px; font-weight: 700;
+      font-family: var(--mono); font-size: 38px; font-weight: 700;
       letter-spacing: -.03em; line-height: 1; margin-top: 10px;
     }
     #workorderPage .wt-stat-desc { font-size: 11px; opacity: .82; margin-top: 8px; line-height: 1.35; }
@@ -4837,7 +4879,10 @@
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="ticketPage" style="display:none">
 
-      <!-- Ticket Hero — dark gradient -->
+      <!-- Date Picker Slot -->
+      <div id="ticketDpSlot"></div>
+
+      <!-- Ticket Hero -->
       <div class="ticket-hero">
         <div class="hero-row hero-row-4">
           <div class="ticket-stat">
@@ -4875,15 +4920,12 @@
         </div>
       </div>
 
-      <!-- Date Picker Slot -->
-      <div id="ticketDpSlot"></div>
-
       <!-- Traffic Tiket Harian (full-width stacked bar chart) -->
       <div class="analytics-panel" id="ticketTrendPanel" style="margin-bottom:18px">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
           <div>
-            <div class="analytics-panel-title" id="ticketTrendPanelTitle">Traffic Tiket Harian</div>
-            <div class="analytics-panel-sub" id="ticketTrendPanelSub">Tiket dibuat vs diselesaikan · per hari</div>
+            <div class="analytics-panel-title">Traffic Tiket Harian</div>
+            <div class="analytics-panel-sub">Tiket dibuat vs diselesaikan · per hari</div>
           </div>
           <span class="analytics-badge" id="tkTrendBadge">— tiket</span>
         </div>
@@ -4893,7 +4935,7 @@
             <input type="checkbox" id="tkSeriesEsc" checked onchange="renderTicketTrendStatus()" style="cursor:pointer;margin:0">
             <span style="width:14px;height:10px;background:#3b82f6;border-radius:3px"></span>Escalated Eng
           </label>
-          <label class="tk-series-tac-wrap" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
+          <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
             <input type="checkbox" id="tkSeriesTac" checked onchange="renderTicketTrendStatus()" style="cursor:pointer;margin:0">
             <span style="width:14px;height:10px;background:#2ba99b;border-radius:3px"></span>On Handling TAC
           </label>
@@ -5276,15 +5318,12 @@
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="dailyPage" style="display:none">
 
-      <!-- Date Picker Slot -->
-      <div id="dailyDpSlot"></div>
-
       <!-- Section 1: Traffic Harian per Group -->
       <div class="dt-section">
         <div class="dt-section-head">
           <span class="dt-section-eyebrow"><span class="dt-section-num">1</span> Traffic Harian per Group</span>
         </div>
-        <div id="dailySlotGroup"></div>
+        <div id="dtSec-group"></div>
       </div>
 
       <!-- Section 2: Traffic Harian per Chat -->
@@ -5292,15 +5331,15 @@
         <div class="dt-section-head">
           <span class="dt-section-eyebrow"><span class="dt-section-num">2</span> Traffic Harian per Chat</span>
         </div>
-        <div id="dailySlotChat"></div>
+        <div id="dtSec-chat"></div>
       </div>
 
-      <!-- Section 3: Traffic Tiket Harian (Escalated Only) -->
+      <!-- Section 3: Traffic Tiket Harian -->
       <div class="dt-section">
         <div class="dt-section-head">
-          <span class="dt-section-eyebrow"><span class="dt-section-num">3</span> Traffic Tiket Harian (Escalated Only)</span>
+          <span class="dt-section-eyebrow"><span class="dt-section-num">3</span> Traffic Tiket Harian</span>
         </div>
-        <div id="dailySlotTrend"></div>
+        <div id="dtSec-trend"></div>
       </div>
 
       <!-- Section 4: Daftar Ticket ID -->
@@ -5909,6 +5948,10 @@ Salam,
     //  CONFIG
     // ════════════════════════════════════════════
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlyIsRkqcr0OuUr_Yu-wB9sugkirG9P2T7fMdKd9tkHy4bQBLOqJXmL7EeolXDRg0o/exec';
+    // ── Supabase (sumber data utama dashboard, gantikan GET Apps Script yang lambat) ──
+    const SUPABASE_URL      = 'https://mbsochjdrzmlvtfjngvd.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic29jaGpkcnptbHZ0ZmpuZ3ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMzY2ODQsImV4cCI6MjA5NTYxMjY4NH0.G12M4rI_Pr1NloZ17EbYrNSet5wEuTcMvIOO8ansxaw';
+    const DASHBOARD_RPC_URL = SUPABASE_URL + '/rest/v1/rpc/get_dashboard';
     const ALLOWED_DOMAIN  = 'majoo.id';
     const SESSION_KEY     = 'majoo_cx_auth';
     const SESSION_TTL_MS  = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -6195,7 +6238,6 @@ Salam,
       if (activeDash === 'team')   { updateTeamStats(); renderTeam(); }
       if (activeDash === 'ticket') { updateTicketStats(); renderTickets(); renderTicketTrendStatus(); renderOutletTacList(); renderTicketIdList(); }
       if (activeDash === 'traffic') { renderTraffic(); }
-      if (activeDash === 'daily')  { renderDaily(); }
       if (activeDash === 'workorder') { renderWorkorder(); }
       closePicker();
     }
@@ -6381,7 +6423,7 @@ Salam,
       // Move the single date-picker into the active slot.
       // Panduan tidak butuh date filter → sembunyikan dpWrap.
       const dpWrap = document.getElementById('dpWrap');
-      if (page === 'panduan') {
+      if (page === 'panduan' || page === 'daily') {
         if (dpWrap) dpWrap.style.display = 'none';
       } else {
         if (dpWrap) dpWrap.style.display = '';
@@ -7022,15 +7064,20 @@ Salam,
       document.getElementById('dailyPage').style.display      = activeDash === 'daily'     ? '' : 'none';
       document.getElementById('workorderPage').style.display  = activeDash === 'workorder' ? '' : 'none';
       document.getElementById('panduanPage').style.display    = activeDash === 'panduan'   ? '' : 'none';
+      if (typeof routeDailyPanels === 'function') routeDailyPanels(activeDash);
       const _dpEl   = document.getElementById('dpWrap');
-      const _slotId = activeDash === 'team' ? 'teamDpSlot'
-                     : activeDash === 'ticket' ? 'ticketDpSlot'
-                     : activeDash === 'traffic' ? 'trafficDpSlot'
-                     : activeDash === 'daily' ? 'dailyDpSlot'
-                     : activeDash === 'workorder' ? 'workorderDpSlot'
-                     : 'outletDpSlot';
-      const _slotEl = document.getElementById(_slotId);
-      if (_dpEl && _slotEl && !_slotEl.contains(_dpEl)) _slotEl.appendChild(_dpEl);
+      if (activeDash === 'daily' || activeDash === 'panduan') {
+        if (_dpEl) _dpEl.style.display = 'none';
+      } else {
+        if (_dpEl) _dpEl.style.display = '';
+        const _slotId = activeDash === 'team' ? 'teamDpSlot'
+                       : activeDash === 'ticket' ? 'ticketDpSlot'
+                       : activeDash === 'traffic' ? 'trafficDpSlot'
+                       : activeDash === 'workorder' ? 'workorderDpSlot'
+                       : 'outletDpSlot';
+        const _slotEl = document.getElementById(_slotId);
+        if (_dpEl && _slotEl && !_slotEl.contains(_dpEl)) _slotEl.appendChild(_dpEl);
+      }
 
       showSkeletons(); hideError();
       document.getElementById('demoBanner').classList.remove('show');
@@ -7038,9 +7085,17 @@ Salam,
       setChip('loading', 'Memuat data…');
 
       try {
-        // Load outlet data and dismissed list in parallel
+        // Load outlet data (Supabase RPC) and dismissed list in parallel
         const [res] = await Promise.all([
-          fetch(APPS_SCRIPT_URL),
+          fetch(DASHBOARD_RPC_URL, {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+            },
+            body: '{}',
+          }),
           loadDismissed(),
         ]);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -9851,7 +9906,7 @@ Salam,
     })();
 
     // ════════════════════════════════════════════════════════════════════
-    //  DAILY TRACKING — panel relocator + render dispatcher
+    //  DAILY TRACKING — panel relocation (DOM relocation pattern)
     //  4 panel di-relocate dari halaman asli ke Daily Tracking saat aktif,
     //  dan dikembalikan ke posisi semula saat user pindah halaman lain.
     //  Tidak menyentuh render logic — pakai render functions existing.
@@ -9859,9 +9914,6 @@ Salam,
     (function() {
       // Panel ID → slot ID di Daily Tracking
       const PANEL_TO_DAILY_SLOT = {
-        trafficGroupPanel: 'dailySlotGroup',
-        trafficChatPanel:  'dailySlotChat',
-        ticketTrendPanel:  'dailySlotTrend',
         ticketIdPanel:     'dailySlotId',
       };
 
@@ -9913,11 +9965,6 @@ Salam,
 
       // Public — render Daily Tracking page.
       // Pakai render functions existing (zero duplikasi logic).
-      // - renderTraffic() menggambar trafficChatPanel + trafficGroupPanel (canvas-nya
-      //   sudah dipindah ke Daily Tracking lewat routeDailyPanels)
-      // - renderTicketTrendStatus() menggambar ticketTrendPanel — tapi
-      //   sebelumnya pastikan TAC checkbox di-uncheck supaya "Escalated Only".
-      // - renderTicketIdList() menggambar ticketIdPanel
       window.renderDaily = function() {
         // Force "Escalated Only" untuk Traffic Tiket Harian
         const tacCb = document.getElementById('tkSeriesTac');
@@ -9939,6 +9986,308 @@ Salam,
       } else {
         dtInit();
       }
+    })();
+
+    /* ════════════════════════════════════════════════════════════
+       DAILY TRACKING v2 — 3 section mandiri (picker + hero + chart)
+       Tiap section punya range tanggal sendiri (independen).
+       ════════════════════════════════════════════════════════════ */
+    (function () {
+      const DEF_PRESET = '30days';
+      const SECTIONS = {
+        group: { title: 'Traffic Harian per Group', kind: 'group', unit: 'outlet' },
+        chat:  { title: 'Traffic Harian per Chat',  kind: 'chat',  unit: 'pesan'  },
+        trend: { title: 'Traffic Tiket Harian',     kind: 'trend', unit: 'tiket'  },
+      };
+      const PRESET_LABELS = {
+        today:'Hari Ini', yesterday:'Kemarin', '7days':'7 Hari Terakhir',
+        thisweek:'Minggu Ini', lastweek:'Minggu Lalu', '30days':'30 Hari Terakhir',
+        thismonth:'Bulan Ini', lastmonth:'Bulan Lalu',
+      };
+      const PRESET_ORDER = ['today','yesterday','7days','thisweek','lastweek','30days','thismonth','lastmonth'];
+      const CAL_MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+      const CAL_DAYS = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+      const GROUPS = ['enterprise','premium','project'];
+      const st = {};       // per-key state
+      const charts = {};   // per-key chart instance
+      let built = false;
+
+      function presetRange(p) {
+        const now = new Date(), t = todayStr(); let s, e;
+        switch (p) {
+          case 'today': s = e = t; break;
+          case 'yesterday': { const y = new Date(now); y.setDate(y.getDate()-1); s = e = localDate(y); break; }
+          case '7days': s = addDays(t,-6); e = t; break;
+          case 'thisweek': { const dw=now.getDay(), mn=new Date(now); mn.setDate(now.getDate()-((dw+6)%7)); s=localDate(mn); e=t; break; }
+          case 'lastweek': { const dw=now.getDay(), mn=new Date(now); mn.setDate(now.getDate()-((dw+6)%7)-7); const sn=new Date(mn); sn.setDate(mn.getDate()+6); s=localDate(mn); e=localDate(sn); break; }
+          case '30days': s = addDays(t,-29); e = t; break;
+          case 'thismonth': s = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`; e = t; break;
+          case 'lastmonth': { const lm=new Date(now.getFullYear(),now.getMonth()-1,1); const lme=new Date(now.getFullYear(),now.getMonth(),0); s=localDate(lm); e=localDate(lme); break; }
+          default: return null;
+        }
+        return { s, e };
+      }
+      function rangeLabel(key) {
+        const s = st[key];
+        if (s.preset && PRESET_LABELS[s.preset]) return PRESET_LABELS[s.preset];
+        if (!s.start || !s.end) return '—';
+        if (s.start === s.end) return fmtLong(s.start);
+        const a=new Date(s.start+'T00:00:00'), b=new Date(s.end+'T00:00:00');
+        return (Math.round((b-a)/86400000)+1) + ' Hari Terakhir';
+      }
+      function fmtNum(v){ return (v||0).toLocaleString('id-ID'); }
+
+      // ── Calendar ──
+      function calMonthHtml(key, year, month, isRight) {
+        const s = st[key], today = todayStr();
+        const rawEnd = s.tempEnd || (s.step===1 && s.hoverDate ? s.hoverDate : null);
+        const rangeS = s.tempStart && rawEnd ? (s.tempStart<=rawEnd?s.tempStart:rawEnd) : s.tempStart;
+        const rangeE = s.tempStart && rawEnd ? (s.tempStart<=rawEnd?rawEnd:s.tempStart) : null;
+        const hasRange = rangeS && rangeE && rangeS!==rangeE;
+        const btnL = isRight ? `<div style="width:28px"></div>` : `<button class="dp-nav-btn" data-nav="-1">&#8249;</button>`;
+        const btnR = isRight ? `<button class="dp-nav-btn" data-nav="1">&#8250;</button>` : `<div style="width:28px"></div>`;
+        const first = new Date(year,month,1), lastDate = new Date(year,month+1,0).getDate(), startDow = first.getDay();
+        let html = `<div class="dp-cal-header">${btnL}<div class="dp-cal-title">${CAL_MONTHS[month]} ${year}</div>${btnR}</div><div class="dp-grid">`;
+        CAL_DAYS.forEach(d => html += `<div class="dp-day-name">${d}</div>`);
+        for (let i=0;i<startDow;i++) html += `<div class="dp-day empty"></div>`;
+        for (let d=1; d<=lastDate; d++){
+          const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+          const isFuture = ds>today, isStart = ds===rangeS, isEnd = ds===rangeE;
+          const inR = !isStart && !isEnd && hasRange && ds>rangeS && ds<rangeE;
+          let cls='dp-day';
+          if (isFuture) cls+=' is-future';
+          if (ds===today) cls+=' is-today';
+          if (isStart) cls+=' is-start';
+          if (isEnd) cls+=' is-end';
+          if (inR) cls+=' in-range';
+          if (hasRange && (isStart||isEnd)) cls+=' has-range';
+          html += `<div class="${cls}" ${isFuture?'':`data-day="${ds}"`}><span class="n">${d}</span></div>`;
+        }
+        return html + `</div>`;
+      }
+      function renderCal(key) {
+        const s = st[key];
+        let ly = s.rightYear, lm = s.rightMonth-1;
+        if (lm<0){ lm=11; ly--; }
+        document.getElementById('dtCalL-'+key).innerHTML = calMonthHtml(key, ly, lm, false);
+        document.getElementById('dtCalR-'+key).innerHTML = calMonthHtml(key, s.rightYear, s.rightMonth, true);
+        const effEnd = s.tempEnd || (s.step===1 && s.hoverDate ? s.hoverDate : null);
+        document.getElementById('dtFrom-'+key).textContent = fmtLong(s.tempStart);
+        document.getElementById('dtTo-'+key).textContent = fmtLong(effEnd || s.tempStart);
+        let ft='—';
+        if (s.tempStart && effEnd){ const [a,b]= s.tempStart<=effEnd?[s.tempStart,effEnd]:[effEnd,s.tempStart]; ft=`${fmtLong(a)} — ${fmtLong(b)}`; }
+        else if (s.tempStart) ft=fmtLong(s.tempStart);
+        document.getElementById('dtFoot-'+key).textContent = ft;
+        PRESET_ORDER.forEach(p => { const el=document.getElementById(`dtp-${key}-${p}`); if (el) el.classList.toggle('active', p===s.activePreset); });
+      }
+      function openPicker(key) {
+        closeAll(key);
+        const s = st[key]; const now = new Date();
+        s.open = true; s.rightYear = now.getFullYear(); s.rightMonth = now.getMonth();
+        s.tempStart = s.start; s.tempEnd = s.end; s.hoverDate=null; s.step=0; s.activePreset = s.preset;
+        document.getElementById('dtPop-'+key).style.display='';
+        document.getElementById('dtTrig-'+key).classList.add('open');
+        renderCal(key);
+      }
+      function closePicker(key) {
+        const s = st[key]; s.open=false;
+        const pop=document.getElementById('dtPop-'+key); if (pop) pop.style.display='none';
+        const tr=document.getElementById('dtTrig-'+key); if (tr) tr.classList.remove('open');
+      }
+      function closeAll(except){ Object.keys(SECTIONS).forEach(k => { if (k!==except && st[k] && st[k].open) closePicker(k); }); }
+      function clickDay(key, ds) {
+        const s = st[key];
+        if (s.step===0){ s.tempStart=ds; s.tempEnd=null; s.hoverDate=null; s.step=1; s.activePreset=null; }
+        else { s.tempEnd=ds; if (s.tempEnd<s.tempStart) [s.tempStart,s.tempEnd]=[s.tempEnd,s.tempStart]; s.step=0; s.activePreset=null; }
+        renderCal(key);
+      }
+      function hoverDay(key, ds){ const s=st[key]; if (s.step===1 && ds!==s.hoverDate){ s.hoverDate=ds; renderCal(key); } }
+      function applyPresetSec(key, p){ const r=presetRange(p); if(!r) return; const s=st[key]; s.tempStart=r.s; s.tempEnd=r.e; s.step=0; s.activePreset=p; renderCal(key); }
+      function applySec(key){
+        const s=st[key]; let a=s.tempStart, b=s.tempEnd||s.tempStart;
+        if (!a){ closePicker(key); return; }
+        if (a>b) [a,b]=[b,a];
+        s.start=a; s.end=b; s.preset=s.activePreset;
+        closePicker(key); updateTrigger(key); renderSection(key);
+      }
+      function updateTrigger(key){ const el=document.getElementById('dtRange-'+key); if (el) el.textContent = rangeLabel(key); }
+
+      // ── Data + render ──
+      function daysOf(key){ const a=[]; eachDay(st[key].start, st[key].end, ds=>a.push(ds)); return a; }
+      function sumGroupTraffic(g,s,e){ return OUTLETS.filter(o=>o.group===g).reduce((t,o)=> t + sumRange(o.trafficByDate,s,e) + sumRange(o.outboundByDate,s,e), 0); }
+      function heroHtml(cells){
+        return cells.map(c => `
+          <div class="dt-hero-stat" data-k="${c.k}">
+            <div class="dt-hero-stat-label">${c.label}</div>
+            <div class="dt-hero-stat-num">${c.num}</div>
+            <div class="dt-hero-stat-sub">${c.sub}</div>
+          </div>`).join('');
+      }
+      function renderSection(key){
+        const cfg = SECTIONS[key], s = st[key];
+        const days = daysOf(key);
+        const ndays = days.length || 1;
+        const labels = days.map(d => { const dt=new Date(d+'T00:00:00'); return dt.toLocaleDateString('id-ID',{day:'2-digit',month:'short'}); });
+        const subEl = document.getElementById('dtSub-'+key);
+        if (subEl) subEl.textContent = `${rangeLabel(key)} · ${days.length} hari`;
+
+        if (cfg.kind==='group' || cfg.kind==='chat'){
+          const seriesByGroup = {};
+          GROUPS.forEach(g => {
+            const list = OUTLETS.filter(o=>o.group===g);
+            seriesByGroup[g] = days.map(ds => {
+              if (cfg.kind==='chat'){
+                let v=0; list.forEach(o=> v += (o.trafficByDate[ds]||0)+(o.outboundByDate[ds]||0)); return v;
+              }
+              let n=0; list.forEach(o=>{ if (((o.trafficByDate[ds]||0)+(o.outboundByDate[ds]||0))>0) n++; }); return n;
+            });
+          });
+          if (cfg.kind==='group'){
+            const ent=sumGroupTraffic('enterprise',s.start,s.end), prem=sumGroupTraffic('premium',s.start,s.end), prj=sumGroupTraffic('project',s.start,s.end);
+            const tot=ent+prem+prj;
+            document.getElementById('dtHeroRow-'+key).innerHTML = heroHtml([
+              {k:'total',label:'TOTAL TRAFFIC',num:fmtNum(tot),sub:'Semua group'},
+              {k:'enterprise',label:'ENTERPRISE',num:fmtNum(ent),sub:OUTLETS.filter(o=>o.group==='enterprise').length+' outlet'},
+              {k:'premium',label:'PREMIUM SERVICES',num:fmtNum(prem),sub:OUTLETS.filter(o=>o.group==='premium').length+' outlet'},
+              {k:'project',label:'PROJECT',num:fmtNum(prj),sub:OUTLETS.filter(o=>o.group==='project').length+' outlet'},
+            ]);
+            document.getElementById('dtBadge-'+key).textContent = `● ${fmtNum(tot)} pesan`;
+          } else {
+            let inb=0, outb=0;
+            OUTLETS.forEach(o=>{ inb+=sumRange(o.trafficByDate,s.start,s.end); outb+=sumRange(o.outboundByDate,s.start,s.end); });
+            const tot=inb+outb;
+            document.getElementById('dtHeroRow-'+key).innerHTML = heroHtml([
+              {k:'total',label:'TOTAL CHAT',num:fmtNum(tot),sub:'Inbound + Outbound'},
+              {k:'inbound',label:'INBOUND',num:fmtNum(inb),sub:'Pesan masuk'},
+              {k:'outbound',label:'OUTBOUND',num:fmtNum(outb),sub:'Pesan keluar'},
+              {k:'avg',label:'RATA²/HARI',num:fmtNum(Math.round(tot/ndays)),sub:days.length+' hari'},
+            ]);
+            document.getElementById('dtBadge-'+key).textContent = `● ${fmtNum(tot)} pesan`;
+          }
+          charts[key] = _renderTaStackedBar({
+            prev: charts[key], canvasId:'dtChart-'+key, legendElId:'dtLegend-'+key, canvasWrapId:'dtChartWrap-'+key,
+            days, labels, seriesByGroup, allOnGroups: GROUPS.slice(), unitLabel: cfg.unit,
+          });
+        } else {
+          const escByDate = {};
+          (TICKET_LIST||[]).forEach(t=>{ if(!t||!t.dateISO) return; if (t.dateISO<s.start||t.dateISO>s.end) return; escByDate[t.dateISO]=(escByDate[t.dateISO]||0)+1; });
+          const escSeries = days.map(d=>escByDate[d]||0);
+          const escTot = escSeries.reduce((a,b)=>a+b,0);
+          const peak = escSeries.reduce((m,v)=>v>m?v:m,0);
+          const activeDays = escSeries.filter(v=>v>0).length;
+          document.getElementById('dtHeroRow-'+key).innerHTML = heroHtml([
+            {k:'total',label:'TOTAL ESCALATED',num:fmtNum(escTot),sub:'Tiket escalated'},
+            {k:'avg',label:'RATA²/HARI',num:fmtNum(Math.round(escTot/ndays)),sub:days.length+' hari'},
+            {k:'escalated',label:'HARI TERTINGGI',num:fmtNum(peak),sub:'Puncak harian'},
+            {k:'inbound',label:'HARI AKTIF',num:fmtNum(activeDays),sub:'Hari ada tiket'},
+          ]);
+          document.getElementById('dtBadge-'+key).textContent = `● ${fmtNum(escTot)} tiket`;
+          renderTrendChart(key, days, labels, escSeries);
+        }
+      }
+      function renderTrendChart(key, days, labels, escSeries){
+        const wrap=document.getElementById('dtChartWrap-'+key); if (wrap){ wrap.style.width=(days.length*38)+'px'; }
+        const ctx=document.getElementById('dtChart-'+key); if(!ctx) return;
+        if (charts[key]){ charts[key].destroy(); charts[key]=null; }
+        const totPlugin = { id:'dtTrendTot-'+key, afterDatasetsDraw(chart){ const {ctx}=chart; ctx.save(); ctx.font='600 11px "Geist Mono", ui-monospace, monospace'; ctx.fillStyle='#374151'; ctx.textAlign='center'; ctx.textBaseline='bottom'; const n=chart.data.labels.length; for(let i=0;i<n;i++){ let total=0,topY=null,xPos=null; chart.data.datasets.forEach((ds,di)=>{ if(!chart.isDatasetVisible(di))return; const v=+ds.data[i]||0; total+=v; const bar=chart.getDatasetMeta(di).data[i]; if(bar&&v>0){ if(topY===null||bar.y<topY)topY=bar.y; if(xPos===null)xPos=bar.x; } }); if(total>0&&topY!==null) ctx.fillText(String(total),xPos,topY-4); } ctx.restore(); } };
+        charts[key] = new Chart(ctx.getContext('2d'),{ type:'bar',
+          data:{ labels, datasets:[
+            { label:'Escalated Eng', data:escSeries, backgroundColor:'#3b82f6', borderRadius:4, maxBarThickness:28 },
+          ]},
+          plugins:[totPlugin],
+          options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:22}},
+            plugins:{ legend:{display:false}, tooltip:{ mode:'index', callbacks:{ label:c=>` ${c.dataset.label}: ${c.parsed.y.toLocaleString('id-ID')}`, footer:items=>'Total: '+items.reduce((a,it)=>a+(it.parsed.y||0),0).toLocaleString('id-ID') } } },
+            scales:{ x:{stacked:true,grid:{display:false},ticks:{font:{size:11},color:'#9ca3af',autoSkip:false,maxRotation:90,minRotation:days.length>14?60:0}}, y:{stacked:true,grid:{color:'#f3f4f6'},ticks:{font:{size:11},color:'#9ca3af',precision:0},beginAtZero:true} }
+          }
+        });
+      }
+
+      function buildSection(key){
+        const cfg = SECTIONS[key];
+        const cont = document.getElementById('dtSec-'+key);
+        if (!cont) return;
+        const presetsHtml = PRESET_ORDER.map(p=>`<div class="dp-preset" id="dtp-${key}-${p}" data-preset="${p}">${PRESET_LABELS[p]}</div>`).join('');
+        cont.innerHTML = `
+          <div class="dt-pick-row">
+            <div class="dp-wrap" id="dtDp-${key}">
+              <div class="dp-trigger" id="dtTrig-${key}">
+                <span class="dp-trigger-ico"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6h12M5.5 1.5V4M10.5 1.5V4"/></svg></span>
+                <span class="dp-trigger-label">Periode</span>
+                <span class="dp-trigger-divider"></span>
+                <span class="dp-trigger-range" id="dtRange-${key}">—</span>
+                <svg class="dp-trigger-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4.5L6 7.5L9 4.5"/></svg>
+              </div>
+              <div class="dp-popup" id="dtPop-${key}" style="display:none">
+                <div class="dp-body">
+                  <div class="dp-presets">${presetsHtml}</div>
+                  <div class="dp-cals" id="dtCals-${key}">
+                    <div class="dp-cal" id="dtCalL-${key}"></div>
+                    <div class="dp-cal" id="dtCalR-${key}"></div>
+                  </div>
+                  <div class="dp-summary">
+                    <div><div class="dp-summary-label">Dari Tanggal</div><div class="dp-summary-date" id="dtFrom-${key}">—</div></div>
+                    <div><div class="dp-summary-label">Hingga Tanggal</div><div class="dp-summary-date" id="dtTo-${key}">—</div></div>
+                  </div>
+                </div>
+                <div class="dp-footer">
+                  <span class="dp-footer-range" id="dtFoot-${key}">—</span>
+                  <div class="dp-footer-btns">
+                    <button class="dp-btn-cancel" id="dtCancel-${key}">Batal</button>
+                    <button class="dp-btn-apply" id="dtApply-${key}">Proses</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dt-hero" id="dtHero-${key}"><div class="dt-hero-row" id="dtHeroRow-${key}"></div></div>
+          <div class="analytics-panel">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+              <div><div class="analytics-panel-title">${cfg.title}</div><div class="analytics-panel-sub" id="dtSub-${key}"></div></div>
+              <span class="analytics-badge" id="dtBadge-${key}">—</span>
+            </div>
+            <div style="overflow-x:auto"><div id="dtChartWrap-${key}" style="position:relative;height:300px"><canvas id="dtChart-${key}"></canvas></div></div>
+            <div class="ta-chart-legend" id="dtLegend-${key}" style="margin-top:12px"></div>
+          </div>`;
+
+        document.getElementById('dtTrig-'+key).addEventListener('click', e=>{ e.stopPropagation(); st[key].open ? closePicker(key) : openPicker(key); });
+        document.getElementById('dtPop-'+key).addEventListener('click', e=>e.stopPropagation());
+        document.getElementById('dtApply-'+key).addEventListener('click', ()=>applySec(key));
+        document.getElementById('dtCancel-'+key).addEventListener('click', ()=>closePicker(key));
+        document.querySelectorAll(`#dtPop-${key} .dp-preset`).forEach(el=> el.addEventListener('click', ()=>applyPresetSec(key, el.dataset.preset)));
+        const cals = document.getElementById('dtCals-'+key);
+        cals.addEventListener('click', e=>{
+          const nav = e.target.closest('[data-nav]');
+          if (nav){ const d=+nav.dataset.nav, s=st[key]; s.rightMonth+=d; if(s.rightMonth>11){s.rightMonth=0;s.rightYear++;} if(s.rightMonth<0){s.rightMonth=11;s.rightYear--;} renderCal(key); return; }
+          const day = e.target.closest('[data-day]'); if (day) clickDay(key, day.dataset.day);
+        });
+        cals.addEventListener('mouseover', e=>{ const day=e.target.closest('[data-day]'); if (day) hoverDay(key, day.dataset.day); });
+        cals.addEventListener('mouseleave', ()=>{ const s=st[key]; if(s.step===1 && s.hoverDate){ s.hoverDate=null; renderCal(key); } });
+      }
+      function buildAll(){
+        Object.keys(SECTIONS).forEach(key=>{
+          const r = presetRange(DEF_PRESET);
+          st[key] = { start:r.s, end:r.e, preset:DEF_PRESET, open:false, tempStart:null, tempEnd:null, hoverDate:null, step:0, rightYear:0, rightMonth:0, activePreset:null };
+          buildSection(key);
+          updateTrigger(key);
+        });
+        document.addEventListener('click', ()=>closeAll(null));
+        built = true;
+      }
+      function renderAll(){
+        if (!OUTLETS || !OUTLETS.length) return;
+        if (!built) buildAll();
+        Object.keys(SECTIONS).forEach(renderSection);
+      }
+      window.DT = { renderAll };
+
+      // Override renderDaily: 3 section mandiri + section 4 (semua data, tanpa filter tanggal)
+      window.renderDaily = function(){
+        try { renderAll(); } catch(e){ console.warn('DT.renderAll:', e); }
+        const _s=selectedDateStart, _e=selectedDateEnd;
+        selectedDateStart=''; selectedDateEnd='';
+        try { if (typeof renderTicketIdList==='function') renderTicketIdList(); } catch(e){ console.warn('renderTicketIdList:', e); }
+        selectedDateStart=_s; selectedDateEnd=_e;
+      };
     })();
 
   </script>
