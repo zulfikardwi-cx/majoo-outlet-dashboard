@@ -2010,6 +2010,9 @@
     .login-blocked-icon { font-size:40px; text-align:center; margin-bottom:16px; }
     /* ── Daily Tracking — per-section hero + picker ── */
     .dt-pick-row { display:flex; justify-content:flex-end; margin-bottom:12px; }
+    .dt-filter-row { display:flex; flex-wrap:wrap; gap:10px 22px; align-items:center; margin-bottom:14px; }
+    .dt-filter-grp { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .dt-filter-lbl { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
     .dt-hero {
       background: var(--m-grad);
       border-radius: var(--rad-lg);
@@ -4163,6 +4166,187 @@
       #workorderPage .wt-tltc-bar-wrap { grid-column: 1 / -1; padding-left: 78px; }
     }
 
+    /* Mau Expired panel */
+    #workorderPage .wt-exp-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    #workorderPage .wt-exp-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 18px 22px; gap: 12px;
+    }
+    #workorderPage .wt-exp-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+    #workorderPage .wt-exp-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    #workorderPage .wt-exp-badges { display: inline-flex; gap: 7px; flex-wrap: wrap; }
+    #workorderPage .wt-exp-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 11px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 600; white-space: nowrap;
+    }
+    #workorderPage .wt-exp-badge.past   { background: #fef2f2; color: #b91c1c; }
+    #workorderPage .wt-exp-badge.soon   { background: #fffbeb; color: #b45309; }
+    #workorderPage .wt-exp-badge.total  { background: var(--m-tint); color: var(--m-dark); }
+    #workorderPage .wt-exp-badge::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    #workorderPage .wt-exp-badge.past::before  { background: #dc2626; }
+    #workorderPage .wt-exp-badge.soon::before  { background: #d97706; }
+    #workorderPage .wt-exp-badge.total::before { background: var(--m-dark); }
+    #workorderPage .wt-exp-list { padding: 0; }
+    #workorderPage .wt-exp-row {
+      display: grid;
+      grid-template-columns: 36px minmax(180px, 1.8fr) minmax(120px, 1fr) minmax(130px, 1fr) auto;
+      gap: 14px; padding: 12px 22px;
+      align-items: center; border-top: 1px solid var(--border);
+    }
+    #workorderPage .wt-exp-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: grid; place-items: center;
+      color: #fff; font-size: 12px; font-weight: 700;
+      background: var(--m-grad);
+    }
+    #workorderPage .wt-exp-row.past .wt-exp-avatar {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+    }
+    #workorderPage .wt-exp-meta { min-width: 0; }
+    #workorderPage .wt-exp-name {
+      font-size: 13.5px; font-weight: 600; color: var(--ink);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #workorderPage .wt-exp-inv {
+      font-size: 11.5px; color: var(--muted); margin-top: 2px;
+      font-family: var(--mono);
+    }
+    #workorderPage .wt-exp-date {
+      font-size: 13px; font-weight: 600; color: var(--ink); font-family: var(--mono);
+    }
+    #workorderPage .wt-exp-date.past { color: #dc2626; }
+    #workorderPage .wt-exp-date.soon { color: #d97706; }
+    #workorderPage .wt-exp-status {
+      font-size: 11.5px; color: var(--muted);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    #workorderPage .wt-exp-status-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    #workorderPage .wt-exp-status.past .wt-exp-status-dot { background: #dc2626; }
+    #workorderPage .wt-exp-status.soon .wt-exp-status-dot { background: #d97706; }
+    #workorderPage .wt-exp-status.past { color: #b91c1c; font-weight: 600; }
+    #workorderPage .wt-exp-status.soon { color: #b45309; font-weight: 600; }
+    #workorderPage .wt-exp-action {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--m-teal); color: #fff;
+      border: none; border-radius: 8px;
+      padding: 7px 14px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: opacity .15s;
+      white-space: nowrap;
+    }
+    #workorderPage .wt-exp-action:hover { opacity: .88; }
+    #workorderPage .wt-exp-action:disabled { opacity: .5; cursor: not-allowed; }
+    #workorderPage .wt-exp-empty {
+      text-align: center; padding: 36px 20px;
+      color: var(--muted); font-size: 13px;
+    }
+    @media (max-width: 720px) {
+      #workorderPage .wt-exp-row {
+        grid-template-columns: 36px 1fr auto;
+        gap: 10px;
+      }
+      #workorderPage .wt-exp-date, #workorderPage .wt-exp-status {
+        grid-column: 2 / -1; padding-left: 0;
+      }
+    }
+
+    /* Perpanjang Expired — modal */
+    .wtExpModalBg {
+      position: fixed; inset: 0; background: rgba(15,23,42,.55);
+      z-index: 9000; opacity: 0; pointer-events: none;
+      transition: opacity .18s;
+    }
+    .wtExpModalBg.open { opacity: 1; pointer-events: auto; }
+    .wtExpModal {
+      position: fixed; left: 50%; top: 50%;
+      transform: translate(-50%, -48%) scale(.96);
+      background: var(--surface); border-radius: 14px;
+      box-shadow: 0 24px 60px rgba(15,23,42,.32);
+      width: min(440px, calc(100% - 32px));
+      z-index: 9001; opacity: 0; pointer-events: none;
+      transition: opacity .18s, transform .2s;
+    }
+    .wtExpModal.open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+    .wtExpModal-head {
+      padding: 18px 22px 12px; border-bottom: 1px solid var(--border);
+    }
+    .wtExpModal-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+    .wtExpModal-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .wtExpModal-body { padding: 18px 22px; }
+    .wtExpModal-info {
+      background: var(--surface-2); border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 14px;
+      display: grid; gap: 6px;
+    }
+    .wtExpModal-info-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; }
+    .wtExpModal-info-label { color: var(--muted); }
+    .wtExpModal-info-val { color: var(--ink); font-weight: 600; text-align: right; }
+    .wtExpModal-info-val.mono { font-family: var(--mono); }
+    .wtExpModal-label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--ink-2); margin-bottom: 6px;
+    }
+    .wtExpModal-input {
+      width: 100%; box-sizing: border-box;
+      padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+      font-size: 13px; color: var(--ink);
+      background: var(--surface);
+    }
+    .wtExpModal-input:focus {
+      outline: none; border-color: var(--m-teal);
+      box-shadow: 0 0 0 3px rgba(45,189,182,.15);
+    }
+    .wtExpModal-presets {
+      display: inline-flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
+    }
+    .wtExpModal-preset {
+      background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--ink-2); padding: 5px 10px; border-radius: 6px;
+      font-size: 11.5px; font-weight: 500; cursor: pointer;
+      transition: all .15s;
+    }
+    .wtExpModal-preset:hover { border-color: var(--m-teal); color: var(--m-dark); }
+    .wtExpModal-err {
+      display: none; margin-top: 10px;
+      padding: 9px 12px; border-radius: 8px;
+      background: #fef2f2; color: #b91c1c;
+      font-size: 12px;
+    }
+    .wtExpModal-err.show { display: block; }
+    .wtExpModal-ok {
+      display: none; margin-top: 10px;
+      padding: 9px 12px; border-radius: 8px;
+      background: #ecfdf5; color: #047857;
+      font-size: 12px;
+    }
+    .wtExpModal-ok.show { display: block; }
+    .wtExpModal-foot {
+      display: flex; gap: 8px; justify-content: flex-end;
+      padding: 12px 22px 18px;
+    }
+    .wtExpModal-btn {
+      padding: 9px 16px; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent;
+      transition: opacity .15s, background .15s;
+    }
+    .wtExpModal-btn-cancel {
+      background: var(--surface); border-color: var(--border); color: var(--ink-2);
+    }
+    .wtExpModal-btn-cancel:hover { background: var(--surface-2); }
+    .wtExpModal-btn-save {
+      background: var(--m-teal); color: #fff;
+    }
+    .wtExpModal-btn-save:hover { opacity: .88; }
+    .wtExpModal-btn-save:disabled { opacity: .5; cursor: not-allowed; }
+
     /* Activity Feed */
     #workorderPage .wt-feed-panel {
       background: var(--surface); border: 1px solid var(--border);
@@ -4384,6 +4568,47 @@
         <path d="M3 8l3.5 3.5L13 4.5"/>
       </svg>
       <span id="eskToastMsg">Request berhasil dikirim.</span>
+    </div>
+
+    <!-- ══════ PERPANJANG EXPIRED — MODAL ══════ -->
+    <div class="wtExpModalBg" id="wtExpModalBg" onclick="if(event.target===this) wtExpCloseModal()"></div>
+    <div class="wtExpModal" id="wtExpModal" role="dialog" aria-modal="true" aria-labelledby="wtExpModalTitle">
+      <div class="wtExpModal-head">
+        <div class="wtExpModal-title" id="wtExpModalTitle">Perpanjang Expired Date</div>
+        <div class="wtExpModal-sub">Tanggal baru akan ditulis ke kolom <i>Expired Date</i> di sheet sumber.</div>
+      </div>
+      <div class="wtExpModal-body">
+        <div class="wtExpModal-info">
+          <div class="wtExpModal-info-row">
+            <span class="wtExpModal-info-label">Outlet</span>
+            <span class="wtExpModal-info-val" id="wtExpModalOutlet">—</span>
+          </div>
+          <div class="wtExpModal-info-row">
+            <span class="wtExpModal-info-label">INV_Code</span>
+            <span class="wtExpModal-info-val mono" id="wtExpModalInv">—</span>
+          </div>
+          <div class="wtExpModal-info-row">
+            <span class="wtExpModal-info-label">Expired saat ini</span>
+            <span class="wtExpModal-info-val mono" id="wtExpModalOld">—</span>
+          </div>
+        </div>
+        <label class="wtExpModal-label" for="wtExpModalDate">Tanggal Expired Baru</label>
+        <input class="wtExpModal-input" id="wtExpModalDate" type="date" />
+        <div class="wtExpModal-presets">
+          <button type="button" class="wtExpModal-preset" data-add="3m">+3 Bulan</button>
+          <button type="button" class="wtExpModal-preset" data-add="6m">+6 Bulan</button>
+          <button type="button" class="wtExpModal-preset" data-add="1y">+1 Tahun</button>
+          <button type="button" class="wtExpModal-preset" data-add="2y">+2 Tahun</button>
+        </div>
+        <label class="wtExpModal-label" for="wtExpModalInvoice" style="margin-top:16px">Kode Invoice Baru <span style="color:var(--muted);font-weight:400">(opsional)</span></label>
+        <input class="wtExpModal-input" id="wtExpModalInvoice" type="text" placeholder="Kode invoice dari perpanjangan yang dibayarkan" autocomplete="off" />
+        <div class="wtExpModal-err" id="wtExpModalErr"></div>
+        <div class="wtExpModal-ok" id="wtExpModalOk"></div>
+      </div>
+      <div class="wtExpModal-foot">
+        <button class="wtExpModal-btn wtExpModal-btn-cancel" onclick="wtExpCloseModal()">Batal</button>
+        <button class="wtExpModal-btn wtExpModal-btn-save" id="wtExpModalSaveBtn" onclick="wtExpSubmit()">Simpan</button>
+      </div>
     </div>
 
     <!-- ══════ SLIDE-IN PANEL: REQUEST MASUK ══════ -->
@@ -5484,7 +5709,7 @@
             <thead>
               <tr>
                 <th>Outlet Name</th><th>Channel</th><th>RSM</th><th>TL</th><th>SALES</th>
-                <th>Date</th><th>Region</th><th>Leads_Code</th><th>INV_Code</th>
+                <th>Date</th><th>Expired</th><th>Region</th><th>Leads_Code</th><th>INV_Code</th>
                 <th>Bundle_Name</th><th>TlTC Handled</th><th>Cek Invoice</th><th>Owner Name</th>
                 <th>Contact</th><th>Update Gform</th><th>FINAL STATUS</th><th>Evidence</th>
                 <th>WA Group</th><th>Hyper Link</th>
@@ -5520,6 +5745,19 @@
           <span class="wt-tltc-badge" id="wtTltcBadge">— grup · — handler</span>
         </div>
         <div class="wt-tltc-list" id="wtTltcList"></div>
+      </div>
+
+      <!-- Mau Expired -->
+      <div class="wt-section-label">GRUP MAU EXPIRED (H-30)</div>
+      <div class="wt-exp-panel">
+        <div class="wt-exp-head">
+          <div>
+            <div class="wt-exp-title">Outlet Mendekati Expired</div>
+            <div class="wt-exp-sub">Grup dengan Expired Date H-30 atau sudah lewat. Klik <b>Perpanjang</b> untuk update tanggal expired.</div>
+          </div>
+          <div class="wt-exp-badges" id="wtExpBadges"></div>
+        </div>
+        <div class="wt-exp-list" id="wtExpList"></div>
       </div>
 
       <!-- Activity Feed -->
@@ -9006,6 +9244,26 @@ Salam,
       const d = wtParseDate(s); if (!d) return s || '';
       return d.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
     }
+    // Hari sampai expired (positif = belum lewat, negatif = sudah lewat). null kalau invalid.
+    function wtDaysUntil(s) {
+      const d = wtParseDate(s); if (!d) return null;
+      const today = new Date(); today.setHours(0,0,0,0);
+      d.setHours(0,0,0,0);
+      return Math.round((d - today) / 86400000);
+    }
+    // Format Expired Date dengan warna indikator (lewat / dekat / aman).
+    function wtFmtExpired(s) {
+      if (!s) return '<span style="color:#cbd5e1">—</span>';
+      const d = wtParseDate(s); if (!d) return wtEscapeHtml(s);
+      const days = wtDaysUntil(s);
+      const label = d.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+      let color = 'inherit', weight = 500;
+      if (days !== null) {
+        if (days < 0)        { color = '#dc2626'; weight = 700; }  // sudah lewat
+        else if (days <= 30) { color = '#d97706'; weight = 600; }  // mau expired
+      }
+      return `<span style="color:${color};font-weight:${weight}">${label}</span>`;
+    }
     function wtPickOutletName(r) {
       return (r.gform_name && String(r.gform_name).trim()) ? r.gform_name : (r.outlet_name || '—');
     }
@@ -9186,12 +9444,15 @@ Salam,
       const tbody = document.getElementById('wtTbody');
       if (tbody) {
         if (!pageRows.length) {
-          tbody.innerHTML = `<tr><td colspan="19"><div class="wt-empty-state">Tidak ada data sesuai filter</div></td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="20"><div class="wt-empty-state">Tidak ada data sesuai filter</div></td></tr>`;
         } else {
           tbody.innerHTML = pageRows.map(r => wtRowHtml(r)).join('');
         }
       }
       wtRenderPagination(total, pages, startIdx, pageRows.length);
+
+      // Mau Expired section
+      wtRenderExpiring();
 
       // Activity feed
       wtRenderFeed();
@@ -9222,6 +9483,7 @@ Salam,
         <td>${wtEscapeHtml(r.tl) || '—'}</td>
         <td>${wtEscapeHtml(r.sales) || '—'}</td>
         <td class="wt-col-date">${wtFmtDate(r.date)}</td>
+        <td class="wt-col-date">${wtFmtExpired(r.expired)}</td>
         <td>${wtEscapeHtml(r.region)}</td>
         <td>${leads}</td>
         <td class="wt-col-inv">${wtEscapeHtml(r.inv_code)}</td>
@@ -9470,6 +9732,237 @@ Salam,
       events.sort((a, b) => b.ts.getTime() - a.ts.getTime());
       return events.slice(0, 10);
     }
+    // ── "Mau Expired" section ──
+    const WT_EXPIRING_WINDOW_DAYS = 30;
+
+    // DEMO: 1 outlet dummy khusus untuk section "Outlet Mendekati Expired".
+    // Tidak masuk WORKORDER_DATA, tidak muncul di tabel Daftar Outlet, tidak menyentuh sheet.
+    // expired di-set dinamis (hari ini + 7) supaya selalu tampil sebagai H-7 saat dipresentasikan.
+    // Hapus blok ini + pemanggilannya kalau demo sudah tidak diperlukan.
+    const WT_DUMMY_EXPIRING_INV = 'DUMMY-EXP-001';
+    function _wtDummyExpiringRecord() {
+      const d = new Date(); d.setDate(d.getDate() + 7);
+      const expStr = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`; // M/D/YYYY
+      return {
+        __dummy: true,
+        inv_code: WT_DUMMY_EXPIRING_INV,
+        gform_name: 'Outlet Demo Sentosa (DUMMY)',
+        outlet_name: 'Outlet Demo Sentosa (DUMMY)',
+        expired: expStr,
+        channel: 'Demo',
+        region: 'Demo',
+      };
+    }
+    let _wtDummyExpiring = _wtDummyExpiringRecord();
+
+    function wtBuildExpiringList() {
+      const rows = wtDedupInv(WORKORDER_DATA || []);
+      const out = [];
+      rows.forEach(r => {
+        if (!r.expired) return;
+        const days = wtDaysUntil(r.expired);
+        if (days === null) return;
+        if (days > WT_EXPIRING_WINDOW_DAYS) return;
+        out.push({ row: r, days });
+      });
+      // DEMO: sisipkan dummy
+      if (_wtDummyExpiring && _wtDummyExpiring.expired) {
+        const dDays = wtDaysUntil(_wtDummyExpiring.expired);
+        if (dDays !== null && dDays <= WT_EXPIRING_WINDOW_DAYS) out.push({ row: _wtDummyExpiring, days: dDays });
+      }
+      // Sudah lewat dulu (negatif paling besar), lanjut yang paling dekat ke nol
+      out.sort((a, b) => a.days - b.days);
+      return out;
+    }
+    function wtRenderExpiring() {
+      const list = document.getElementById('wtExpList');
+      const badges = document.getElementById('wtExpBadges');
+      if (!list || !badges) return;
+      const items = wtBuildExpiringList();
+      const past = items.filter(x => x.days < 0).length;
+      const soon = items.length - past;
+      badges.innerHTML = [
+        items.length ? `<span class="wt-exp-badge total">${items.length} grup</span>` : '',
+        past ? `<span class="wt-exp-badge past">${past} sudah lewat</span>` : '',
+        soon ? `<span class="wt-exp-badge soon">${soon} ≤ 30 hari</span>` : '',
+      ].filter(Boolean).join('');
+      if (!items.length) {
+        list.innerHTML = '<div class="wt-exp-empty">Tidak ada outlet yang mendekati expired.</div>';
+        return;
+      }
+      list.innerHTML = items.map(({ row: r, days }) => {
+        const name    = wtPickOutletName(r);
+        const initials= wtGetInitials(name);
+        const inv     = r.inv_code || '—';
+        const expDate = wtParseDate(r.expired);
+        const expFmt  = expDate ? expDate.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : (r.expired || '—');
+        const past    = days < 0;
+        const statusCls = past ? 'past' : 'soon';
+        const statusTxt = past
+          ? `Sudah lewat ${Math.abs(days)} hari`
+          : (days === 0 ? 'Expired hari ini' : `H-${days}`);
+        return `
+          <div class="wt-exp-row ${past ? 'past' : ''}">
+            <div class="wt-exp-avatar">${wtEscapeHtml(initials)}</div>
+            <div class="wt-exp-meta">
+              <div class="wt-exp-name" title="${wtEscapeHtml(name)}">${wtEscapeHtml(name)}</div>
+              <div class="wt-exp-inv">${wtEscapeHtml(inv)}</div>
+            </div>
+            <div class="wt-exp-date ${statusCls}">${expFmt}</div>
+            <div class="wt-exp-status ${statusCls}"><span class="wt-exp-status-dot"></span>${statusTxt}</div>
+            <button class="wt-exp-action" onclick="wtExpOpenModal('${encodeURIComponent(inv)}')">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 8h10M8 3l5 5-5 5"/>
+              </svg>
+              Perpanjang
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ── Modal Perpanjang ──
+    let _wtExpModalState = { inv: '', oldExpired: '', outletName: '' };
+    function _wtExpDefaultNewDate(oldStr) {
+      // Default: +1 tahun dari expired lama. Kalau invalid → +1 tahun dari hari ini.
+      const base = wtParseDate(oldStr) || new Date();
+      const d = new Date(base.getFullYear() + 1, base.getMonth(), base.getDate());
+      return wtYmd(d);
+    }
+    function _wtExpAddPreset(base, code) {
+      const d = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+      if (code === '3m') d.setMonth(d.getMonth() + 3);
+      else if (code === '6m') d.setMonth(d.getMonth() + 6);
+      else if (code === '1y') d.setFullYear(d.getFullYear() + 1);
+      else if (code === '2y') d.setFullYear(d.getFullYear() + 2);
+      return d;
+    }
+    window.wtExpOpenModal = function(invEncoded) {
+      const inv = decodeURIComponent(invEncoded || '');
+      const rows = wtDedupInv(WORKORDER_DATA || []);
+      let r = rows.find(x => String(x.inv_code || '').trim() === inv);
+      // DEMO: dummy tidak ada di WORKORDER_DATA
+      if (!r && inv === WT_DUMMY_EXPIRING_INV) r = _wtDummyExpiring;
+      if (!r) return;
+      _wtExpModalState.inv = inv;
+      _wtExpModalState.oldExpired = r.expired || '';
+      _wtExpModalState.outletName = wtPickOutletName(r);
+
+      document.getElementById('wtExpModalOutlet').textContent = _wtExpModalState.outletName;
+      document.getElementById('wtExpModalInv').textContent = inv;
+      const oldD = wtParseDate(r.expired);
+      document.getElementById('wtExpModalOld').textContent = oldD
+        ? oldD.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' })
+        : (r.expired || '—');
+
+      const input = document.getElementById('wtExpModalDate');
+      input.value = _wtExpDefaultNewDate(r.expired);
+
+      const invInput = document.getElementById('wtExpModalInvoice');
+      if (invInput) invInput.value = '';
+
+      document.getElementById('wtExpModalErr').classList.remove('show');
+      document.getElementById('wtExpModalErr').textContent = '';
+      document.getElementById('wtExpModalOk').classList.remove('show');
+      document.getElementById('wtExpModalOk').textContent = '';
+      const btn = document.getElementById('wtExpModalSaveBtn');
+      btn.disabled = false; btn.textContent = 'Simpan';
+
+      document.getElementById('wtExpModalBg').classList.add('open');
+      document.getElementById('wtExpModal').classList.add('open');
+      setTimeout(() => input.focus(), 60);
+    };
+    window.wtExpCloseModal = function() {
+      document.getElementById('wtExpModalBg').classList.remove('open');
+      document.getElementById('wtExpModal').classList.remove('open');
+    };
+    // Preset buttons
+    document.addEventListener('click', function(ev) {
+      const btn = ev.target.closest('.wtExpModal-preset');
+      if (!btn) return;
+      const code = btn.dataset.add;
+      const base = wtParseDate(_wtExpModalState.oldExpired) || new Date();
+      const d = _wtExpAddPreset(base, code);
+      document.getElementById('wtExpModalDate').value = wtYmd(d);
+    });
+    // ESC closes
+    document.addEventListener('keydown', function(ev) {
+      if (ev.key === 'Escape' && document.getElementById('wtExpModal')?.classList.contains('open')) {
+        wtExpCloseModal();
+      }
+    });
+    window.wtExpSubmit = async function() {
+      const inv = _wtExpModalState.inv;
+      const newDate = document.getElementById('wtExpModalDate').value;
+      const newInvoice = (document.getElementById('wtExpModalInvoice')?.value || '').trim();
+      const errEl = document.getElementById('wtExpModalErr');
+      const okEl  = document.getElementById('wtExpModalOk');
+      errEl.classList.remove('show'); errEl.textContent = '';
+      okEl.classList.remove('show');  okEl.textContent = '';
+
+      if (!inv) { errEl.textContent = 'INV_Code tidak terdeteksi.'; errEl.classList.add('show'); return; }
+      if (!newDate || !/^\d{4}-\d{2}-\d{2}$/.test(newDate)) {
+        errEl.textContent = 'Tanggal expired baru wajib diisi.'; errEl.classList.add('show'); return;
+      }
+
+      // DEMO: dummy disimulasikan lokal, tidak memanggil backend (INV tidak ada di sheet).
+      if (inv === WT_DUMMY_EXPIRING_INV) {
+        const m = newDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        _wtDummyExpiring.expired = `${+m[2]}/${+m[3]}/${m[1]}`; // M/D/YYYY
+        const newFmt = new Date(+m[1], +m[2]-1, +m[3]).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+        const invNote = newInvoice ? ` Invoice baru: <b>${wtEscapeHtml(newInvoice)}</b>.` : '';
+        okEl.innerHTML = `<b>[DEMO]</b> Tanggal expired (dummy) diperpanjang ke <b>${wtEscapeHtml(newFmt)}</b>.${invNote} Data nyata & sheet tidak berubah.`;
+        okEl.classList.add('show');
+        renderWorkorder();
+        setTimeout(() => { wtExpCloseModal(); }, 1300);
+        return;
+      }
+
+      let email = '';
+      try {
+        const sess = JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
+        email = (sess.email || '').trim();
+      } catch (_) { /* noop */ }
+      if (!email) {
+        errEl.textContent = 'Sesi login tidak terdeteksi. Silakan login ulang.';
+        errEl.classList.add('show'); return;
+      }
+
+      const btn = document.getElementById('wtExpModalSaveBtn');
+      btn.disabled = true; btn.textContent = 'Menyimpan…';
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'updateWorkorderExpired',
+            invCode: inv,
+            newExpired: newDate,
+            email: email,
+            newInvoice: newInvoice,
+          }),
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          errEl.textContent = data.error || 'Gagal menyimpan tanggal expired.';
+          errEl.classList.add('show');
+          btn.disabled = false; btn.textContent = 'Simpan';
+          return;
+        }
+        okEl.innerHTML = `Tanggal expired berhasil diperpanjang ke <b>${wtEscapeHtml(data.newExpired)}</b>.`;
+        okEl.classList.add('show');
+        // Update lokal supaya re-render langsung kelihatan; backend cache sudah di-clear.
+        (WORKORDER_DATA || []).forEach(r => {
+          if (String(r.inv_code || '').trim() === inv) r.expired = data.newExpired;
+        });
+        renderWorkorder();
+        setTimeout(() => { wtExpCloseModal(); }, 1100);
+      } catch (err) {
+        errEl.textContent = 'Gagal terhubung ke server. Coba lagi.';
+        errEl.classList.add('show');
+        btn.disabled = false; btn.textContent = 'Simpan';
+      }
+    };
+
     function wtRenderFeed() {
       const list = document.getElementById('wtFeedList');
       if (!list) return;
@@ -10132,45 +10625,51 @@ Salam,
         if (subEl) subEl.textContent = `${rangeLabel(key)} · ${days.length} hari`;
 
         if (cfg.kind==='group' || cfg.kind==='chat'){
+          const activeGroups = GROUPS.filter(g=>s.groups[g]);
+          const useInb = !!s.chats.inbound, useOut = !!s.chats.outbound;
+          const msgOn    = (o,ds)=> (useInb?(o.trafficByDate[ds]||0):0) + (useOut?(o.outboundByDate[ds]||0):0);
+          const msgRange = (o)=>    (useInb?sumRange(o.trafficByDate,s.start,s.end):0) + (useOut?sumRange(o.outboundByDate,s.start,s.end):0);
           const seriesByGroup = {};
-          GROUPS.forEach(g => {
+          activeGroups.forEach(g => {
             const list = OUTLETS.filter(o=>o.group===g);
             seriesByGroup[g] = days.map(ds => {
-              if (cfg.kind==='chat'){
-                let v=0; list.forEach(o=> v += (o.trafficByDate[ds]||0)+(o.outboundByDate[ds]||0)); return v;
-              }
-              let n=0; list.forEach(o=>{ if (((o.trafficByDate[ds]||0)+(o.outboundByDate[ds]||0))>0) n++; }); return n;
+              if (cfg.kind==='chat'){ let v=0; list.forEach(o=> v += msgOn(o,ds)); return v; }
+              let n=0; list.forEach(o=>{ if (msgOn(o,ds)>0) n++; }); return n;
             });
           });
           if (cfg.kind==='group'){
-            const ent=sumGroupTraffic('enterprise',s.start,s.end), prem=sumGroupTraffic('premium',s.start,s.end), prj=sumGroupTraffic('project',s.start,s.end);
-            const tot=ent+prem+prj;
-            document.getElementById('dtHeroRow-'+key).innerHTML = heroHtml([
-              {k:'total',label:'TOTAL TRAFFIC',num:fmtNum(tot),sub:'Semua group'},
-              {k:'enterprise',label:'ENTERPRISE',num:fmtNum(ent),sub:OUTLETS.filter(o=>o.group==='enterprise').length+' outlet'},
-              {k:'premium',label:'PREMIUM SERVICES',num:fmtNum(prem),sub:OUTLETS.filter(o=>o.group==='premium').length+' outlet'},
-              {k:'project',label:'PROJECT',num:fmtNum(prj),sub:OUTLETS.filter(o=>o.group==='project').length+' outlet'},
-            ]);
+            const GL={enterprise:'ENTERPRISE',premium:'PREMIUM SERVICES',project:'PROJECT'};
+            const perG={}; activeGroups.forEach(g=> perG[g]=OUTLETS.filter(o=>o.group===g).reduce((t,o)=>t+msgRange(o),0));
+            const tot=activeGroups.reduce((a,g)=>a+perG[g],0);
+            const cells=[{k:'total',label:'TOTAL TRAFFIC',num:fmtNum(tot),sub:'Group aktif: '+activeGroups.length}];
+            activeGroups.forEach(g=> cells.push({k:g,label:GL[g],num:fmtNum(perG[g]),sub:OUTLETS.filter(o=>o.group===g).length+' outlet'}));
+            document.getElementById('dtHeroRow-'+key).innerHTML = heroHtml(cells);
             document.getElementById('dtBadge-'+key).textContent = `● ${fmtNum(tot)} pesan`;
           } else {
             let inb=0, outb=0;
-            OUTLETS.forEach(o=>{ inb+=sumRange(o.trafficByDate,s.start,s.end); outb+=sumRange(o.outboundByDate,s.start,s.end); });
-            const tot=inb+outb;
-            document.getElementById('dtHeroRow-'+key).innerHTML = heroHtml([
-              {k:'total',label:'TOTAL CHAT',num:fmtNum(tot),sub:'Inbound + Outbound'},
-              {k:'inbound',label:'INBOUND',num:fmtNum(inb),sub:'Pesan masuk'},
-              {k:'outbound',label:'OUTBOUND',num:fmtNum(outb),sub:'Pesan keluar'},
-              {k:'avg',label:'RATA²/HARI',num:fmtNum(Math.round(tot/ndays)),sub:days.length+' hari'},
-            ]);
+            OUTLETS.filter(o=>s.groups[o.group]).forEach(o=>{ inb+=sumRange(o.trafficByDate,s.start,s.end); outb+=sumRange(o.outboundByDate,s.start,s.end); });
+            const tot=(useInb?inb:0)+(useOut?outb:0);
+            const dirSub=[useInb?'Inbound':null,useOut?'Outbound':null].filter(Boolean).join(' + ')||'—';
+            const cells=[{k:'total',label:'TOTAL CHAT',num:fmtNum(tot),sub:dirSub}];
+            if (useInb) cells.push({k:'inbound',label:'INBOUND',num:fmtNum(inb),sub:'Pesan masuk'});
+            if (useOut) cells.push({k:'outbound',label:'OUTBOUND',num:fmtNum(outb),sub:'Pesan keluar'});
+            cells.push({k:'avg',label:'RATA²/HARI',num:fmtNum(Math.round(tot/ndays)),sub:days.length+' hari'});
+            document.getElementById('dtHeroRow-'+key).innerHTML = heroHtml(cells);
             document.getElementById('dtBadge-'+key).textContent = `● ${fmtNum(tot)} pesan`;
           }
           charts[key] = _renderTaStackedBar({
             prev: charts[key], canvasId:'dtChart-'+key, legendElId:'dtLegend-'+key, canvasWrapId:'dtChartWrap-'+key,
-            days, labels, seriesByGroup, allOnGroups: GROUPS.slice(), unitLabel: cfg.unit,
+            days, labels, seriesByGroup, allOnGroups: activeGroups, unitLabel: cfg.unit,
           });
         } else {
           const escByDate = {};
-          (TICKET_LIST||[]).forEach(t=>{ if(!t||!t.dateISO) return; if (t.dateISO<s.start||t.dateISO>s.end) return; escByDate[t.dateISO]=(escByDate[t.dateISO]||0)+1; });
+          (TICKET_LIST||[]).forEach(t=>{
+            if(!t||!t.dateISO) return;
+            if (t.dateISO<s.start||t.dateISO>s.end) return;
+            const g = (typeof classify==='function') ? classify(String(t.outletTitle||'')) : 'enterprise';
+            if (!s.groups[g]) return;   // filter group
+            escByDate[t.dateISO]=(escByDate[t.dateISO]||0)+1;
+          });
           const escSeries = days.map(d=>escByDate[d]||0);
           const escTot = escSeries.reduce((a,b)=>a+b,0);
           const peak = escSeries.reduce((m,v)=>v>m?v:m,0);
@@ -10200,6 +10699,38 @@ Salam,
             scales:{ x:{stacked:true,grid:{display:false},ticks:{font:{size:11},color:'#9ca3af',autoSkip:false,maxRotation:90,minRotation:days.length>14?60:0}}, y:{stacked:true,grid:{color:'#f3f4f6'},ticks:{font:{size:11},color:'#9ca3af',precision:0},beginAtZero:true} }
           }
         });
+      }
+
+      // ── Filter chips (group untuk semua section; type chat untuk group & chat saja) ──
+      function hasChatFilter(key){ return key==='group' || key==='chat'; }
+      const _chk = `<span class="ta-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg></span>`;
+      function chipGroupHtml(key,g,label){ return `<div class="ta-chip on" data-g="${g}">${_chk}<span class="ta-cdot"></span>${label}</div>`; }
+      function chipChatHtml(key,c,label,arrow){ return `<div class="ta-chip on" data-c="${c}">${_chk}<span style="font-size:13px;line-height:1">${arrow}</span>${label}</div>`; }
+      function filterRowHtml(key){
+        const grp = `<div class="dt-filter-grp"><span class="dt-filter-lbl">Filter Group</span><div class="ta-chips">`
+          + chipGroupHtml(key,'enterprise','Enterprise') + chipGroupHtml(key,'premium','Premium Services') + chipGroupHtml(key,'project','Project')
+          + `</div></div>`;
+        const chat = hasChatFilter(key)
+          ? `<div class="dt-filter-grp"><span class="dt-filter-lbl">Type Chat</span><div class="ta-chips">`
+            + chipChatHtml(key,'inbound','Inbound','→') + chipChatHtml(key,'outbound','Outbound','←')
+            + `</div></div>`
+          : '';
+        return `<div class="dt-filter-row">${grp}${chat}</div>`;
+      }
+      function syncChips(key){
+        const cont=document.getElementById('dtSec-'+key); if(!cont)return;
+        GROUPS.forEach(g=>{ const el=cont.querySelector(`.ta-chip[data-g="${g}"]`); if(el) el.classList.toggle('on', !!st[key].groups[g]); });
+        ['inbound','outbound'].forEach(c=>{ const el=cont.querySelector(`.ta-chip[data-c="${c}"]`); if(el) el.classList.toggle('on', !!st[key].chats[c]); });
+      }
+      function toggleDtGroup(key,g){
+        const gs=st[key].groups; const active=GROUPS.filter(x=>gs[x]).length;
+        if (gs[g] && active<=1) return;       // selalu sisakan minimal 1 group
+        gs[g]=!gs[g]; syncChips(key); renderSection(key);
+      }
+      function toggleDtChat(key,c){
+        const cs=st[key].chats; const other=(c==='inbound')?'outbound':'inbound';
+        if (cs[c] && !cs[other]) return;      // selalu sisakan minimal 1 type chat
+        cs[c]=!cs[c]; syncChips(key); renderSection(key);
       }
 
       function buildSection(key){
@@ -10239,6 +10770,7 @@ Salam,
               </div>
             </div>
           </div>
+          ${filterRowHtml(key)}
           <div class="dt-hero" id="dtHero-${key}"><div class="dt-hero-row" id="dtHeroRow-${key}"></div></div>
           <div class="analytics-panel">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
@@ -10262,11 +10794,17 @@ Salam,
         });
         cals.addEventListener('mouseover', e=>{ const day=e.target.closest('[data-day]'); if (day) hoverDay(key, day.dataset.day); });
         cals.addEventListener('mouseleave', ()=>{ const s=st[key]; if(s.step===1 && s.hoverDate){ s.hoverDate=null; renderCal(key); } });
+
+        // Filter chips
+        cont.querySelectorAll('.ta-chip[data-g]').forEach(ch=> ch.addEventListener('click', ()=> toggleDtGroup(key, ch.dataset.g)));
+        cont.querySelectorAll('.ta-chip[data-c]').forEach(ch=> ch.addEventListener('click', ()=> toggleDtChat(key, ch.dataset.c)));
       }
       function buildAll(){
         Object.keys(SECTIONS).forEach(key=>{
           const r = presetRange(DEF_PRESET);
-          st[key] = { start:r.s, end:r.e, preset:DEF_PRESET, open:false, tempStart:null, tempEnd:null, hoverDate:null, step:0, rightYear:0, rightMonth:0, activePreset:null };
+          st[key] = { start:r.s, end:r.e, preset:DEF_PRESET, open:false, tempStart:null, tempEnd:null, hoverDate:null, step:0, rightYear:0, rightMonth:0, activePreset:null,
+            groups:{ enterprise:true, premium:true, project:true },   // filter group (semua section)
+            chats:{ inbound:true, outbound:true } };                  // filter type chat (section group & chat saja)
           buildSection(key);
           updateTrigger(key);
         });
