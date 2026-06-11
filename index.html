@@ -11203,6 +11203,7 @@ Salam,
       let st = { bucket:'open', activeGid:null, search:'', sort:'newest', replyTo:null, pendingMedia:null, memberCache:{} };
       let loaded = false, loading = false, listenersBound = false;
       let inboxTimer = null, lastInboxSig = '';   // auto-refresh inbox (near-realtime)
+      let _searchTimer = null;                    // debounce search server-side
       let mp = { open:false, items:[], active:0, start:0, end:0 }; // state autocomplete mention
       const MAX_MEDIA = 16 * 1024 * 1024; // 16MB
       const IMG_EXT = ['jpg','jpeg','png','gif','webp','bmp','heic'];
@@ -11257,7 +11258,35 @@ Salam,
         if (m <= 30) return { tx:'--ci-sla-warn-tx', bg:'--ci-sla-warn-bg', bd:'--ci-sla-warn-bd' };
         return { tx:'--ci-sla-late-tx', bg:'--ci-sla-late-bg', bd:'--ci-sla-late-bd' };
       }
-      const lastMsg = (c) => (c.messages && c.messages.length) ? c.messages[c.messages.length-1] : null;
+      // Pesan terakhir: kalau thread sudah dimuat pakai itu, kalau belum pakai preview `last` ringkasan.
+      const lastMsg = (c) => (c && c.messages && c.messages.length) ? c.messages[c.messages.length-1] : ((c && c.last) || null);
+      // Salin pesan yang sudah dimuat (thread terbuka) dari daftar lama ke ringkasan baru,
+      // supaya refresh inbox (yang kini hanya ringkasan) tak menghapus thread yang sudah dibuka.
+      function carryMessages(oldList, newList){
+        const byId = {}; (oldList||[]).forEach(c => { byId[c.group_id] = c; });
+        (newList||[]).forEach(nc => { const oc = byId[nc.group_id]; if (oc && oc.messages !== undefined) nc.messages = oc.messages; });
+      }
+      // Muat thread (pesan lengkap) sebuah grup on-demand via get_thread. Pertahankan
+      // pesan optimistic (id null) yang belum muncul di server.
+      async function ensureThread(gid, force){
+        const c = findConv(gid); if (!c) return;
+        if (c.messages !== undefined && !force) return;   // sudah dimuat
+        try {
+          const res = await fetch(RPC('get_thread'), { method:'POST', headers:HEAD(), body: JSON.stringify({ p_group_id: gid }) });
+          if (!res.ok){ if (c.messages === undefined) c.messages = []; return; }
+          const d = await res.json();
+          let srv = Array.isArray(d.messages) ? d.messages : [];
+          (c.messages || []).filter(m => m.id == null).forEach(p => {
+            const dup = srv.some(s => s.who==='agent' && (s.text||'')===(p.text||'') && Math.abs(new Date(s.ts)-new Date(p.ts)) < 5*60*1000);
+            const tooOld = (Date.now() - new Date(p.ts)) > 5*60*1000;
+            if (!dup && !tooOld) srv.push(p);
+          });
+          srv.sort((a,b) => new Date(a.ts) - new Date(b.ts));
+          c.messages = srv;
+          if (d.mentions) mentions = Object.assign({}, mentions, d.mentions);
+          if (st.activeGid === gid) renderThread();
+        } catch(e){ if (c.messages === undefined) c.messages = []; }
+      }
       const findConv = (gid) => convs.find(c => c.group_id === gid);
 
       /* ── load ── */
@@ -11275,8 +11304,10 @@ Salam,
           const res = await fetch(RPC('get_inbox'), { method:'POST', headers:HEAD(), body:'{}' });
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const data = await res.json();
-          if (Array.isArray(data)) { convs = data; mentions = {}; }
-          else { convs = Array.isArray(data.conversations) ? data.conversations : []; mentions = data.mentions || {}; }
+          const nc = Array.isArray(data) ? data : (Array.isArray(data.conversations) ? data.conversations : []);
+          carryMessages(convs, nc);          // pertahankan thread yang sudah dibuka
+          convs = nc;
+          // mentions TIDAK di-reset: get_inbox kini hanya ringkasan; peta mention diisi get_thread.
           lastInboxSig = inboxSignature(convs);
           loaded = true;
         } catch (err){
@@ -11324,16 +11355,12 @@ Salam,
         const tx = {open:'var(--ci-open-tx)',prog:'var(--ci-prog-tx)',done:'var(--ci-done-tx)'}[st.bucket];
 
         const searching = !!(st.search && st.search.trim());
-        const q = searching ? st.search.trim().toLowerCase() : '';
-        // Saat mencari: LINTAS semua bucket & termasuk ISI teks chat (contains).
+        // Saat mencari: hasil dari server (get_inbox p_q) — lintas bucket & isi pesan.
+        //   st.searchConvs null = pencarian masih berjalan (debounce/in-flight).
         // Saat tidak: tampilkan bucket aktif seperti biasa.
+        const pendingSearch = searching && st.searchConvs == null;
         let items = searching
-          ? convs.filter(c =>
-              String(c.name||'').toLowerCase().includes(q) ||
-              (c.messages||[]).some(m =>
-                String(m.text||'').toLowerCase().includes(q) ||
-                String(m.sender_name||'').toLowerCase().includes(q) ||
-                String(m.sender_number||'').includes(q)))
+          ? (st.searchConvs || [])
           : convs.filter(c => c.bucket === st.bucket);
         items.sort((a,bb) => {
           const ta = new Date(a.last_ts||0), tb = new Date(bb.last_ts||0);
@@ -11347,7 +11374,7 @@ Salam,
 
         const list = document.getElementById('ciConvList');
         if (!list) return;
-        if (!items.length){ list.innerHTML = `<div class="ci-list-empty">${searching ? `Tidak ada chat yang cocok dengan "${esc(st.search.trim())}".` : 'Tidak ada chat di bucket ini.'}</div>`; return; }
+        if (!items.length){ list.innerHTML = `<div class="ci-list-empty">${pendingSearch ? 'Mencari…' : (searching ? `Tidak ada chat yang cocok dengan "${esc(st.search.trim())}".` : 'Tidak ada chat di bucket ini.')}</div>`; return; }
 
         list.innerHTML = items.map(c => {
           const lm = lastMsg(c);
@@ -11411,6 +11438,10 @@ Salam,
 
         let lastDay = '';
         let msgsHtml = '';
+        if (c.messages === undefined){
+          // thread belum dimuat (get_thread sedang jalan / akan dipanggil)
+          msgsHtml = `<div class="ci-day-sep">Memuat pesan…</div>`;
+        } else
         (c.messages||[]).forEach((m, idx) => {
           const dt = new Date(m.ts);
           const dayLabel = isNaN(dt) ? '' : dt.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long' });
@@ -11745,13 +11776,14 @@ Salam,
 
       /* ── actions ── */
       function setBucket(id){ st.bucket = id; st.activeGid = null; renderAll(); }
-      function openConv(gid){
+      async function openConv(gid){
         st.activeGid = gid;
         renderList();
-        renderThread();
+        renderThread();                 // tampilkan kerangka dulu (mungkin "Memuat pesan…")
         // Cek apakah nomor WA pusat anggota grup ini → banner + kunci composer bila bukan.
         const c = findConv(gid);
         if (c) ciCheckMembership(c);
+        await ensureThread(gid);        // muat pesan lengkap on-demand (atau pakai cache)
         // Dari hasil pencarian → loncat & sorot pesan yg cocok di dalam thread.
         if (st.search && st.search.trim()) scrollToSearchHit(st.search.trim());
       }
@@ -11950,16 +11982,16 @@ Salam,
 
       /* ── auto-refresh inbox (near-realtime via polling) ─────────────────────── */
       // Sidik jari ringan utk deteksi perubahan (hindari render ulang sia-sia).
+      // Sidik jari berbasis RINGKASAN (last_ts + preview), bukan array messages (kini lazy).
       function inboxSignature(list){
         return (list||[]).map(c => {
-          const m = c.messages || [];
-          const last = m.length ? m[m.length-1] : null;
-          return c.group_id+'|'+c.bucket+'|'+(c.last_ts||'')+'|'+m.length+'|'+((last&&last.id)||'');
+          const l = c.last || {};
+          return c.group_id+'|'+c.bucket+'|'+(c.last_ts||'')+'|'+(l.ts||'')+'|'+(c.in_progress_by||'');
         }).sort().join(';');
       }
       function activeConvSig(c){
-        const m = c.messages || []; const last = m.length ? m[m.length-1] : null;
-        return c.bucket+'|'+m.length+'|'+((last&&last.id)||'')+'|'+(c.in_progress_by||'');
+        const l = c.last || {};
+        return c.bucket+'|'+(c.last_ts||'')+'|'+(l.ts||'')+'|'+(c.in_progress_by||'');
       }
       // Pertahankan pesan optimistic (id null) yg belum tersimpan di DB saat refresh,
       // supaya balasan yg baru dikirim tidak hilang sekejap sebelum scraper menulisnya.
@@ -11981,8 +12013,8 @@ Salam,
         return newList;
       }
       // Terapkan data baru tanpa mengganggu yg sedang diketik / posisi scroll.
-      function applyInbox(newConvs, newMentions){
-        newConvs = mergePending(convs, newConvs);
+      function applyInbox(newConvs){
+        carryMessages(convs, newConvs);     // pertahankan thread yang sudah dibuka
         const sig = inboxSignature(newConvs);
         if (sig === lastInboxSig) return false;   // tidak ada perubahan → diam
 
@@ -11997,7 +12029,7 @@ Salam,
         const prevScroll = body ? body.scrollTop : 0;
 
         convs = newConvs;
-        if (newMentions) mentions = newMentions;
+        // mentions tidak diganti di sini (diisi get_thread)
         lastInboxSig = sig;
 
         renderBuckets();
@@ -12005,15 +12037,20 @@ Salam,
 
         const nowActive = findConv(st.activeGid);
         const nowActiveSig = nowActive ? activeConvSig(nowActive) : null;
-        if (nowActiveSig !== prevActiveSig){   // hanya render ulang thread jika benar berubah
-          renderThread();
-          const ta2 = document.getElementById('ciReplyInput');
-          if (ta2 && taVal != null){
-            ta2.value = taVal; ciAutoGrow.call(ta2);
-            if (taFocused){ ta2.focus(); try { ta2.setSelectionRange(selS, selE); } catch(e){} }
-          }
-          const body2 = document.getElementById('ciThreadBody');
-          if (body2) body2.scrollTop = nearBottom ? body2.scrollHeight : prevScroll;
+        if (nowActiveSig !== prevActiveSig){   // ada perubahan pada thread aktif
+          const restore = () => {
+            const ta2 = document.getElementById('ciReplyInput');
+            if (ta2 && taVal != null){
+              ta2.value = taVal; ciAutoGrow.call(ta2);
+              if (taFocused){ ta2.focus(); try { ta2.setSelectionRange(selS, selE); } catch(e){} }
+            }
+            const body2 = document.getElementById('ciThreadBody');
+            if (body2) body2.scrollTop = nearBottom ? body2.scrollHeight : prevScroll;
+          };
+          // last_ts berubah → tarik ulang pesan thread aktif (near-realtime), lalu pulihkan
+          // isi composer & posisi scroll. ensureThread(force) yang me-render ulang thread.
+          if (nowActive) ensureThread(st.activeGid, true).then(restore);
+          else { renderThread(); restore(); }
         }
         return true;
       }
@@ -12022,18 +12059,32 @@ Salam,
         if (!cp || cp.style.display === 'none') return;
         if (document.hidden || loading) return;
         try {
+          // poll selalu ambil daftar penuh (ringkasan, ~puluhan KB), bukan hasil search
           const res = await fetch(RPC('get_inbox'), { method:'POST', headers:HEAD(), body:'{}' });
           if (!res.ok) return;
           const data = await res.json();
-          let nc, nm;
-          if (Array.isArray(data)){ nc = data; nm = null; }
-          else { nc = Array.isArray(data.conversations) ? data.conversations : []; nm = data.mentions || {}; }
-          applyInbox(nc, nm);
+          const nc = Array.isArray(data) ? data : (Array.isArray(data.conversations) ? data.conversations : []);
+          applyInbox(nc);
+          if (st.search && st.search.trim()) renderList();  // jaga tampilan hasil search tetap sinkron
         } catch (e){ /* diam — coba lagi tick berikutnya */ }
+      }
+      // Search lintas-thread via server (get_inbox p_q) — egress hanya saat mencari,
+      // mengembalikan ringkasan grup yang cocok (nama / isi pesan / pengirim).
+      async function runInboxSearch(q){
+        if (!q || q !== st.search.trim()) return;
+        try {
+          const res = await fetch(RPC('get_inbox'), { method:'POST', headers:HEAD(), body: JSON.stringify({ p_q: q }) });
+          if (!res.ok) return;
+          const d = await res.json();
+          const arr = Array.isArray(d.conversations) ? d.conversations : (Array.isArray(d) ? d : []);
+          carryMessages(convs, arr);     // biar buka hasil search tetap punya thread bila sudah dimuat
+          st.searchConvs = arr;
+          renderList();
+        } catch(e){ /* diam */ }
       }
       function startInboxPolling(){
         if (inboxTimer) return;
-        inboxTimer = setInterval(pollInbox, 12000);
+        inboxTimer = setInterval(pollInbox, 20000);
         // begitu user kembali ke tab dashboard → refresh seketika (tak perlu tunggu 12s)
         document.addEventListener('visibilitychange', () => { if (!document.hidden) pollInbox(); });
       }
@@ -12041,7 +12092,15 @@ Salam,
       function bindListeners(){
         if (listenersBound) return;
         const search = document.getElementById('ciSearch');
-        if (search) search.addEventListener('input', e => { st.search = e.target.value; renderList(); });
+        if (search) search.addEventListener('input', e => {
+          st.search = e.target.value;
+          clearTimeout(_searchTimer);
+          const qq = st.search.trim();
+          if (!qq){ st.searchConvs = null; renderList(); return; }
+          // tampilkan state "mencari…" segera, lalu cari di server (debounce)
+          renderList();
+          _searchTimer = setTimeout(() => runInboxSearch(qq), 350);
+        });
         const sortBtn = document.getElementById('ciSortBtn');
         if (sortBtn) sortBtn.addEventListener('click', function(){
           st.sort = st.sort==='newest' ? 'oldest' : 'newest';
