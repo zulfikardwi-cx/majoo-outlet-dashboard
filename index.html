@@ -24,6 +24,7 @@
       --ink-2: #292524;
       --muted: #78716c;
       --muted-2: #a8a29e;
+      --text: var(--ink);
 
       --m-teal: #2DBDB6;
       --m-green: #9ACF87;
@@ -329,6 +330,37 @@
       display: none;
     }
 
+    /* ── Theme toggle (Light / Auto / Dark) ── */
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+    }
+    .theme-opt {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 24px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted-2);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      padding: 0;
+    }
+    .theme-opt svg { width: 14px; height: 14px; display: block; }
+    .theme-opt:hover { color: var(--ink-2); }
+    .theme-opt.active {
+      background: var(--m-tint);
+      color: var(--m-dark);
+    }
+
     .retry-btn {
       font-size: 11px;
       font-family: var(--font);
@@ -454,7 +486,7 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #fff;
+      background: var(--surface);
       opacity: 0;
       transition: opacity .15s;
     }
@@ -609,13 +641,13 @@
     }
 
     .dp-preset:hover {
-      background: #fff;
+      background: var(--surface);
     }
 
     .dp-preset.active {
       color: var(--m-dark);
       font-weight: 600;
-      background: #fff;
+      background: var(--surface);
       box-shadow: inset 3px 0 0 var(--m-teal);
     }
 
@@ -624,7 +656,7 @@
       padding: 20px;
       gap: 0;
       flex: 1;
-      background: #fff;
+      background: var(--surface);
     }
 
     .dp-cal {
@@ -807,7 +839,7 @@
       font-size: 13px;
       color: var(--ink-2);
       margin-top: 8px;
-      background: #fff;
+      background: var(--surface);
       font-family: var(--mono);
     }
 
@@ -2084,16 +2116,16 @@
     .ota-chip-tac .ota-chip-dot { background:#a855f7; }
     /* ── Login Screen ── */
     #loginScreen { position:fixed; inset:0; background:#f3f4f6; display:flex; align-items:center; justify-content:center; z-index:9999; padding:20px; }
-    .login-card { background:#fff; border-radius:16px; padding:40px 36px; width:100%; max-width:400px; box-shadow:0 4px 32px rgba(0,0,0,.10); }
+    .login-card { background:var(--surface); border-radius:16px; padding:40px 36px; width:100%; max-width:400px; box-shadow:0 4px 32px rgba(0,0,0,.10); }
     .login-logo { display:flex; align-items:center; gap:10px; margin-bottom:32px; }
     .login-logo span { font-size:18px; font-weight:800; color:var(--text); letter-spacing:-.3px; }
     .login-title { font-size:22px; font-weight:700; color:var(--text); margin-bottom:6px; }
     .login-sub { font-size:13.5px; color:var(--muted); line-height:1.6; margin-bottom:24px; }
     .login-field-wrap { margin-bottom:10px; }
-    .login-input { width:100%; box-sizing:border-box; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; color:var(--text); outline:none; transition:border .15s; background:#fff; }
+    .login-input { width:100%; box-sizing:border-box; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; color:var(--text); outline:none; transition:border .15s; background:var(--surface); }
     .login-input:focus { border-color:var(--m-teal); }
     .login-otp-wrap { margin-bottom:10px; }
-    .login-otp-input { width:100%; box-sizing:border-box; padding:16px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:28px; font-weight:700; letter-spacing:.4em; text-align:center; color:var(--text); outline:none; transition:border .15s; background:#fff; font-family:'Courier New',monospace; }
+    .login-otp-input { width:100%; box-sizing:border-box; padding:16px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:28px; font-weight:700; letter-spacing:.4em; text-align:center; color:var(--text); outline:none; transition:border .15s; background:var(--surface); font-family:'Courier New',monospace; }
     .login-otp-input:focus { border-color:var(--m-teal); }
     .login-error { font-size:12.5px; color:#dc2626; min-height:18px; margin-bottom:8px; }
     .login-btn { width:100%; padding:13px; background:var(--m-teal); color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:background .15s; margin-bottom:12px; }
@@ -2134,7 +2166,7 @@
       opacity:.95; margin-bottom:10px; display:inline-flex; align-items:center; gap:8px;
     }
     .dt-hero-stat-label::before { content:''; width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.65); }
-    .dt-hero-stat[data-k="total"] .dt-hero-stat-label::before { background:#fff; }
+    .dt-hero-stat[data-k="total"] .dt-hero-stat-label::before { background:var(--surface); }
     .dt-hero-stat[data-k="enterprise"] .dt-hero-stat-label::before,
     .dt-hero-stat[data-k="inbound"] .dt-hero-stat-label::before,
     .dt-hero-stat[data-k="escalated"] .dt-hero-stat-label::before { background:#bfdbfe; }
@@ -2158,7 +2190,7 @@
     .ticket-stat-num { font-size:38px; font-weight:700; color:#fff; line-height:1; margin-bottom:6px; }
     .ticket-stat-sub { font-size:11.5px; color:rgba(255,255,255,0.65); }
     /* Ticket status filter buttons */
-    .tk-status-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; border:1.5px solid var(--border); background:#fff; font-size:12.5px; font-weight:500; color:var(--muted); cursor:pointer; transition:all .15s; }
+    .tk-status-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; border:1.5px solid var(--border); background:var(--surface); font-size:12.5px; font-weight:500; color:var(--muted); cursor:pointer; transition:all .15s; }
     .tk-status-btn:hover { background:var(--bg-1); color:var(--text); border-color:#ccc; }
     .tk-status-btn[data-ts="all"].active   { background:#1a8078; color:#fff; border-color:#1a8078; font-weight:600; }
     .tk-status-btn[data-ts="ticket"].active { background:#e6f7f5; color:#1a8078; border-color:#2ba99b; font-weight:600; }
@@ -2167,12 +2199,12 @@
     /* ── Team Analytics Grid ── */
     .team-analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
     .week-analytics-wrap { margin-bottom:22px; }
-    .week-nav-bar { display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid var(--border); border-radius:10px; padding:10px 16px; margin-bottom:12px; }
+    .week-nav-bar { display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 16px; margin-bottom:12px; }
     .week-nav-btn { display:flex; align-items:center; gap:6px; background:none; border:none; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--muted); padding:4px 8px; border-radius:6px; transition:background .15s,color .15s; }
     .week-nav-btn:hover { background:var(--bg-1,#f3f4f6); color:var(--text); }
     .week-nav-btn:disabled { opacity:.35; cursor:default; }
     .week-nav-center { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:var(--text); }
-    .analytics-panel { background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
+    .analytics-panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
     .analytics-panel-title { font-size:14px; font-weight:600; color:var(--text); }
     .analytics-panel-sub { font-size:11.5px; color:var(--muted); margin-top:3px; }
     .analytics-badge { background:#e6f7f5; color:var(--m-teal); border-radius:999px; padding:3px 11px; font-size:12px; font-weight:600; white-space:nowrap; }
@@ -2595,7 +2627,7 @@
       width: 16px; height: 16px;
       border-radius: 4px;
       border: 1.5px solid var(--border-strong);
-      background: #fff;
+      background: var(--surface);
       display: grid; place-items: center;
       flex-shrink: 0;
       transition: all .14s;
@@ -2679,7 +2711,7 @@
       content: '';
       width: 7px; height: 7px;
       border-radius: 50%;
-      background: #fff;
+      background: var(--surface);
       box-shadow: 0 0 0 3px rgba(255,255,255,0.25);
     }
     .ta-hero-meta {
@@ -2729,7 +2761,7 @@
       border-radius: 50%;
       background: rgba(255,255,255,0.65);
     }
-    .ta-hero-stat[data-k="total"] .ta-hero-stat-label::before { background: #fff; }
+    .ta-hero-stat[data-k="total"] .ta-hero-stat-label::before { background: var(--surface); }
     .ta-hero-stat[data-k="enterprise"] .ta-hero-stat-label::before { background: #bfdbfe; }
     .ta-hero-stat[data-k="premium"] .ta-hero-stat-label::before { background: #e9d5ff; }
     .ta-hero-stat[data-k="project"] .ta-hero-stat-label::before { background: #bbf7d0; }
@@ -2805,7 +2837,7 @@
       padding: 0 4px 2px;
     }
     .ta-chart-scroll::-webkit-scrollbar { height: 8px; }
-    .ta-chart-scroll::-webkit-scrollbar-track { background: #f5f5f4; border-radius: 4px; }
+    .ta-chart-scroll::-webkit-scrollbar-track { background: var(--surface-2); border-radius: 4px; }
     .ta-chart-scroll::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 4px; }
     .ta-chart-scroll::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
     .ta-chart-canvas-wrap {
@@ -2926,7 +2958,7 @@
       padding: 10px 12px;
       border: 1px solid var(--border);
       border-radius: var(--rad);
-      background: #fafafa;
+      background: var(--surface-2);
     }
     .ta-pv-search-wrap {
       position: relative; display: inline-flex; align-items: center;
@@ -2990,7 +3022,7 @@
     .ta-pv-table thead th {
       position: sticky;
       top: 0;
-      background: #fafafa;
+      background: var(--surface-2);
       border-bottom: 1px solid var(--border);
       z-index: 2;
       padding: 10px 8px;
@@ -3002,7 +3034,7 @@
     .ta-pv-table thead th.ta-pv-th-no,
     .ta-pv-table thead th.ta-pv-th-outlet {
       position: sticky;
-      background: #fafafa;
+      background: var(--surface-2);
       z-index: 5;
       text-align: left;
     }
@@ -3014,7 +3046,7 @@
     }
     .ta-pv-table thead th.ta-pv-th-total {
       position: sticky; right: 0;
-      background: #f0faf6;
+      background: var(--m-tint-2);
       border-left: 1px solid var(--border);
       z-index: 5;
       min-width: 80px;
@@ -3028,7 +3060,7 @@
       padding: 8px 6px;
       transition: background .14s;
     }
-    .ta-pv-th-date:hover { background: #f0faf6; }
+    .ta-pv-th-date:hover { background: var(--m-tint-2); }
     .ta-pv-th-date.active { background: var(--m-tint); color: var(--m-dark); }
     .ta-pv-th-date-day {
       display: block;
@@ -3118,7 +3150,7 @@
     .ta-pv-cell-empty { color: var(--muted-2); font-family: var(--mono); }
     .ta-pv-cell-total {
       position: sticky; right: 0;
-      background: #f0faf6;
+      background: var(--m-tint-2);
       border-left: 1px solid var(--border);
       z-index: 1;
       font-family: var(--mono);
@@ -3135,7 +3167,7 @@
 
     .ta-pv-table tfoot td {
       position: sticky; bottom: 0;
-      background: #fafafa;
+      background: var(--surface-2);
       border-top: 2px solid var(--border);
       padding: 10px 8px;
       text-align: center;
@@ -3146,7 +3178,7 @@
     }
     .ta-pv-tfoot-label {
       position: sticky; left: 0;
-      background: #fafafa;
+      background: var(--surface-2);
       z-index: 3;
       text-align: left !important;
       padding-left: 14px !important;
@@ -3311,8 +3343,8 @@
       letter-spacing: .08em; text-transform: uppercase;
       padding: 3px 9px; border-radius: 999px;
     }
-    #panduanPage .pd-scenario.ok .pd-scenario-tag { background: #fff; color: var(--pd-ok-tx); border: 1px solid var(--pd-ok-bd); }
-    #panduanPage .pd-scenario.warn .pd-scenario-tag { background: #fff; color: var(--pd-bad-tx); border: 1px solid var(--pd-bad-bd); }
+    #panduanPage .pd-scenario.ok .pd-scenario-tag { background: var(--surface); color: var(--pd-ok-tx); border: 1px solid var(--pd-ok-bd); }
+    #panduanPage .pd-scenario.warn .pd-scenario-tag { background: var(--surface); color: var(--pd-bad-tx); border: 1px solid var(--pd-bad-bd); }
     #panduanPage .pd-scenario-title { font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
     #panduanPage .pd-scenario-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
     #panduanPage .pd-scenario-body { padding: 18px 20px 20px; }
@@ -3389,7 +3421,7 @@
       font-family: var(--mono); font-size: 11.5px; font-weight: 500;
     }
     #panduanPage .pd-bubble .tkt {
-      color: var(--pd-bad-tx); background: #fff;
+      color: var(--pd-bad-tx); background: var(--surface);
       border: 1px solid var(--pd-bad-bd);
       border-radius: 4px; padding: 0 6px;
       font-family: var(--mono); font-size: 11.5px; font-weight: 600;
@@ -3659,7 +3691,7 @@
     }
     .esk-modal-bg.open { display: flex; }
     .esk-modal {
-      background: #fff; border-radius: 14px;
+      background: var(--surface); border-radius: 14px;
       width: 440px; max-width: 92vw;
       box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
       overflow: hidden;
@@ -3688,7 +3720,7 @@
       font-family: var(--font); font-size: 13px; color: var(--ink);
       padding: 9px 11px;
       border: 1px solid var(--border); border-radius: 8px;
-      background: #fff;
+      background: var(--surface);
       transition: border-color .15s;
     }
     .esk-field input:focus, .esk-field select:focus {
@@ -3706,7 +3738,7 @@
       padding: 9px 16px; border-radius: 8px; cursor: pointer;
       border: 1px solid transparent; transition: all .15s;
     }
-    .esk-btn-cancel { background: #fff; color: var(--muted); border-color: var(--border); }
+    .esk-btn-cancel { background: var(--surface); color: var(--muted); border-color: var(--border); }
     .esk-btn-cancel:hover { background: var(--surface-2); color: var(--ink); }
     .esk-btn-submit {
       background: linear-gradient(135deg, #2dbdb6 0%, #6ec9a8 100%);
@@ -3781,7 +3813,7 @@
     .esk-panel-close:hover { background: rgba(255,255,255,.32); }
     .esk-panel-filters {
       padding: 12px 20px;
-      background: #fff;
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
       display: flex; gap: 6px; flex-wrap: wrap;
     }
@@ -3807,7 +3839,7 @@
       font-size: 13px; padding: 40px 20px;
     }
     .esk-card {
-      background: #fff; border: 1px solid var(--border);
+      background: var(--surface); border: 1px solid var(--border);
       border-radius: 10px; padding: 14px;
       transition: box-shadow .15s, border-color .15s;
     }
@@ -3856,7 +3888,7 @@
       flex: 1;
       font-family: var(--font); font-size: 11px; font-weight: 600;
       padding: 7px 8px; border-radius: 6px;
-      border: 1px solid var(--border); background: #fff;
+      border: 1px solid var(--border); background: var(--surface);
       color: var(--muted); cursor: pointer;
       transition: all .15s;
     }
@@ -3952,7 +3984,7 @@
     }
     #workorderPage .wt-stat-label::after {
       content: ''; position: absolute; left: 1px; top: 50%; transform: translateY(-50%);
-      width: 6px; height: 6px; border-radius: 50%; background: #fff; opacity: 0; transition: opacity .15s;
+      width: 6px; height: 6px; border-radius: 50%; background: var(--surface); opacity: 0; transition: opacity .15s;
     }
     #workorderPage .wt-stat.active .wt-stat-label::after { opacity: 1; }
     #workorderPage .wt-stat-num {
@@ -3989,7 +4021,7 @@
       width: 7px; height: 7px; border-radius: 50%;
       background: rgba(255,255,255,.7); flex-shrink: 0;
     }
-    #workorderPage .wt-substat.active .wt-substat-dot { background: #fff; }
+    #workorderPage .wt-substat.active .wt-substat-dot { background: var(--surface); }
     #workorderPage .wt-substat-num { font-family: var(--mono); font-weight: 600; }
     @media (max-width: 1280px) {
       #workorderPage .wt-stats { grid-template-columns: repeat(4, 1fr); row-gap: 22px; }
@@ -4025,7 +4057,7 @@
     }
     #workorderPage .wt-chart-dp-presets { display: inline-flex; gap: 5px; flex-wrap: wrap; }
     #workorderPage .wt-chart-dp-preset {
-      border: 1.5px solid var(--border); background: #fff;
+      border: 1.5px solid var(--border); background: var(--surface);
       color: var(--muted); font-family: var(--font);
       font-size: 11.5px; font-weight: 500;
       padding: 4px 11px; border-radius: 999px; cursor: pointer;
@@ -4043,7 +4075,7 @@
     #workorderPage .wt-chart-dp-input {
       border: 1px solid var(--border); border-radius: 8px;
       padding: 4px 8px; font-family: var(--font); font-size: 11.5px;
-      color: var(--ink); background: #fff; outline: none;
+      color: var(--ink); background: var(--surface); outline: none;
     }
     #workorderPage .wt-chart-dp-input:focus { border-color: var(--m-teal); box-shadow: 0 0 0 3px rgba(45,189,182,.15); }
     #workorderPage .wt-chart-dp-label {
@@ -4095,7 +4127,7 @@
       padding: 7px 12px 7px 32px;
       border: 1px solid var(--border); border-radius: 8px;
       font-family: var(--font); font-size: 12.5px;
-      color: var(--ink); background: #fff;
+      color: var(--ink); background: var(--surface);
       outline: none; min-width: 240px;
       transition: border-color .15s;
     }
@@ -4105,7 +4137,7 @@
       color: var(--muted); pointer-events: none;
     }
     #workorderPage .wt-btn-reset {
-      border: 1px solid var(--border); background: #fff;
+      border: 1px solid var(--border); background: var(--surface);
       color: var(--muted); font-family: var(--font); font-size: 12.5px;
       padding: 7px 14px; border-radius: 8px; cursor: pointer;
       transition: all .15s;
@@ -4171,7 +4203,7 @@
       font-size: 12.5px; font-family: var(--font);
       padding: 4px 26px 4px 10px;
       border: 1px solid var(--border); border-radius: 8px;
-      background: #fff; color: var(--ink-2); cursor: pointer;
+      background: var(--surface); color: var(--ink-2); cursor: pointer;
       outline: none; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2378716c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat; background-position: right 8px center;
@@ -4181,7 +4213,7 @@
     #workorderPage .wt-pag-nav { display: inline-flex; gap: 4px; }
     #workorderPage .wt-pag-btn {
       min-width: 32px; height: 32px; padding: 0 8px;
-      border: 1px solid var(--border); background: #fff;
+      border: 1px solid var(--border); background: var(--surface);
       border-radius: 6px; cursor: pointer; font-size: 12.5px;
       color: var(--ink-2); font-family: var(--font);
       display: inline-flex; align-items: center; justify-content: center;
@@ -4753,7 +4785,115 @@
       #chatPage .ci-inbox { grid-template-columns:1fr; height:auto; margin-left:0; margin-right:0; }
       #chatPage .ci-col { height:520px; }
     }
+
+    /* ════════════════════════════════════════════════════════════
+       DARK THEME — token overrides + targeted fixes for hardcoded spots
+       Activated by data-theme="dark" on <html>. Light mode untouched.
+       ════════════════════════════════════════════════════════════ */
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0b1413;
+      --surface: #121b1a;
+      --surface-2: #1a2625;
+      --surface-3: #16201f;
+      --border: #283634;
+      --border-strong: #3b4d4a;
+      --ink: #ecf6f4;
+      --ink-2: #c6d7d3;
+      --muted: #93a7a3;
+      --muted-2: #677975;
+      --text: var(--ink);
+
+      --m-tint: #143230;
+      --m-tint-2: #112826;
+      --m-dark: #7ce8dd;          /* "dark teal" text → light on dark tints */
+      --m-grad-soft: linear-gradient(135deg, #143230 0%, #112826 100%);
+      --teal-range: #16403b;
+
+      /* group / status accent tints (dark variants; dots stay vivid) */
+      --e-bg:#142339; --e-bd:#26446c; --e-tx:#93c5fd;
+      --p-bg:#241733; --p-bd:#472b61; --p-tx:#d8b4fe;
+      --r-bg:#10271b; --r-bd:#20502f; --r-tx:#86efac;
+      --z-bg:#2a1a0d; --z-bd:#54381b; --z-tx:#fdba74;
+      --i-bg:#1a232f; --i-bd:#344150; --i-tx:#cbd5e1;
+      --n-bg:#2a1a0d; --n-bd:#54381b; --n-tx:#fdba74;
+      --t-bg:#0f2e2b; --t-bd:#1c544d; --t-tx:#5eead4;
+      --o-bg:#2a2410; --o-bd:#54481a; --o-tx:#fcd34d;
+    }
+
+    /* Body ambient glow tuned for dark */
+    [data-theme="dark"] body {
+      background:
+        radial-gradient(1100px 380px at 80% -120px, rgba(45,189,182,0.10) 0%, transparent 60%),
+        radial-gradient(900px 420px at -10% -80px, rgba(154,207,135,0.08) 0%, transparent 70%),
+        var(--bg);
+    }
+
+    /* Chat Inbox scoped tokens */
+    [data-theme="dark"] #chatPage {
+      --ci-surface:#121b1a; --ci-surface-2:#1a2625; --ci-surface-3:#16201f;
+      --ci-border:#283634; --ci-border-strong:#3b4d4a;
+      --ci-ink:#ecf6f4; --ci-ink-2:#c6d7d3; --ci-muted:#93a7a3; --ci-muted-2:#677975;
+      --ci-m-dark:#7ce8dd; --ci-m-tint:#143230; --ci-m-tint-2:#112826;
+      --ci-open-bg:#142339; --ci-open-bd:#26446c; --ci-open-tx:#93c5fd;
+      --ci-prog-bg:#2a1f0d; --ci-prog-bd:#54401a; --ci-prog-tx:#fcd34d;
+      --ci-done-bg:#10271b; --ci-done-bd:#20502f; --ci-done-tx:#86efac;
+      --ci-sla-ok-tx:#86efac;  --ci-sla-ok-bg:#10271b;  --ci-sla-ok-bd:#20502f;
+      --ci-sla-warn-tx:#fcd34d; --ci-sla-warn-bg:#2a1f0d; --ci-sla-warn-bd:#54401a;
+      --ci-sla-late-tx:#fca5a5; --ci-sla-late-bg:#2a1414; --ci-sla-late-bd:#5a2424;
+      --ci-agent-bubble:#16403b; --ci-agent-bubble-ink:#d4f4ee;
+    }
+
+    /* Panduan scoped tints */
+    [data-theme="dark"] #panduanPage {
+      --pd-ok-bg:#10271b;  --pd-ok-bd:#20502f;  --pd-ok-tx:#86efac;
+      --pd-warn-bg:#2a2410; --pd-warn-bd:#54481a; --pd-warn-tx:#fcd34d;
+      --pd-bad-bg:#2a1414;  --pd-bad-bd:#5a2424;  --pd-bad-tx:#fca5a5;
+      --pd-info-bg:#142339; --pd-info-bd:#26446c; --pd-info-tx:#93c5fd;
+      --pd-note-bg:#241733; --pd-note-bd:#472b61; --pd-note-tx:#d8b4fe;
+      --pd-tint:#143230;
+    }
+
+    /* Inverted "active" pills/buttons: --ink flips light, so dark text on it */
+    [data-theme="dark"] .group-tab.active,
+    [data-theme="dark"] .role-tab.active { color: var(--bg); border-color: var(--ink); }
+    [data-theme="dark"] .ta-pv-sort-btn.active {
+      background: var(--ink); color: var(--bg); border-color: var(--ink);
+    }
+
+    /* Buttons that used --m-dark as a solid fill → use vivid brand teal in dark */
+    [data-theme="dark"] .tpl-fab:hover,
+    [data-theme="dark"] .pd-tmpl-blast-btn:hover,
+    [data-theme="dark"] .bl-btn-primary:hover,
+    [data-theme="dark"] .esk-panel-filter.active,
+    [data-theme="dark"] .esk-status-btn.active {
+      background: var(--m-teal); border-color: var(--m-teal); color: #06231f;
+    }
+
+    /* Keep white status-dots white on gradient/colored backgrounds */
+    [data-theme="dark"] .dt-hero-stat[data-k="total"] .dt-hero-stat-label::before,
+    [data-theme="dark"] .ta-hero-stat[data-k="total"] .ta-hero-stat-label::before,
+    [data-theme="dark"] #workorderPage .wt-substat.active .wt-substat-dot { background:#fff; }
+
+    /* Error chip */
+    [data-theme="dark"] .chip.error { color:#fca5a5; background:#2a1414; border-color:#5a2424; }
+    [data-theme="dark"] .chip.live { border-color:#1c544d; }
+
+    /* Chart.js gridlines/ticks are drawn in JS with light greys; soften via canvas opacity */
+    [data-theme="dark"] canvas { filter: none; }
   </style>
+  <script>
+    // Apply saved theme before first paint (no flash). Mode: light | dark | auto (auto = by clock).
+    (function () {
+      try {
+        var m = localStorage.getItem('dashTheme') || 'auto';
+        var h = new Date().getHours();
+        var eff = m === 'auto' ? ((h >= 18 || h < 6) ? 'dark' : 'light') : m;
+        document.documentElement.setAttribute('data-theme', eff);
+        document.documentElement.style.colorScheme = eff;
+      } catch (e) {}
+    })();
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 
@@ -4860,6 +5000,17 @@
         </div>
       </div>
       <div class="header-right">
+        <div class="theme-toggle" id="themeToggle" role="group" aria-label="Tema tampilan">
+          <button class="theme-opt" data-theme-mode="light" title="Terang" aria-label="Terang" onclick="setTheme('light')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+          </button>
+          <button class="theme-opt" data-theme-mode="auto" title="Otomatis (ikut jam)" aria-label="Otomatis" onclick="setTheme('auto')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </button>
+          <button class="theme-opt" data-theme-mode="dark" title="Gelap" aria-label="Gelap" onclick="setTheme('dark')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a7 7 0 1 0 11 11Z"/></svg>
+          </button>
+        </div>
         <span class="chip plain" id="dateChip">—</span>
         <span class="chip loading" id="syncChip">Memuat data…</span>
         <button class="retry-btn" onclick="loadData()" id="retryBtn" style="display:none">↺ Coba lagi</button>
@@ -6658,6 +6809,44 @@ Salam,
 
   <script>
     // ════════════════════════════════════════════
+    //  THEME (Light / Auto / Dark) — Auto follows the clock
+    // ════════════════════════════════════════════
+    const THEME_KEY = 'dashTheme';
+    const DARK_FROM_HOUR = 18, DARK_TO_HOUR = 6;   // auto = dark 18:00–05:59
+    function isDarkByClock() { const h = new Date().getHours(); return h >= DARK_FROM_HOUR || h < DARK_TO_HOUR; }
+    function getThemeMode() { return localStorage.getItem(THEME_KEY) || 'auto'; }
+    function resolveTheme(mode) { return mode === 'auto' ? (isDarkByClock() ? 'dark' : 'light') : mode; }
+    // Readable label color for on-canvas chart text (reads the active theme's --ink-2).
+    function chartInkColor() {
+      return getComputedStyle(document.documentElement).getPropertyValue('--ink-2').trim() || '#374151';
+    }
+    // Re-render the charts on the active page so on-canvas label colors pick up the new theme.
+    function refreshChartsForTheme() {
+      try {
+        if (typeof OUTLETS === 'undefined' || !OUTLETS.length) return;
+        if (typeof activeDash === 'undefined') return;
+        if (activeDash === 'traffic' && typeof renderTraffic === 'function') renderTraffic();
+        else if (activeDash === 'daily' && window.DT && DT.renderAll) DT.renderAll();
+        else if (activeDash === 'outlet' && typeof updateStats === 'function') updateStats();
+      } catch (e) {}
+    }
+    let _lastEffTheme = null;
+    function applyTheme() {
+      const mode = getThemeMode();
+      const eff = resolveTheme(mode);
+      document.documentElement.setAttribute('data-theme', eff);
+      document.documentElement.style.colorScheme = eff;
+      document.querySelectorAll('.theme-opt').forEach(b =>
+        b.classList.toggle('active', b.dataset.themeMode === mode));
+      if (eff !== _lastEffTheme) { _lastEffTheme = eff; refreshChartsForTheme(); }
+    }
+    function setTheme(mode) { localStorage.setItem(THEME_KEY, mode); applyTheme(); }
+    // Re-evaluate every minute so Auto flips at the 18:00 / 06:00 boundary without a reload.
+    setInterval(() => { if (getThemeMode() === 'auto') applyTheme(); }, 60000);
+    // Sync the toggle's active pill on first load (attribute already set pre-paint in <head>).
+    document.addEventListener('DOMContentLoaded', applyTheme);
+
+    // ════════════════════════════════════════════
     //  CONFIG
     // ════════════════════════════════════════════
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlyIsRkqcr0OuUr_Yu-wB9sugkirG9P2T7fMdKd9tkHy4bQBLOqJXmL7EeolXDRg0o/exec';
@@ -7450,7 +7639,7 @@ Salam,
           if (!firstMeta || !firstMeta.data) return;
           ctx.save();
           ctx.font = '600 11px "Geist Mono", ui-monospace, monospace';
-          ctx.fillStyle = '#0d3b39';
+          ctx.fillStyle = chartInkColor();
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom';
           firstMeta.data.forEach((_, i) => {
@@ -8701,7 +8890,7 @@ Salam,
             const { ctx } = chart;
             ctx.save();
             ctx.font = '600 11px ' + (getComputedStyle(document.body).fontFamily || 'system-ui');
-            ctx.fillStyle = '#374151';
+            ctx.fillStyle = chartInkColor();
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             const n = chart.data.labels.length;
@@ -10130,7 +10319,7 @@ Salam,
           const { ctx } = chart;
           ctx.save();
           ctx.font = '600 11px ' + (getComputedStyle(document.body).fontFamily || 'system-ui');
-          ctx.fillStyle = '#374151';
+          ctx.fillStyle = chartInkColor();
           ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
           const n = chart.data.labels.length;
           for (let i = 0; i < n; i++) {
@@ -11170,7 +11359,7 @@ Salam,
         const wrap=document.getElementById('dtChartWrap-'+key); if (wrap){ wrap.style.width=(days.length*38)+'px'; }
         const ctx=document.getElementById('dtChart-'+key); if(!ctx) return;
         if (charts[key]){ charts[key].destroy(); charts[key]=null; }
-        const totPlugin = { id:'dtTrendTot-'+key, afterDatasetsDraw(chart){ const {ctx}=chart; ctx.save(); ctx.font='600 11px "Geist Mono", ui-monospace, monospace'; ctx.fillStyle='#374151'; ctx.textAlign='center'; ctx.textBaseline='bottom'; const n=chart.data.labels.length; for(let i=0;i<n;i++){ let total=0,topY=null,xPos=null; chart.data.datasets.forEach((ds,di)=>{ if(!chart.isDatasetVisible(di))return; const v=+ds.data[i]||0; total+=v; const bar=chart.getDatasetMeta(di).data[i]; if(bar&&v>0){ if(topY===null||bar.y<topY)topY=bar.y; if(xPos===null)xPos=bar.x; } }); if(total>0&&topY!==null) ctx.fillText(String(total),xPos,topY-4); } ctx.restore(); } };
+        const totPlugin = { id:'dtTrendTot-'+key, afterDatasetsDraw(chart){ const {ctx}=chart; ctx.save(); ctx.font='600 11px "Geist Mono", ui-monospace, monospace'; ctx.fillStyle=chartInkColor(); ctx.textAlign='center'; ctx.textBaseline='bottom'; const n=chart.data.labels.length; for(let i=0;i<n;i++){ let total=0,topY=null,xPos=null; chart.data.datasets.forEach((ds,di)=>{ if(!chart.isDatasetVisible(di))return; const v=+ds.data[i]||0; total+=v; const bar=chart.getDatasetMeta(di).data[i]; if(bar&&v>0){ if(topY===null||bar.y<topY)topY=bar.y; if(xPos===null)xPos=bar.x; } }); if(total>0&&topY!==null) ctx.fillText(String(total),xPos,topY-4); } ctx.restore(); } };
         charts[key] = new Chart(ctx.getContext('2d'),{ type:'bar',
           data:{ labels, datasets:[
             { label:'Escalated Eng', data:escSeries, backgroundColor:'#3b82f6', borderRadius:4, maxBarThickness:28 },
