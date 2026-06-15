@@ -11583,13 +11583,20 @@ Salam,
         return (((p[0]||'')[0]||'') + ((p[1]||'')[0]||'') || (p[0]||'#')[0]).toUpperCase();
       }
       const shortFrom = (f) => f ? String(f).split(' · ')[0] : '';
-      // Nomor WA terpusat atas nama Fico (6285166315544). Balasan via dashboard menyimpan
-      // email login di sender_name → label menjadi "Fico - {email}" (cth. Fico - zulfikar.dwi@majoo.id).
+      // Nomor WA terpusat (outbound) atas nama Fico. HANYA balasan yang dikirim lewat nomor
+      // ini yang menampilkan email login → "Fico - {email}" (cth. Fico - zulfikar.dwi@majoo.id).
+      // Pesan dari nomor PIC lain tetap memakai nama mapping template seperti sebelumnya.
       const CENTRAL_SENDER = 'Fico';
-      const ciAgentLabel = (name) => {
+      const FICO_NUMBER = '6285166315544';
+      const ciAgentLabel = (name, number) => {
         const n = (name || '').trim();
-        if (!n || n === CENTRAL_SENDER || n.toLowerCase() === 'tim majoo') return CENTRAL_SENDER;
-        return `${CENTRAL_SENDER} - ${n}`;
+        const num = String(number || '').replace(/\D/g, '');
+        if (num === FICO_NUMBER) {
+          if (!n || n === CENTRAL_SENDER || n.toLowerCase() === 'tim majoo') return CENTRAL_SENDER;
+          return `${CENTRAL_SENDER} - ${n}`;
+        }
+        // Nomor PIC lain → nama sesuai mapping template (perilaku existing).
+        return n || 'Tim majoo';
       };
       function waitMins(c){ const t = c.last_ts ? new Date(c.last_ts) : null; return t ? Math.max(0, Math.round((Date.now()-t)/60000)) : 0; }
       function slaInfo(m){
@@ -11787,7 +11794,7 @@ Salam,
           if (dayLabel && dayLabel !== lastDay){ msgsHtml += `<div class="ci-day-sep">${dayLabel}</div>`; lastDay = dayLabel; }
           const who = m.who==='agent' ? 'agent' : 'cust';
           let author = '';
-          if (who==='agent') author = `<div class="ci-msg-author">${esc(ciAgentLabel(m.sender_name))}</div>`;
+          if (who==='agent') author = `<div class="ci-msg-author">${esc(ciAgentLabel(m.sender_name, m.sender_number))}</div>`;
           else author = `<div class="ci-msg-author" style="color:${senderColor(m.sender_name)}">${esc(m.sender_name||'')}${m.sender_number?` · ${esc(m.sender_number)}`:''}</div>`;
           const tick = who==='agent' ? `<span style="color:#34b7f1;display:inline-flex"><svg width="14" height="11" viewBox="0 0 18 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 6.5 4.5 10 11 2.5"/><path d="M7 9.5 8 10.7 16.5 1.5"/></svg></span>` : '';
           // blok pesan yang dikutip (dari DB quoted_author/quoted_message ATAU quote optimistic)
@@ -11966,7 +11973,7 @@ Salam,
         if (!c || !c.messages || !c.messages[idx]) return;
         const m = c.messages[idx];
         if (!m.id) return;
-        const au = m.who==='agent' ? ciAgentLabel(m.sender_name) : (m.sender_name || shortFrom(c.name));
+        const au = m.who==='agent' ? ciAgentLabel(m.sender_name, m.sender_number) : (m.sender_name || shortFrom(c.name));
         st.replyTo = { id:m.id, au, tx:(m.text || (m.media ? '[lampiran]' : '')) };
         renderThread();
         const ta = document.getElementById('ciReplyInput');
@@ -12236,7 +12243,7 @@ Salam,
           }
           if (data.error) throw new Error(data.error);
           // optimistic append
-          const newMsg = { id:data.id||null, who:'agent', sender_name: email, sender_number:'', text, ts: new Date().toISOString() };
+          const newMsg = { id:data.id||null, who:'agent', sender_name: email, sender_number: FICO_NUMBER, text, ts: new Date().toISOString() };
           if (reply) newMsg.quoted = { au: reply.au, tx: reply.tx };
           if (media){ newMsg.localMediaUrl = media.dataUrl; newMsg.localIsImg = media.isImg; newMsg.localMediaName = media.name; }
           (c.messages = c.messages || []).push(newMsg);
