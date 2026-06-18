@@ -12216,6 +12216,9 @@ Salam,
         const reply = st.replyTo;
         const btn = document.getElementById('ciSendBtn');
         if (btn) btn.disabled = true;
+        // Jaga agar request ke Apps Script tidak menggantung selamanya (button stuck disabled).
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 30000);
         try {
           let data;
           if (media){
@@ -12226,8 +12229,9 @@ Salam,
               mediaBase64: media.b64, mediaMime: media.mime, mediaName: media.name,
             };
             const res = await fetch(`${APPS_SCRIPT_URL}?action=sendReply&email=${encodeURIComponent(email)}`, {
-              method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload),
+              method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload), signal: ctrl.signal,
             });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
             data = await res.json();
           } else {
             let url = `${APPS_SCRIPT_URL}?action=sendReply`
@@ -12238,7 +12242,8 @@ Salam,
               + `&body=${encodeURIComponent(text)}`;
             if (wids.length) url += `&mentions=${encodeURIComponent(wids.join(','))}`;
             if (reply && reply.id) url += `&quotedMsgId=${encodeURIComponent(reply.id)}`;
-            const res = await fetch(url);
+            const res = await fetch(url, { signal: ctrl.signal });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
             data = await res.json();
           }
           if (data.error) throw new Error(data.error);
@@ -12256,8 +12261,11 @@ Salam,
           // poll cepat supaya bucket pindah ke "Done Reply" begitu balasan tersimpan
           setTimeout(pollInbox, 4000); setTimeout(pollInbox, 9000);
         } catch (err){
-          toast('Gagal kirim: ' + err.message);
+          toast(err.name === 'AbortError'
+            ? 'Gagal kirim: server tidak merespons (timeout 30 dtk). Coba lagi.'
+            : 'Gagal kirim: ' + err.message);
         } finally {
+          clearTimeout(timer);
           if (btn) btn.disabled = false;
         }
       }
