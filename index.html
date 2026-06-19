@@ -5771,12 +5771,20 @@
             </select>
           </label>
           <label style="display:inline-flex;align-items:center;gap:6px">
-            <span class="pag-size-label">Status ClickUp:</span>
-            <select class="pag-size-select" id="tlFilterStatus" style="min-width:170px" onchange="tlFilterStatus=this.value;tlPage=1;renderTicketIdList()">
-              <option value="">Semua</option>
-            </select>
+            <span class="pag-size-label">Status:</span>
+            <div id="tlBucketMulti" style="position:relative">
+              <button type="button" class="pag-size-select" id="tlBucketTrigger" style="min-width:160px;text-align:left;cursor:pointer;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1L5 5L9 1' stroke='%2378716c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>&quot;);background-repeat:no-repeat;background-position:right 10px center;padding-right:26px">Semua</button>
+              <div id="tlBucketPanel" style="display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.08);min-width:220px;padding:6px"></div>
+            </div>
           </label>
-          <button class="pag-size-select" style="cursor:pointer;background:var(--surface-2);color:var(--muted);padding:4px 12px;background-image:none" onclick="tlFilterCreator='';tlFilterFeature='';tlFilterStatus='';tlQuery='';document.getElementById('ticketIdSearch').value='';tlPage=1;renderTicketIdList()">Reset Filter</button>
+          <label style="display:inline-flex;align-items:center;gap:6px">
+            <span class="pag-size-label">Status ClickUp:</span>
+            <div id="tlStatusMulti" style="position:relative">
+              <button type="button" class="pag-size-select" id="tlStatusTrigger" style="min-width:170px;text-align:left;cursor:pointer;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1L5 5L9 1' stroke='%2378716c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>&quot;);background-repeat:no-repeat;background-position:right 10px center;padding-right:26px">Semua</button>
+              <div id="tlStatusPanel" style="display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.08);min-width:240px;max-height:280px;overflow:auto;padding:6px"></div>
+            </div>
+          </label>
+          <button class="pag-size-select" style="cursor:pointer;background:var(--surface-2);color:var(--muted);padding:4px 12px;background-image:none" onclick="tlFilterCreator='';tlFilterFeature='';tlFilterStatusSet.clear();tlFilterBucketSet.clear();tlQuery='';document.getElementById('ticketIdSearch').value='';tlPage=1;renderTicketIdList()">Reset Filter</button>
         </div>
         <!-- Search -->
         <div class="toolbar" style="margin-bottom:12px">
@@ -5792,6 +5800,7 @@
             <thead>
               <tr>
                 <th class="c-no">#</th>
+                <th style="min-width:130px">Tanggal Dibuat</th>
                 <th style="min-width:140px">Ticket ID</th>
                 <th class="c-name">Outlet</th>
                 <th style="min-width:180px">Creator</th>
@@ -6103,6 +6112,9 @@
         <div class="dt-section-head">
           <span class="dt-section-eyebrow"><span class="dt-section-num">4</span> Daftar Ticket ID</span>
         </div>
+        <!-- Picker khusus Section 4 (filter by ClickUp date_created) -->
+        <div id="dtSec-id"></div>
+        <!-- ticketIdPanel di-relocate ke sini saat Daily aktif -->
         <div id="dailySlotId"></div>
       </div>
 
@@ -7077,7 +7089,144 @@ Salam,
     // Expected shape: [{ id, outletTitle, senderNumber, dateISO }]
     let TICKET_LIST = [];
     let tlQuery = '', tlPage = 1, tlPageSize = 10;
-    let tlFilterCreator = '', tlFilterFeature = '', tlFilterStatus = '';
+    let tlFilterCreator = '', tlFilterFeature = '';
+    let tlFilterStatusSet = new Set();   // Status ClickUp: multi-select (Set kosong = Semua)
+    let tlFilterBucketSet = new Set();   // Status (bucket): multi-select 'tac' | 'eng' | 'done' (Set kosong = Semua)
+
+    // ── Status bucket definitions ──
+    // - Backlog TAC : backlog, need feedback tac, qa test on prod, hold: cust no feedback
+    // - Done        : done from squad, approve by tac, customer confirm solved
+    // - Backlog Eng : semua status ClickUp lain
+    const TL_TAC_SET  = new Set(['backlog','need feedback tac','qa test on prod','hold: cust no feedback']);
+    const TL_DONE_SET = new Set(['done from squad','approve by tac','customer confirm solved']);
+    const TL_BUCKET_LABEL = { tac: 'Backlog TAC', eng: 'Backlog Eng', done: 'Done' };
+    function tlBucketOf(status) {
+      const s = String(status || '').toLowerCase().trim();
+      if (!s) return null;                       // empty status tidak masuk bucket manapun
+      if (TL_TAC_SET.has(s))  return 'tac';
+      if (TL_DONE_SET.has(s)) return 'done';
+      return 'eng';
+    }
+
+    // ── Status ClickUp multi-select: trigger label + panel render ──
+    function updateTlStatusTrigger(allStatuses) {
+      const btn = document.getElementById('tlStatusTrigger');
+      if (!btn) return;
+      const n = tlFilterStatusSet.size;
+      if (!n) btn.textContent = 'Semua';
+      else if (n === 1) btn.textContent = Array.from(tlFilterStatusSet)[0];
+      else btn.textContent = `${n} status dipilih`;
+      btn.style.color = n ? 'var(--ink)' : 'var(--muted)';
+    }
+    function renderTlStatusPanel(allStatuses) {
+      const panel = document.getElementById('tlStatusPanel');
+      if (!panel) return;
+      const items = (allStatuses || []).map(s => {
+        const checked = tlFilterStatusSet.has(s);
+        return `<label class="tl-status-opt" data-v="${esc(s)}" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--ink-2);${checked ? 'background:var(--surface-2)' : ''}">
+          <input type="checkbox" ${checked ? 'checked' : ''} style="margin:0;cursor:pointer;accent-color:var(--m-teal)" />
+          <span>${esc(s)}</span>
+        </label>`;
+      }).join('');
+      const noneItem = `<label class="tl-status-opt tl-status-all" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2);${tlFilterStatusSet.size===0?'background:var(--surface-2)':''};border-bottom:1px solid var(--border);margin-bottom:4px;padding-bottom:8px">
+        <input type="checkbox" ${tlFilterStatusSet.size===0 ? 'checked':''} style="margin:0;cursor:pointer;accent-color:var(--m-teal)" />
+        <span>Semua</span>
+      </label>`;
+      panel.innerHTML = (allStatuses && allStatuses.length)
+        ? noneItem + items
+        : `<div style="padding:10px;color:var(--muted-2);font-size:12px;text-align:center">Tidak ada status</div>`;
+    }
+    function toggleTlStatusPanel(forceOpen) {
+      const panel = document.getElementById('tlStatusPanel');
+      if (!panel) return;
+      const willOpen = forceOpen != null ? forceOpen : panel.style.display === 'none';
+      panel.style.display = willOpen ? '' : 'none';
+    }
+    // Wire up trigger + panel + outside click (once). Aman dipanggil sebelum/sesudah DOMContentLoaded.
+    function _initTlStatusFilter() {
+      const trig = document.getElementById('tlStatusTrigger');
+      const panel = document.getElementById('tlStatusPanel');
+      if (!trig || !panel) return;
+      if (trig.dataset.wired === '1') return;   // idempotent
+      trig.dataset.wired = '1';
+      trig.addEventListener('click', (e) => { e.stopPropagation(); toggleTlStatusPanel(); });
+      panel.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const opt = e.target.closest('.tl-status-opt');
+        if (!opt) return;
+        if (opt.classList.contains('tl-status-all')) {
+          tlFilterStatusSet.clear();
+        } else {
+          const v = opt.dataset.v;
+          if (tlFilterStatusSet.has(v)) tlFilterStatusSet.delete(v);
+          else tlFilterStatusSet.add(v);
+        }
+        tlPage = 1;
+        renderTicketIdList();
+      });
+      document.addEventListener('click', () => toggleTlStatusPanel(false));
+    }
+    if (document.readyState !== 'loading') _initTlStatusFilter();
+    else document.addEventListener('DOMContentLoaded', _initTlStatusFilter);
+
+    // ── Status bucket multi-select: trigger label + panel render + wire ──
+    function updateTlBucketTrigger() {
+      const btn = document.getElementById('tlBucketTrigger');
+      if (!btn) return;
+      const n = tlFilterBucketSet.size;
+      if (!n) btn.textContent = 'Semua';
+      else if (n === 1) btn.textContent = TL_BUCKET_LABEL[Array.from(tlFilterBucketSet)[0]];
+      else btn.textContent = `${n} status dipilih`;
+      btn.style.color = n ? 'var(--ink)' : 'var(--muted)';
+    }
+    function renderTlBucketPanel() {
+      const panel = document.getElementById('tlBucketPanel');
+      if (!panel) return;
+      const noneItem = `<label class="tl-bucket-opt tl-bucket-all" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2);${tlFilterBucketSet.size===0?'background:var(--surface-2)':''};border-bottom:1px solid var(--border);margin-bottom:4px;padding-bottom:8px">
+        <input type="checkbox" ${tlFilterBucketSet.size===0 ? 'checked':''} style="margin:0;cursor:pointer;accent-color:var(--m-teal)" />
+        <span>Semua</span>
+      </label>`;
+      const items = ['tac','eng','done'].map(k => {
+        const checked = tlFilterBucketSet.has(k);
+        return `<label class="tl-bucket-opt" data-v="${k}" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--ink-2);${checked ? 'background:var(--surface-2)' : ''}">
+          <input type="checkbox" ${checked ? 'checked' : ''} style="margin:0;cursor:pointer;accent-color:var(--m-teal)" />
+          <span>${TL_BUCKET_LABEL[k]}</span>
+        </label>`;
+      }).join('');
+      panel.innerHTML = noneItem + items;
+    }
+    function toggleTlBucketPanel(forceOpen) {
+      const panel = document.getElementById('tlBucketPanel');
+      if (!panel) return;
+      const willOpen = forceOpen != null ? forceOpen : panel.style.display === 'none';
+      panel.style.display = willOpen ? '' : 'none';
+    }
+    function _initTlBucketFilter() {
+      const trig = document.getElementById('tlBucketTrigger');
+      const panel = document.getElementById('tlBucketPanel');
+      if (!trig || !panel) return;
+      if (trig.dataset.wired === '1') return;   // idempotent
+      trig.dataset.wired = '1';
+      trig.addEventListener('click', (e) => { e.stopPropagation(); toggleTlBucketPanel(); });
+      panel.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const opt = e.target.closest('.tl-bucket-opt');
+        if (!opt) return;
+        if (opt.classList.contains('tl-bucket-all')) {
+          tlFilterBucketSet.clear();
+        } else {
+          const v = opt.dataset.v;
+          if (tlFilterBucketSet.has(v)) tlFilterBucketSet.delete(v);
+          else tlFilterBucketSet.add(v);
+        }
+        tlPage = 1;
+        renderTicketIdList();
+      });
+      document.addEventListener('click', () => toggleTlBucketPanel(false));
+    }
+    if (document.readyState !== 'loading') _initTlBucketFilter();
+    else document.addEventListener('DOMContentLoaded', _initTlBucketFilter);
+
     // Traffic Analytic state
     let taGroups = { enterprise: true, premium: true, project: true, zopoz: true };
     let taChats  = { inbound: true, outbound: true };
@@ -8648,11 +8797,31 @@ Salam,
       AGENTS.forEach(a => { if (a.number) picMap[String(a.number)] = a.name; });
 
       // 1) Filter by selected date range
+      //    - Halaman Daily Tracking (Section 4): pakai range per-section dari DT, filter by ClickUp date_created
+      //    - Halaman lain (Ticket page): pakai global selectedDateStart/End, filter by tanggal chat (dateISO)
+      const _dtRange = (typeof activeDash !== 'undefined' && activeDash === 'daily' && window.DT && typeof window.DT.getDateRange === 'function')
+        ? window.DT.getDateRange('id') : null;
+      const _dStart = _dtRange ? _dtRange.start : selectedDateStart;
+      const _dEnd   = _dtRange ? _dtRange.end   : selectedDateEnd;
+      const _toLocalYMD = (unixMs) => {
+        if (unixMs == null || unixMs === '') return null;
+        const n = typeof unixMs === 'number' ? unixMs : Number(unixMs);
+        if (!isFinite(n)) return null;
+        const d = new Date(n);
+        if (isNaN(d.getTime())) return null;
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      };
       const inRange = (TICKET_LIST || []).filter(t => {
         if (!t || !t.id) return false;
+        if (_dtRange) {
+          // Section 4 (Daily) — filter by ClickUp date_created (unix ms)
+          const ymd = _toLocalYMD(t.clickupCreatedAt || t.dateCreatedAt || t.date_created);
+          if (!ymd) return false;   // tiket tanpa date_created tidak punya posisi di timeline → exclude
+          return (!_dStart || ymd >= _dStart) && (!_dEnd || ymd <= _dEnd);
+        }
+        // Ticket page — filter by tanggal chat (perilaku lama)
         const d = t.dateISO || '';
-        return (!selectedDateStart || d >= selectedDateStart) &&
-               (!selectedDateEnd   || d <= selectedDateEnd);
+        return (!_dStart || d >= _dStart) && (!_dEnd || d <= _dEnd);
       });
 
       // 2) Resolve creator name for each row (fallback: senderNumber, then '—')
@@ -8671,6 +8840,8 @@ Salam,
           // (TAC) FEATURE custom field — array of { name, color }
           tacFeatures: Array.isArray(t.tacFeatures) ? t.tacFeatures : [],
           clickupUrl: t.clickupUrl || ('https://app.clickup.com/t/' + String(t.id || '').toLowerCase()),
+          // ClickUp date_created (unix ms string atau ISO; backend Edge Function clickup-sync menyimpan ini)
+          clickupCreatedAt: t.clickupCreatedAt || t.dateCreatedAt || t.date_created || null,
         };
       });
 
@@ -8688,7 +8859,6 @@ Salam,
           // Sync global state ke nilai effective
           if (id === 'tlFilterCreator') tlFilterCreator = '';
           if (id === 'tlFilterFeature') tlFilterFeature = '';
-          if (id === 'tlFilterStatus')  tlFilterStatus  = '';
         }
         sel.innerHTML = `<option value="">Semua</option>` +
           sorted.map(v => `<option value="${esc(v)}" ${v === effective ? 'selected' : ''}>${esc(v)}</option>`).join('');
@@ -8698,13 +8868,26 @@ Salam,
       const allStatuses  = resolved.map(r => r.status);
       fillSelect('tlFilterCreator', allCreators, tlFilterCreator);
       fillSelect('tlFilterFeature', allFeatures, tlFilterFeature);
-      fillSelect('tlFilterStatus',  allStatuses, tlFilterStatus);
+      // Status ClickUp: multi-select checkbox panel
+      const sortedStatuses = Array.from(new Set(allStatuses.filter(v => v && v !== '—')))
+        .sort((a, b) => String(a).localeCompare(String(b), 'id', { sensitivity: 'base' }));
+      // Drop pilihan stale yang sudah tidak ada di dataset
+      Array.from(tlFilterStatusSet).forEach(v => { if (!sortedStatuses.includes(v)) tlFilterStatusSet.delete(v); });
+      renderTlStatusPanel(sortedStatuses);
+      updateTlStatusTrigger(sortedStatuses);
+      // Status (bucket): 3 opsi statis, render panel & sync trigger
+      renderTlBucketPanel();
+      updateTlBucketTrigger();
 
       // 3b) Apply dropdown filters
       const filteredByDropdowns = resolved.filter(r => {
         if (tlFilterCreator && r.creator !== tlFilterCreator) return false;
         if (tlFilterFeature && !(r.tacFeatures || []).some(f => f.name === tlFilterFeature)) return false;
-        if (tlFilterStatus  && r.status !== tlFilterStatus)  return false;
+        if (tlFilterStatusSet.size && !tlFilterStatusSet.has(r.status)) return false;
+        if (tlFilterBucketSet.size) {
+          const b = tlBucketOf(r.status);
+          if (!b || !tlFilterBucketSet.has(b)) return false;
+        }
         return true;
       });
 
@@ -8721,7 +8904,7 @@ Salam,
 
       // 4) Update badge & chip
       if (badge) badge.textContent = `${resolved.length} ticket`;
-      const hasFilter = !!(q || tlFilterCreator || tlFilterFeature || tlFilterStatus);
+      const hasFilter = !!(q || tlFilterCreator || tlFilterFeature || tlFilterStatusSet.size || tlFilterBucketSet.size);
       if (chip) {
         chip.textContent = hasFilter
           ? `${filtered.length} dari ${resolved.length} ticket`
@@ -8730,7 +8913,7 @@ Salam,
 
       // 5) Empty states
       if (!resolved.length) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Belum ada Ticket ID terdeteksi pada periode ini</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">Belum ada Ticket ID terdeteksi pada periode ini</td></tr>`;
         if (pagBar) pagBar.innerHTML = '';
         return;
       }
@@ -8738,7 +8921,7 @@ Salam,
         const msg = q
           ? `Tidak ada Ticket ID yang cocok dengan pencarian "${esc(tlQuery)}"`
           : `Tidak ada Ticket ID yang cocok dengan filter aktif`;
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">${msg}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:18px 0;font-size:13px">${msg}</td></tr>`;
         if (pagBar) pagBar.innerHTML = '';
         return;
       }
@@ -8750,6 +8933,24 @@ Salam,
       if (tlPage < 1) tlPage = 1;
       const pgStart = (tlPage - 1) * tlPageSize;
       const pageRows = filtered.slice(pgStart, pgStart + tlPageSize);
+
+      // Helper: format ClickUp date_created → "DD MMM YYYY" id-ID. Terima unix ms (string/number) atau ISO.
+      const _DT_MONTH_ID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      const fmtClickupDate = (v) => {
+        if (v === null || v === undefined || v === '') return '';
+        let d;
+        if (typeof v === 'number') d = new Date(v);
+        else if (/^\d+$/.test(String(v))) d = new Date(Number(v));
+        else d = new Date(v);
+        if (isNaN(d.getTime())) return '';
+        return `${String(d.getDate()).padStart(2,'0')} ${_DT_MONTH_ID[d.getMonth()]} ${d.getFullYear()}`;
+      };
+      const renderCreatedAt = (r) => {
+        const s = fmtClickupDate(r.clickupCreatedAt);
+        return s
+          ? `<span style="font-family:var(--mono);font-size:12px;color:var(--ink-2);white-space:nowrap">${esc(s)}</span>`
+          : `<span style="color:var(--muted-2);font-size:12px">—</span>`;
+      };
 
       // Helper: render status badge (color-tinted pill) — fallback to muted dash
       const renderStatusBadge = (r) => {
@@ -8791,6 +8992,7 @@ Salam,
       tbody.innerHTML = pageRows.map((r, i) => `
         <tr>
           <td class="c-no" style="color:var(--muted-2)">${pgStart + i + 1}</td>
+          <td>${renderCreatedAt(r)}</td>
           <td><a href="${esc(r.clickupUrl)}" target="_blank" rel="noopener" title="Buka di ClickUp" style="font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink);background:var(--surface-2);padding:3px 8px;border-radius:6px;letter-spacing:.01em;text-decoration:none;display:inline-block">${esc(r.id)}</a></td>
           <td class="c-name" style="font-weight:500">${esc(r.outletTitle)}</td>
           <td style="${r.creatorIsKnown ? '' : 'color:var(--muted-2);font-family:var(--mono);font-size:12.5px'}">${esc(r.creator)}</td>
@@ -11162,6 +11364,7 @@ Salam,
         group: { title: 'Traffic Harian per Group', kind: 'group', unit: 'outlet' },
         chat:  { title: 'Traffic Harian per Chat',  kind: 'chat',  unit: 'pesan'  },
         trend: { title: 'Traffic Tiket Harian',     kind: 'trend', unit: 'tiket'  },
+        id:    { title: 'Daftar Ticket ID',         kind: 'list',  unit: 'tiket'  },
       };
       const PRESET_LABELS = {
         today:'Hari Ini', yesterday:'Kemarin', '7days':'7 Hari Terakhir',
@@ -11295,6 +11498,14 @@ Salam,
         const subEl = document.getElementById('dtSub-'+key);
         if (subEl) subEl.textContent = `${rangeLabel(key)} · ${days.length} hari`;
 
+        // Section 4 (Daftar Ticket ID): cuma render ulang ticket list — filter by ClickUp date_created
+        if (cfg.kind === 'list') {
+          tlPage = 1;
+          try { if (typeof renderTicketIdList === 'function') renderTicketIdList(); }
+          catch (e) { console.warn('renderTicketIdList:', e); }
+          return;
+        }
+
         if (cfg.kind==='group' || cfg.kind==='chat'){
           const activeGroups = GROUPS.filter(g=>s.groups[g]);
           const useInb = !!s.chats.inbound, useOut = !!s.chats.outbound;
@@ -11333,12 +11544,17 @@ Salam,
             days, labels, seriesByGroup, allOnGroups: activeGroups, unitLabel: cfg.unit,
           });
         } else {
+          // Exclude tiket dengan TAC Feature "Request To TAC" / "Request To Eng" — sisanya = escalated yang real
+          const TREND_EXCLUDE_TAC = new Set(['request to tac','request to eng']);
           const escByDate = {};
           (TICKET_LIST||[]).forEach(t=>{
             if(!t||!t.dateISO) return;
             if (t.dateISO<s.start||t.dateISO>s.end) return;
             const g = (typeof classify==='function') ? classify(String(t.outletTitle||'')) : 'enterprise';
             if (!s.groups[g]) return;   // filter group
+            const feats = Array.isArray(t.tacFeatures) ? t.tacFeatures : [];
+            const hasExcluded = feats.some(f => TREND_EXCLUDE_TAC.has(String((f && f.name) || '').toLowerCase().trim()));
+            if (hasExcluded) return;    // skip tiket yang request-to-tac / request-to-eng
             escByDate[t.dateISO]=(escByDate[t.dateISO]||0)+1;
           });
           const escSeries = days.map(d=>escByDate[d]||0);
@@ -11441,7 +11657,7 @@ Salam,
               </div>
             </div>
           </div>
-          ${filterRowHtml(key)}
+          ${cfg.kind === 'list' ? '' : `${filterRowHtml(key)}
           <div class="dt-hero" id="dtHero-${key}"><div class="dt-hero-row" id="dtHeroRow-${key}"></div></div>
           <div class="analytics-panel">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
@@ -11450,7 +11666,7 @@ Salam,
             </div>
             <div style="overflow-x:auto"><div id="dtChartWrap-${key}" style="position:relative;height:300px"><canvas id="dtChart-${key}"></canvas></div></div>
             <div class="ta-chart-legend" id="dtLegend-${key}" style="margin-top:12px"></div>
-          </div>`;
+          </div>`}`;
 
         document.getElementById('dtTrig-'+key).addEventListener('click', e=>{ e.stopPropagation(); st[key].open ? closePicker(key) : openPicker(key); });
         document.getElementById('dtPop-'+key).addEventListener('click', e=>e.stopPropagation());
@@ -11466,9 +11682,11 @@ Salam,
         cals.addEventListener('mouseover', e=>{ const day=e.target.closest('[data-day]'); if (day) hoverDay(key, day.dataset.day); });
         cals.addEventListener('mouseleave', ()=>{ const s=st[key]; if(s.step===1 && s.hoverDate){ s.hoverDate=null; renderCal(key); } });
 
-        // Filter chips
-        cont.querySelectorAll('.ta-chip[data-g]').forEach(ch=> ch.addEventListener('click', ()=> toggleDtGroup(key, ch.dataset.g)));
-        cont.querySelectorAll('.ta-chip[data-c]').forEach(ch=> ch.addEventListener('click', ()=> toggleDtChat(key, ch.dataset.c)));
+        // Filter chips (skip untuk kind='list' karena Section 4 punya filter sendiri di dalam ticketIdPanel)
+        if (cfg.kind !== 'list') {
+          cont.querySelectorAll('.ta-chip[data-g]').forEach(ch=> ch.addEventListener('click', ()=> toggleDtGroup(key, ch.dataset.g)));
+          cont.querySelectorAll('.ta-chip[data-c]').forEach(ch=> ch.addEventListener('click', ()=> toggleDtChat(key, ch.dataset.c)));
+        }
       }
       function buildAll(){
         Object.keys(SECTIONS).forEach(key=>{
@@ -11487,15 +11705,15 @@ Salam,
         if (!built) buildAll();
         Object.keys(SECTIONS).forEach(renderSection);
       }
-      window.DT = { renderAll };
+      window.DT = {
+        renderAll,
+        // Akses state range per-section, dipakai renderTicketIdList saat di halaman Daily
+        getDateRange: (key) => (st[key] ? { start: st[key].start, end: st[key].end } : null),
+      };
 
-      // Override renderDaily: 3 section mandiri + section 4 (semua data, tanpa filter tanggal)
+      // renderDaily: tinggal panggil DT.renderAll. Section 4 (kind='list') sudah meng-handle renderTicketIdList internal.
       window.renderDaily = function(){
         try { renderAll(); } catch(e){ console.warn('DT.renderAll:', e); }
-        const _s=selectedDateStart, _e=selectedDateEnd;
-        selectedDateStart=''; selectedDateEnd='';
-        try { if (typeof renderTicketIdList==='function') renderTicketIdList(); } catch(e){ console.warn('renderTicketIdList:', e); }
-        selectedDateStart=_s; selectedDateEnd=_e;
       };
     })();
 
