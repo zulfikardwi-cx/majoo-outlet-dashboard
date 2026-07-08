@@ -62,6 +62,10 @@
       --t-bd: #99f6e4;
       --t-tx: #0f766e;
       --t-dot: #14b8a6;
+      --tk-bg: #fef2f2;
+      --tk-bd: #fecaca;
+      --tk-tx: #b91c1c;
+      --tk-dot: #ef4444;
       --o-bg: #fef3c7;
       --o-bd: #fde68a;
       --o-tx: #a16207;
@@ -248,6 +252,17 @@
 
     .gpill-z .gpill-dot {
       background: var(--z-dot);
+    }
+
+    .gpill-tk {
+      background: var(--tk-bg);
+      border-color: var(--tk-bd);
+      color: var(--tk-tx);
+      --gp-glow: color-mix(in srgb, var(--tk-dot) 18%, transparent);
+    }
+
+    .gpill-tk .gpill-dot {
+      background: var(--tk-dot);
     }
 
     .gpill-i {
@@ -1131,6 +1146,11 @@
       --gd-glow: color-mix(in srgb, var(--z-dot) 18%, transparent);
     }
 
+    .g-dot.dot-tk {
+      background: var(--tk-dot);
+      --gd-glow: color-mix(in srgb, var(--tk-dot) 18%, transparent);
+    }
+
     .g-dot.dot-i {
       background: var(--i-dot);
       --gd-glow: color-mix(in srgb, var(--i-dot) 18%, transparent);
@@ -1227,6 +1247,25 @@
 
     .group-tab[data-grp="zopoz"].active .gcount {
       background: var(--z-dot);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .group-tab[data-grp="telkom"].active {
+      background: var(--tk-bg);
+      border-color: var(--tk-bd);
+      color: var(--tk-tx);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--tk-dot) 18%, transparent), 0 4px 14px -6px color-mix(in srgb, var(--tk-dot) 35%, transparent);
+    }
+
+    .group-tab[data-grp="telkom"].active .g-dot {
+      display: flex;
+      background: var(--tk-dot);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--tk-dot) 22%, transparent);
+    }
+
+    .group-tab[data-grp="telkom"].active .gcount {
+      background: var(--tk-dot);
       color: #fff;
       border-color: transparent;
     }
@@ -1489,6 +1528,16 @@
 
     .bz .dot {
       background: var(--z-dot);
+    }
+
+    .btk {
+      background: var(--tk-bg);
+      border-color: var(--tk-bd);
+      color: var(--tk-tx);
+    }
+
+    .btk .dot {
+      background: var(--tk-dot);
     }
 
     .bi {
@@ -2176,6 +2225,7 @@
     .dt-hero-stat[data-k="project"] .dt-hero-stat-label::before,
     .dt-hero-stat[data-k="avg"] .dt-hero-stat-label::before { background:#bbf7d0; }
     .dt-hero-stat[data-k="zopoz"] .dt-hero-stat-label::before { background:#fed7aa; }
+    .dt-hero-stat[data-k="telkom"] .dt-hero-stat-label::before { background:#fecaca; }
     .dt-hero-stat-num { font-family:var(--mono); font-size:38px; font-weight:700; letter-spacing:-.04em; line-height:1; color:#fff; }
     .dt-hero-stat-sub { font-size:11.5px; color:rgba(255,255,255,.78); margin-top:8px; }
     @media (max-width:880px){
@@ -2653,6 +2703,9 @@
     .ta-chip[data-g="zopoz"].on { background: var(--z-bg); border-color: var(--z-bd); color: var(--z-tx); }
     .ta-chip[data-g="zopoz"].on .ta-check { background: var(--z-dot); border-color: var(--z-dot); }
     .ta-chip[data-g="zopoz"] .ta-cdot { background: var(--z-dot); }
+    .ta-chip[data-g="telkom"].on { background: var(--tk-bg); border-color: var(--tk-bd); color: var(--tk-tx); }
+    .ta-chip[data-g="telkom"].on .ta-check { background: var(--tk-dot); border-color: var(--tk-dot); }
+    .ta-chip[data-g="telkom"] .ta-cdot { background: var(--tk-dot); }
 
     .ta-chip[data-c="inbound"].on { background: var(--m-tint); border-color: #b8e5e1; color: var(--m-dark); }
     .ta-chip[data-c="inbound"].on .ta-check { background: var(--m-teal); border-color: var(--m-teal); }
@@ -2766,6 +2819,7 @@
     .ta-hero-stat[data-k="premium"] .ta-hero-stat-label::before { background: #e9d5ff; }
     .ta-hero-stat[data-k="project"] .ta-hero-stat-label::before { background: #bbf7d0; }
     .ta-hero-stat[data-k="zopoz"] .ta-hero-stat-label::before { background: #fed7aa; }
+    .ta-hero-stat[data-k="telkom"] .ta-hero-stat-label::before { background: #fecaca; }
     .ta-hero-stat-num {
       font-family: var(--mono);
       font-size: 38px;
@@ -2906,6 +2960,7 @@
     .ta-top-badge.b-premium    { background: var(--p-bg); border-color: var(--p-bd); color: var(--p-tx); }
     .ta-top-badge.b-project    { background: var(--r-bg); border-color: var(--r-bd); color: var(--r-tx); }
     .ta-top-badge.b-zopoz      { background: var(--z-bg); border-color: var(--z-bd); color: var(--z-tx); }
+    .ta-top-badge.b-telkom     { background: var(--tk-bg); border-color: var(--tk-bd); color: var(--tk-tx); }
     .ta-top-badge.b-internal   { background: var(--i-bg); border-color: var(--i-bd); color: var(--i-tx); }
     .ta-top-value {
       font-family: var(--mono);
@@ -3139,6 +3194,7 @@
     .ta-pv-pill.premium    { background: var(--p-bg); border-color: var(--p-bd); color: var(--p-tx); }
     .ta-pv-pill.project    { background: var(--r-bg); border-color: var(--r-bd); color: var(--r-tx); }
     .ta-pv-pill.zopoz      { background: var(--z-bg); border-color: var(--z-bd); color: var(--z-tx); }
+    .ta-pv-pill.telkom     { background: var(--tk-bg); border-color: var(--tk-bd); color: var(--tk-tx); }
     .ta-pv-pill.internal   { background: var(--i-bg); border-color: var(--i-bd); color: var(--i-tx); }
 
     .ta-pv-cell-data {
@@ -4818,6 +4874,7 @@
       --i-bg:#1a232f; --i-bd:#344150; --i-tx:#cbd5e1;
       --n-bg:#2a1a0d; --n-bd:#54381b; --n-tx:#fdba74;
       --t-bg:#0f2e2b; --t-bd:#1c544d; --t-tx:#5eead4;
+      --tk-bg:#3a1113; --tk-bd:#7f1d1d; --tk-tx:#fca5a5;
       --o-bg:#2a2410; --o-bd:#54481a; --o-tx:#fcd34d;
     }
 
@@ -4994,6 +5051,7 @@
             <span class="gpill gpill-p"><span class="gpill-dot"></span>Premium Services</span>
             <span class="gpill gpill-r"><span class="gpill-dot"></span>Projects</span>
             <span class="gpill gpill-z"><span class="gpill-dot"></span>Zopoz</span>
+            <span class="gpill gpill-tk"><span class="gpill-dot"></span>Telkom</span>
             <span class="gpill gpill-i"><span class="gpill-dot"></span>Internal</span>
           </div>
           <div class="brand-sub" id="brandSub">Reporting &amp; Monitoring Activity Handling Groups</div>
@@ -5391,6 +5449,8 @@
               class="g-dot dot-r"></span>Project Groups <span class="gcount" id="gc-project">—</span></button>
           <button class="group-tab" data-grp="zopoz" onclick="setGroup('zopoz')"><span
               class="g-dot dot-z"></span>Grup Zopoz <span class="gcount" id="gc-zopoz">—</span></button>
+          <button class="group-tab" data-grp="telkom" onclick="setGroup('telkom')"><span
+              class="g-dot dot-tk"></span>Grup Telkom <span class="gcount" id="gc-telkom">—</span></button>
           <button class="group-tab" data-grp="internal" onclick="setGroup('internal')"><span
               class="g-dot dot-i"></span>Internal Grup <span class="gcount" id="gc-internal">—</span></button>
         </div>
@@ -5410,6 +5470,7 @@
           <option value="enterprise">Enterprise Groups</option>
           <option value="project">Project Groups</option>
           <option value="zopoz">Grup Zopoz</option>
+          <option value="telkom">Grup Telkom</option>
           <option value="internal">Internal Grup</option>
         </select>
         <span class="count-chip" id="countChip">— outlet</span>
@@ -5914,6 +5975,12 @@
               Zopoz
               <span class="ta-chip-count" id="ta-gc-zopoz">—</span>
             </div>
+            <div class="ta-chip on" data-g="telkom" onclick="toggleTaGroup('telkom')">
+              <span class="ta-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg></span>
+              <span class="ta-cdot"></span>
+              Telkom
+              <span class="ta-chip-count" id="ta-gc-telkom">—</span>
+            </div>
           </div>
         </div>
 
@@ -5977,6 +6044,12 @@
             <div class="ta-hero-stat-num" id="ta-n-zopoz">—</div>
             <div class="ta-hero-stat-sub" id="ta-s-zopoz">— outlet</div>
             <div class="ta-hero-stat-delta" id="ta-d-zopoz" style="display:none"></div>
+          </div>
+          <div class="ta-hero-stat" data-k="telkom">
+            <div class="ta-hero-stat-label">Telkom</div>
+            <div class="ta-hero-stat-num" id="ta-n-telkom">—</div>
+            <div class="ta-hero-stat-sub" id="ta-s-telkom">— outlet</div>
+            <div class="ta-hero-stat-delta" id="ta-d-telkom" style="display:none"></div>
           </div>
         </div>
       </div>
@@ -7228,7 +7301,7 @@ Salam,
     else document.addEventListener('DOMContentLoaded', _initTlBucketFilter);
 
     // Traffic Analytic state
-    let taGroups = { enterprise: true, premium: true, project: true, zopoz: true };
+    let taGroups = { enterprise: true, premium: true, project: true, zopoz: true, telkom: true };
     let taChats  = { inbound: true, outbound: true };
     // Pivot table state — sort mode + search query
     let taPvSort  = { kind: 'total', dir: 'desc', date: null };  // kind: 'total' | 'name' | 'date'
@@ -7558,6 +7631,7 @@ Salam,
       premium:    { fill: '#d8b4fe', text: 'var(--p-tx)', label: 'Premium Services' },
       project:    { fill: '#86efac', text: 'var(--r-tx)', label: 'Project' },
       zopoz:      { fill: '#fdba74', text: 'var(--z-tx)', label: 'Zopoz' },
+      telkom:     { fill: '#fca5a5', text: 'var(--tk-tx)', label: 'Telkom' },
     };
 
     function toggleTaGroup(g) {
@@ -7646,6 +7720,7 @@ Salam,
       document.getElementById('ta-gc-premium').textContent    = OUTLETS.filter(o => o.group === 'premium').length;
       document.getElementById('ta-gc-project').textContent    = OUTLETS.filter(o => o.group === 'project').length;
       document.getElementById('ta-gc-zopoz').textContent      = OUTLETS.filter(o => o.group === 'zopoz').length;
+      document.getElementById('ta-gc-telkom').textContent     = OUTLETS.filter(o => o.group === 'telkom').length;
 
       const days = [];
       eachDay(selectedDateStart, selectedDateEnd, ds => days.push(ds));
@@ -7665,7 +7740,7 @@ Salam,
       setTaDelta('ta-d-total', totalCur, totalPrev);
       document.getElementById('ta-s-total').textContent = `${activeGroupsLabel()} aktif`;
 
-      ['enterprise','premium','project','zopoz'].forEach(g => {
+      ['enterprise','premium','project','zopoz','telkom'].forEach(g => {
         const cur  = taSumGroup(g, selectedDateStart, selectedDateEnd);
         const prev = taSumGroup(g, prevStart, prevEnd);
         const cnt  = OUTLETS.filter(o => o.group === g).length;
@@ -7752,7 +7827,7 @@ Salam,
       }
 
       // Build datasets in fixed visual order (enterprise → premium → project → zopoz)
-      const order = ['enterprise','premium','project','zopoz'].filter(g => allOnGroups.includes(g));
+      const order = ['enterprise','premium','project','zopoz','telkom'].filter(g => allOnGroups.includes(g));
       const lastIdx = order.length - 1;
       const datasets = order.map((g, i) => ({
         label: TA_COLORS[g].label,
@@ -7909,7 +7984,7 @@ Salam,
         return;
       }
 
-      const GROUP_LABEL = { enterprise: 'Enterprise', premium: 'Premium', project: 'Project', zopoz: 'Zopoz', internal: 'Internal' };
+      const GROUP_LABEL = { enterprise: 'Enterprise', premium: 'Premium', project: 'Project', zopoz: 'Zopoz', telkom: 'Telkom', internal: 'Internal' };
       list.innerHTML = ranked.map((x, i) => {
         const o = x.o;
         const nameHtml = (o.url && o.url !== '#')
@@ -8046,7 +8121,7 @@ Salam,
         return;
       }
 
-      const GROUP_LABEL = { enterprise: 'Enterprise', premium: 'Premium', project: 'Project', zopoz: 'Zopoz', internal: 'Internal' };
+      const GROUP_LABEL = { enterprise: 'Enterprise', premium: 'Premium', project: 'Project', zopoz: 'Zopoz', telkom: 'Telkom', internal: 'Internal' };
       const levelClass = (v) => {
         if (!v || v <= 0) return 'ta-pv-cell-empty';
         if (maxVal <= 0) return 'ta-pv-cell-l1';
@@ -8110,6 +8185,7 @@ Salam,
       const t = title.toLowerCase();
       if (t.includes('majoo support') || t.includes('cc x tac')) return 'internal';
       if (t.includes('zopoz')) return 'zopoz';
+      if (t.includes('telkom')) return 'telkom';
       if (t.includes('majoo premium')) return 'premium';
       if (t.includes('majoo project')) return 'project';
       return 'enterprise';
@@ -8118,6 +8194,7 @@ Salam,
       let n = title;
       n = n.replace(/^WA\s*[-–]\s*/i, '');
       n = n.replace(/^zopoz\s+project\s+[xX]\s+/i, '');
+      n = n.replace(/^majoo\s*[-–]\s*telkom\s+[xX]\s+/i, '');
       n = n.replace(/^majoo\s+premium\s+[xX]\s+/i, '');
       n = n.replace(/^majoo\s+project\s+[xX]\s+/i, '');
       n = n.replace(/^majoo\s+pusat\s+[xX]\s+/i, '');
@@ -8275,6 +8352,7 @@ Salam,
       setText('gc-enterprise', OUTLETS.filter(o => o.group === 'enterprise').length);
       setText('gc-project', OUTLETS.filter(o => o.group === 'project').length);
       setText('gc-zopoz', OUTLETS.filter(o => o.group === 'zopoz').length);
+      setText('gc-telkom', OUTLETS.filter(o => o.group === 'telkom').length);
       setText('gc-internal', OUTLETS.filter(o => o.group === 'internal').length);
 
       // Sparklines
@@ -9460,6 +9538,7 @@ Salam,
       premium: { label: 'Premium Services Groups', cls: 'bp' },
       project: { label: 'Project Groups', cls: 'br' },
       zopoz: { label: 'Grup Zopoz', cls: 'bz' },
+      telkom: { label: 'Grup Telkom', cls: 'btk' },
       internal: { label: 'Internal Grup', cls: 'bi' },
     };
     function badgeH(g) { const m = GM[g] || { cls: 'be', label: g || '—' }; return `<span class="badge ${m.cls}"><span class="dot"></span>${m.label}</span>`; }
@@ -11374,7 +11453,7 @@ Salam,
       const PRESET_ORDER = ['today','yesterday','7days','thisweek','lastweek','30days','thismonth','lastmonth'];
       const CAL_MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
       const CAL_DAYS = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
-      const GROUPS = ['enterprise','premium','project','zopoz'];
+      const GROUPS = ['enterprise','premium','project','zopoz','telkom'];
       const st = {};       // per-key state
       const charts = {};   // per-key chart instance
       let built = false;
@@ -11520,7 +11599,7 @@ Salam,
             });
           });
           if (cfg.kind==='group'){
-            const GL={enterprise:'ENTERPRISE',premium:'PREMIUM SERVICES',project:'PROJECT',zopoz:'ZOPOZ'};
+            const GL={enterprise:'ENTERPRISE',premium:'PREMIUM SERVICES',project:'PROJECT',zopoz:'ZOPOZ',telkom:'TELKOM'};
             const perG={}; activeGroups.forEach(g=> perG[g]=OUTLETS.filter(o=>o.group===g).reduce((t,o)=>t+msgRange(o),0));
             const tot=activeGroups.reduce((a,g)=>a+perG[g],0);
             const cells=[{k:'total',label:'TOTAL TRAFFIC',num:fmtNum(tot),sub:'Group aktif: '+activeGroups.length}];
@@ -11595,7 +11674,7 @@ Salam,
       function chipChatHtml(key,c,label,arrow){ return `<div class="ta-chip on" data-c="${c}">${_chk}<span style="font-size:13px;line-height:1">${arrow}</span>${label}</div>`; }
       function filterRowHtml(key){
         const grp = `<div class="dt-filter-grp"><span class="dt-filter-lbl">Filter Group</span><div class="ta-chips">`
-          + chipGroupHtml(key,'enterprise','Enterprise') + chipGroupHtml(key,'premium','Premium Services') + chipGroupHtml(key,'project','Project') + chipGroupHtml(key,'zopoz','Zopoz')
+          + chipGroupHtml(key,'enterprise','Enterprise') + chipGroupHtml(key,'premium','Premium Services') + chipGroupHtml(key,'project','Project') + chipGroupHtml(key,'zopoz','Zopoz') + chipGroupHtml(key,'telkom','Telkom')
           + `</div></div>`;
         const chat = hasChatFilter(key)
           ? `<div class="dt-filter-grp"><span class="dt-filter-lbl">Type Chat</span><div class="ta-chips">`
@@ -11692,7 +11771,7 @@ Salam,
         Object.keys(SECTIONS).forEach(key=>{
           const r = presetRange(DEF_PRESET);
           st[key] = { start:r.s, end:r.e, preset:DEF_PRESET, open:false, tempStart:null, tempEnd:null, hoverDate:null, step:0, rightYear:0, rightMonth:0, activePreset:null,
-            groups:{ enterprise:true, premium:true, project:true, zopoz:true },   // filter group (semua section)
+            groups:{ enterprise:true, premium:true, project:true, zopoz:true, telkom:true },   // filter group (semua section)
             chats:{ inbound:true, outbound:true } };                  // filter type chat (section group & chat saja)
           buildSection(key);
           updateTrigger(key);
