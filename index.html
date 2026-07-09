@@ -11829,6 +11829,17 @@ Salam,
       let convs = [];
       let mentions = {};   // ident (lid / nomor) -> nama tampil, dari get_inbox
       let st = { bucket:'open', activeGid:null, search:'', sort:'newest', replyTo:null, pendingMedia:null, memberCache:{} };
+
+      // Grup internal (mis. majoo Support, CC x TAC) = koordinasi internal, bukan tiket outlet.
+      // Jangan auto-pindah ke "Done Reply" saat dibalas agent — biarkan tetap di "Open".
+      function isInternalGroup(name){
+        const t = String(name || '').toLowerCase();
+        return t.includes('majoo support') || t.includes('cc x tac');
+      }
+      function keepInternalOpen(list){
+        (list || []).forEach(c => { if (c && c.bucket === 'done' && isInternalGroup(c.name)) c.bucket = 'open'; });
+        return list;
+      }
       let loaded = false, loading = false, listenersBound = false;
       let inboxTimer = null, lastInboxSig = '';   // auto-refresh inbox (near-realtime)
       let _searchTimer = null;                    // debounce search server-side
@@ -11947,7 +11958,7 @@ Salam,
           const res = await fetch(RPC('get_inbox'), { method:'POST', headers:HEAD(), body:'{}' });
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const data = await res.json();
-          const nc = Array.isArray(data) ? data : (Array.isArray(data.conversations) ? data.conversations : []);
+          const nc = keepInternalOpen(Array.isArray(data) ? data : (Array.isArray(data.conversations) ? data.conversations : []));
           carryMessages(convs, nc);          // pertahankan thread yang sudah dibuka
           convs = nc;
           // mentions TIDAK di-reset: get_inbox kini hanya ringkasan; peta mention diisi get_thread.
@@ -12714,7 +12725,7 @@ Salam,
           const res = await fetch(RPC('get_inbox'), { method:'POST', headers:HEAD(), body:'{}' });
           if (!res.ok) return;
           const data = await res.json();
-          const nc = Array.isArray(data) ? data : (Array.isArray(data.conversations) ? data.conversations : []);
+          const nc = keepInternalOpen(Array.isArray(data) ? data : (Array.isArray(data.conversations) ? data.conversations : []));
           applyInbox(nc);
           if (st.search && st.search.trim()) renderList();  // jaga tampilan hasil search tetap sinkron
         } catch (e){ /* diam — coba lagi tick berikutnya */ }
@@ -12727,7 +12738,7 @@ Salam,
           const res = await fetch(RPC('get_inbox'), { method:'POST', headers:HEAD(), body: JSON.stringify({ p_q: q }) });
           if (!res.ok) return;
           const d = await res.json();
-          const arr = Array.isArray(d.conversations) ? d.conversations : (Array.isArray(d) ? d : []);
+          const arr = keepInternalOpen(Array.isArray(d.conversations) ? d.conversations : (Array.isArray(d) ? d : []));
           carryMessages(convs, arr);     // biar buka hasil search tetap punya thread bila sudah dimuat
           st.searchConvs = arr;
           renderList();
