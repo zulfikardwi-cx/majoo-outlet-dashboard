@@ -4199,6 +4199,62 @@
       transition: all .15s;
     }
     #workorderPage .wt-btn-reset:hover { color: var(--ink); border-color: var(--border-strong); }
+
+    /* Filter Pills bar (di dalam Daftar Outlet) — sinkron dua arah dgn KPI cards */
+    #workorderPage .wt-filter-bar {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding: 12px 20px; border-bottom: 1px solid var(--border);
+      background: var(--surface-2, #fafaf9);
+    }
+    #workorderPage .wt-filter-bar-label {
+      font-size: 10.5px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .1em; margin-right: 4px;
+    }
+    #workorderPage .wt-filter-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 999px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-family: var(--font); font-size: 12px; font-weight: 500;
+      color: var(--muted); cursor: pointer;
+      transition: background .12s, color .12s, border-color .12s;
+    }
+    #workorderPage .wt-filter-pill:hover { color: var(--ink); border-color: var(--border-strong); }
+    #workorderPage .wt-filter-pill .wt-filter-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    #workorderPage .wt-filter-pill .wt-filter-count {
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      color: var(--muted-2, #94a3b8);
+    }
+    #workorderPage .wt-filter-pill.active {
+      background: var(--m-dark); border-color: var(--m-dark); color: #fff;
+    }
+    #workorderPage .wt-filter-pill.active .wt-filter-count { color: rgba(255,255,255,.75); }
+
+    /* Filter Tanggal bar (khusus Daftar Outlet, independen dari page date picker) */
+    #workorderPage .wt-list-dp-bar {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 12px 20px; border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    #workorderPage .wt-list-dp-presets { display: inline-flex; gap: 5px; flex-wrap: wrap; }
+    #workorderPage .wt-list-dp-preset {
+      border: 1.5px solid var(--border); background: var(--surface);
+      color: var(--muted); font-family: var(--font);
+      font-size: 11.5px; font-weight: 500;
+      padding: 4px 11px; border-radius: 999px; cursor: pointer;
+      transition: all .15s;
+    }
+    #workorderPage .wt-list-dp-preset:hover { border-color: #ccc; color: var(--ink); }
+    #workorderPage .wt-list-dp-preset.active {
+      background: var(--m-teal); color: #fff;
+      border-color: var(--m-teal); font-weight: 600;
+    }
+    #workorderPage .wt-list-dp-range {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11.5px; color: var(--muted); margin-left: auto;
+    }
+
     #workorderPage .wt-table-wrap { overflow-x: auto; }
     #workorderPage .wt-dt {
       width: 100%; border-collapse: collapse;
@@ -6319,6 +6375,54 @@
             </div>
             <button class="wt-btn-reset" onclick="wtResetAll()">Reset Filter</button>
           </div>
+        </div>
+        <!-- Filter Tanggal Daftar Outlet — independen dari page date picker -->
+        <div class="wt-list-dp-bar" id="wtListDpBar">
+          <span class="wt-filter-bar-label">Filter Tanggal</span>
+          <div class="wt-list-dp-presets">
+            <button class="wt-list-dp-preset" data-preset="today">Hari Ini</button>
+            <button class="wt-list-dp-preset" data-preset="7d">7 Hari</button>
+            <button class="wt-list-dp-preset" data-preset="30d">30 Hari</button>
+            <button class="wt-list-dp-preset active" data-preset="month">Bulan Ini</button>
+            <button class="wt-list-dp-preset" data-preset="lastmonth">Bulan Lalu</button>
+            <button class="wt-list-dp-preset" data-preset="all">All Time</button>
+          </div>
+          <div class="wt-list-dp-range">
+            <input type="date" id="wtListDpStart" class="wt-chart-dp-input" />
+            <span>—</span>
+            <input type="date" id="wtListDpEnd" class="wt-chart-dp-input" />
+          </div>
+        </div>
+        <!-- Filter Pills — sinkron dgn KPI card di hero -->
+        <div class="wt-filter-bar" id="wtFilterBar">
+          <span class="wt-filter-bar-label">Filter Status</span>
+          <button class="wt-filter-pill active" data-status="total" onclick="wtSetStatusFilter('total')">
+            Semua <span class="wt-filter-count" id="wtPillCntTotal">—</span>
+          </button>
+          <button class="wt-filter-pill" data-status="backlog" onclick="wtSetStatusFilter('backlog')">
+            <span class="wt-filter-dot" style="background:#cbd5e1"></span>Backlog
+            <span class="wt-filter-count" id="wtPillCntBacklog">—</span>
+          </button>
+          <button class="wt-filter-pill" data-status="onprocess" onclick="wtSetStatusFilter('onprocess')">
+            <span class="wt-filter-dot" style="background:#93c5fd"></span>Onprocess FU
+            <span class="wt-filter-count" id="wtPillCntOnproc">—</span>
+          </button>
+          <button class="wt-filter-pill" data-status="backlog_sales" onclick="wtSetStatusFilter('backlog_sales')">
+            <span class="wt-filter-dot" style="background:#fdba74"></span>Backlog Sales
+            <span class="wt-filter-count" id="wtPillCntBSales">—</span>
+          </button>
+          <button class="wt-filter-pill" data-status="need_fu" onclick="wtSetStatusFilter('need_fu')">
+            <span class="wt-filter-dot" style="background:#fcd34d"></span>Final Attempt
+            <span class="wt-filter-count" id="wtPillCntNeedFU">—</span>
+          </button>
+          <button class="wt-filter-pill" data-status="closed" onclick="wtSetStatusFilter('closed')">
+            <span class="wt-filter-dot" style="background:#fca5a5"></span>Close
+            <span class="wt-filter-count" id="wtPillCntClosed">—</span>
+          </button>
+          <button class="wt-filter-pill" data-status="done" onclick="wtSetStatusFilter('done')">
+            <span class="wt-filter-dot" style="background:#86efac"></span>Done
+            <span class="wt-filter-count" id="wtPillCntDone">—</span>
+          </button>
         </div>
         <div class="wt-table-wrap">
           <table class="wt-dt">
@@ -10184,6 +10288,8 @@ Salam,
     const wtState = {
       // Chart-only date range (independen dari date picker halaman)
       chartPreset: 'month', chartRangeStart: null, chartRangeEnd: null,
+      // Daftar Outlet date range (independen — dipakai list + pill counts)
+      listPreset: 'month', listRangeStart: null, listRangeEnd: null,
       statusFilter: 'total', subFilter: null,
       search: '', pageSize: 10, page: 1,
     };
@@ -10299,6 +10405,48 @@ Salam,
         return true;
       });
     }
+    // Filter khusus Daftar Outlet — pakai wtState.listRangeStart/End (independen).
+    // Range null = All Time.
+    function wtFilterByListDate(rows) {
+      const s = wtState.listRangeStart, e = wtState.listRangeEnd;
+      if (!s && !e) return rows;
+      const sYmd = s ? wtYmd(s) : '';
+      const eYmd = e ? wtYmd(e) : '';
+      return rows.filter(r => {
+        const d = wtParseDate(r.date); if (!d) return false;
+        const ds = wtYmd(d);
+        if (sYmd && ds < sYmd) return false;
+        if (eYmd && ds > eYmd) return false;
+        return true;
+      });
+    }
+    // Set preset untuk filter tanggal Daftar Outlet
+    function wtApplyListPreset(preset) {
+      wtState.listPreset = preset;
+      const today = new Date(); today.setHours(0,0,0,0);
+      let start = null, end = today;
+      if (preset === 'today')         start = today;
+      else if (preset === '7d')       { start = new Date(today); start.setDate(start.getDate() - 6); }
+      else if (preset === '30d')      { start = new Date(today); start.setDate(start.getDate() - 29); }
+      else if (preset === 'month')    {
+        start = new Date(today.getFullYear(), today.getMonth(), 1);
+        end   = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      }
+      else if (preset === 'lastmonth') {
+        start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        end   = new Date(today.getFullYear(), today.getMonth(), 0);
+      }
+      else if (preset === 'all')      { start = null; end = null; }
+      wtState.listRangeStart = start;
+      wtState.listRangeEnd   = end;
+      const s1 = document.getElementById('wtListDpStart');
+      const s2 = document.getElementById('wtListDpEnd');
+      if (s1) s1.value = start ? wtYmd(start) : '';
+      if (s2) s2.value = end   ? wtYmd(end)   : '';
+      document.querySelectorAll('#workorderPage .wt-list-dp-preset').forEach(b => b.classList.toggle('active', b.dataset.preset === preset));
+      wtState.page = 1;
+      renderWorkorder();
+    }
     function wtFilterByStatus(rows) {
       const sf = wtState.statusFilter;
       if (sf === 'total') return rows;
@@ -10356,23 +10504,33 @@ Salam,
 
     // ── Main render orchestrator ──
     function renderWorkorder() {
-      const inRange = wtFilterByDate(wtDedupInv(WORKORDER_DATA || []));
+      const deduped = wtDedupInv(WORKORDER_DATA || []);
+      // Dua scope terpisah:
+      //   pageInRange → KPI hero cards + TLTC leaderboard (ikut date picker halaman)
+      //   listInRange → Filter pills counts + Tabel Daftar Outlet (ikut wt-list-dp)
+      const pageInRange = wtFilterByDate(deduped);
+      const listInRange = wtFilterByListDate(deduped);
 
-      // KPI counts
-      const counts = {
-        total: inRange.length,
-        backlog: 0, onprocess: 0, backlog_sales: 0,
-        need_fu: 0, closed: 0, done: 0,
-        not_respond: 0, no_invalid: 0, no_sales: 0,
+      const buildCounts = (rows) => {
+        const c = {
+          total: rows.length,
+          backlog: 0, onprocess: 0, backlog_sales: 0,
+          need_fu: 0, closed: 0, done: 0,
+          not_respond: 0, no_invalid: 0, no_sales: 0,
+        };
+        rows.forEach(r => {
+          const b = wtStatusBucket(r.final_status);
+          if (c[b] !== undefined) c[b]++;
+          if (b === 'backlog_sales') {
+            const sb = wtSalesSubBucket(r.final_status);
+            if (sb) c[sb]++;
+          }
+        });
+        return c;
       };
-      inRange.forEach(r => {
-        const b = wtStatusBucket(r.final_status);
-        if (counts[b] !== undefined) counts[b]++;
-        if (b === 'backlog_sales') {
-          const sb = wtSalesSubBucket(r.final_status);
-          if (sb) counts[sb]++;
-        }
-      });
+      const counts     = buildCounts(pageInRange); // KPI hero
+      const listCounts = buildCounts(listInRange); // Pills + tabel
+
       const setNum = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v.toLocaleString('id-ID'); };
       setNum('wtKpiTotal', counts.total);
       setNum('wtKpiBacklog', counts.backlog);
@@ -10385,9 +10543,20 @@ Salam,
       setNum('wtKpiNoInvalid', counts.no_invalid);
       setNum('wtKpiNoSales', counts.no_sales);
 
-      // Active states
+      // Active states — KPI cards + filter pills (dua-arah sync)
       document.querySelectorAll('#workorderPage .wt-stat').forEach(c => c.classList.toggle('active', c.dataset.status === wtState.statusFilter));
       document.querySelectorAll('#workorderPage .wt-substat').forEach(c => c.classList.toggle('active', c.dataset.sub === wtState.subFilter));
+      document.querySelectorAll('#workorderPage .wt-filter-pill').forEach(p => p.classList.toggle('active', p.dataset.status === wtState.statusFilter));
+
+      // Filter pill counts (mengikuti filter tanggal Daftar Outlet)
+      const setPill = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v.toLocaleString('id-ID'); };
+      setPill('wtPillCntTotal',   listCounts.total);
+      setPill('wtPillCntBacklog', listCounts.backlog);
+      setPill('wtPillCntOnproc',  listCounts.onprocess);
+      setPill('wtPillCntBSales',  listCounts.backlog_sales);
+      setPill('wtPillCntNeedFU',  listCounts.need_fu);
+      setPill('wtPillCntClosed',  listCounts.closed);
+      setPill('wtPillCntDone',    listCounts.done);
 
       // Header dynamic
       const periodeMap = {
@@ -10402,11 +10571,11 @@ Salam,
       // Chart (chart picker independen)
       wtRenderDailyChart();
 
-      // TLTC leaderboard
-      wtRenderTltcLeaderboard(inRange);
+      // TLTC leaderboard — ikut scope halaman (KPI hero)
+      wtRenderTltcLeaderboard(pageInRange);
 
-      // Filter pipeline: status + search
-      const filtered = wtFilterBySearch(wtFilterByStatus(inRange));
+      // Filter pipeline untuk Daftar Outlet: pakai listInRange (scope tanggal sendiri)
+      const filtered = wtFilterBySearch(wtFilterByStatus(listInRange));
 
       // Filter chip
       const chipMap = {
@@ -10424,9 +10593,9 @@ Salam,
       const chipWrap = document.getElementById('wtFilterChipWrap');
       if (chipWrap) chipWrap.innerHTML = chip;
 
-      // Panel sub
+      // Panel sub — pakai listCounts (bukan page KPI counts)
       const sub = document.getElementById('wtPanelSub');
-      if (sub) sub.textContent = `${filtered.length.toLocaleString('id-ID')} dari ${counts.total.toLocaleString('id-ID')} outlet`;
+      if (sub) sub.textContent = `${filtered.length.toLocaleString('id-ID')} dari ${listCounts.total.toLocaleString('id-ID')} outlet`;
 
       // Pagination
       const total = filtered.length;
@@ -10953,12 +11122,27 @@ Salam,
       wtState.statusFilter = 'total'; wtState.subFilter = null;
       wtState.page = 1; renderWorkorder();
     }
+    // Filter pill handler — dipanggil dari Daftar Outlet.
+    // Klik pill yang sama = toggle off (kembali ke 'total').
+    function wtSetStatusFilter(status) {
+      if (wtState.statusFilter === status && status !== 'total') {
+        wtState.statusFilter = 'total';
+      } else {
+        wtState.statusFilter = status;
+      }
+      // Reset sub-filter kalau status pindah dari backlog_sales
+      if (wtState.statusFilter !== 'backlog_sales') wtState.subFilter = null;
+      wtState.page = 1;
+      renderWorkorder();
+    }
     function wtResetAll() {
       wtState.statusFilter = 'total'; wtState.subFilter = null;
       wtState.search = '';
       const si = document.getElementById('wtSearchInput'); if (si) si.value = '';
       // Reset page picker → "thismonth" via existing preset infra
       if (typeof setPreset === 'function') setPreset('thismonth');
+      // Reset filter tanggal Daftar Outlet ke "Bulan Ini"
+      wtApplyListPreset('month');
       wtState.page = 1;
       renderWorkorder();
     }
@@ -11000,6 +11184,27 @@ Salam,
         });
         // Init chart preset (Bulan Ini)
         wtApplyChartPreset('month');
+
+        // ── Filter Tanggal Daftar Outlet ──
+        const lp = document.getElementById('wtListDpBar');
+        if (lp) lp.addEventListener('click', e => {
+          const btn = e.target.closest('.wt-list-dp-preset'); if (!btn) return;
+          wtApplyListPreset(btn.dataset.preset);
+        });
+        const ls = document.getElementById('wtListDpStart');
+        if (ls) ls.addEventListener('change', e => {
+          wtState.listRangeStart = wtParseInputDate(e.target.value); wtState.listPreset = 'custom';
+          document.querySelectorAll('#workorderPage .wt-list-dp-preset').forEach(b => b.classList.remove('active'));
+          wtState.page = 1; renderWorkorder();
+        });
+        const le = document.getElementById('wtListDpEnd');
+        if (le) le.addEventListener('change', e => {
+          wtState.listRangeEnd = wtParseInputDate(e.target.value); wtState.listPreset = 'custom';
+          document.querySelectorAll('#workorderPage .wt-list-dp-preset').forEach(b => b.classList.remove('active'));
+          wtState.page = 1; renderWorkorder();
+        });
+        // Init list preset (Bulan Ini)
+        wtApplyListPreset('month');
       };
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
       else init();
