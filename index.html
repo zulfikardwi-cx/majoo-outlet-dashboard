@@ -5518,7 +5518,7 @@
             </svg>
           </span>
           <input class="search-input" id="searchInput" type="text" placeholder="Cari nama outlet…"
-            oninput="curPage=1;render()" />
+            oninput="outletSearchInput()" />
         </div>
         <select id="groupSel" onchange="handleSel()" aria-hidden="true">
           <option value="all">All Groups</option>
@@ -5907,7 +5907,7 @@
         <div class="toolbar" style="margin-bottom:12px">
           <div class="search-wrap">
             <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="6.5" cy="6.5" r="5.5"/><line x1="11" y1="11" x2="15" y2="15"/></svg></span>
-            <input class="search-input" id="ticketIdSearch" type="text" placeholder="Cari Ticket ID, outlet, atau creator…" oninput="tlQuery=this.value;tlPage=1;renderTicketIdList()"/>
+            <input class="search-input" id="ticketIdSearch" type="text" placeholder="Cari Ticket ID, outlet, atau creator…" oninput="tlSearchInput(this.value)"/>
           </div>
           <span class="count-chip" id="ticketIdShownChip">— ticket</span>
         </div>
@@ -7440,6 +7440,56 @@ Salam,
       while (d <= endD) { cb(localDate(d), new Date(d)); d.setDate(d.getDate() + 1); }
     }
 
+    // ── Index outlet (dibangun sekali per loadData) ──────────────
+    // OUTLETS_BY_GROUP: hindari OUTLETS.filter(o=>o.group===g) berulang (~40x/render).
+    // Prefix-sum harian: sumFast O(1) menggantikan sumRange O(hari) di hot path traffic/outbound.
+    let OUTLETS_BY_GROUP = { enterprise: [], premium: [], project: [] };
+    let _dtAxisStartMs = 0, _dtAxisLen = 0;
+    function buildOutletIndexes() {
+      OUTLETS_BY_GROUP = { enterprise: [], premium: [], project: [] };
+      (OUTLETS || []).forEach(o => { (OUTLETS_BY_GROUP[o.group] || (OUTLETS_BY_GROUP[o.group] = [])).push(o); });
+
+      // Sumbu tanggal global: dari tanggal data terlama s/d max(tanggal data terbaru, hari ini)
+      let min = null, max = null;
+      (OUTLETS || []).forEach(o => {
+        for (const ds in o.trafficByDate)  { if (min === null || ds < min) min = ds; if (max === null || ds > max) max = ds; }
+        for (const ds in o.outboundByDate) { if (min === null || ds < min) min = ds; if (max === null || ds > max) max = ds; }
+      });
+      const today = localDate(new Date());
+      if (min === null) min = today;
+      if (max === null || max < today) max = today;
+      _dtAxisStartMs = new Date(min + 'T00:00:00').getTime();
+      _dtAxisLen = Math.round((new Date(max + 'T00:00:00').getTime() - _dtAxisStartMs) / 86400000) + 1;
+
+      // String tanggal sumbu dihitung sekali (tanpa alokasi Date di inner loop per outlet)
+      const axis = new Array(_dtAxisLen);
+      { let d = new Date(_dtAxisStartMs); for (let i = 0; i < _dtAxisLen; i++) { axis[i] = localDate(d); d.setDate(d.getDate() + 1); } }
+
+      (OUTLETS || []).forEach(o => {
+        const ci = new Array(_dtAxisLen), co = new Array(_dtAxisLen);
+        let ai = 0, ao = 0;
+        for (let i = 0; i < _dtAxisLen; i++) {
+          ai += (o.trafficByDate[axis[i]]  || 0);
+          ao += (o.outboundByDate[axis[i]] || 0);
+          ci[i] = ai; co[i] = ao;
+        }
+        o._cumIn = ci; o._cumOut = co;
+      });
+    }
+    function _axisIdx(ds) { return Math.round((new Date(ds + 'T00:00:00').getTime() - _dtAxisStartMs) / 86400000); }
+    function sumFast(cum, start, end) {
+      if (!cum || !start || !end) return 0;
+      let i0 = _axisIdx(start), i1 = _axisIdx(end);
+      const last = cum.length - 1;
+      if (i1 < 0 || i0 > last) return 0;
+      if (i0 < 0) i0 = 0;
+      if (i1 > last) i1 = last;
+      return cum[i1] - (i0 > 0 ? cum[i0 - 1] : 0);
+    }
+    // Wrapper aman: fallback ke sumRange bila index belum dibangun (mis. sebelum loadData)
+    function outletIn(o, start, end)  { return o && o._cumIn  ? sumFast(o._cumIn,  start, end) : sumRange(o && o.trafficByDate,  start, end); }
+    function outletOut(o, start, end) { return o && o._cumOut ? sumFast(o._cumOut, start, end) : sumRange(o && o.outboundByDate, start, end); }
+
     // ════════════════════════════════════════════
     //  DATE PICKER
     // ════════════════════════════════════════════
@@ -7756,16 +7806,16 @@ Salam,
 
     function taSumOutletInRange(o) {
       let total = 0;
-      if (taChats.inbound)  total += sumRange(o.trafficByDate,  selectedDateStart, selectedDateEnd);
-      if (taChats.outbound) total += sumRange(o.outboundByDate, selectedDateStart, selectedDateEnd);
+      if (taChats.inbound)  total += outletIn(o,  selectedDateStart, selectedDateEnd);
+      if (taChats.outbound) total += outletOut(o, selectedDateStart, selectedDateEnd);
       return total;
     }
     function taSumGroup(group, start, end) {
-      const list = OUTLETS.filter(o => o.group === group);
+      const list = OUTLETS_BY_GROUP[group] || [];
       let total = 0;
       list.forEach(o => {
-        if (taChats.inbound)  total += sumRange(o.trafficByDate,  start, end);
-        if (taChats.outbound) total += sumRange(o.outboundByDate, start, end);
+        if (taChats.inbound)  total += outletIn(o,  start, end);
+        if (taChats.outbound) total += outletOut(o, start, end);
       });
       return total;
     }
@@ -7847,7 +7897,7 @@ Salam,
       ['enterprise','premium','project','zopoz','telkom'].forEach(g => {
         const cur  = taSumGroup(g, selectedDateStart, selectedDateEnd);
         const prev = taSumGroup(g, prevStart, prevEnd);
-        const cnt  = OUTLETS.filter(o => o.group === g).length;
+        const cnt  = (OUTLETS_BY_GROUP[g] || []).length;
         setTaNum('ta-n-' + g, cur);
         setTaDelta('ta-d-' + g, cur, prev);
         document.getElementById('ta-s-' + g).textContent = `${cnt} outlet`;
@@ -7866,7 +7916,7 @@ Salam,
       // ── Series 1: Per Chat = jumlah pesan per hari (existing behavior) ──
       const seriesByGroupChat = {};
       allOnGroups.forEach(g => {
-        const list = OUTLETS.filter(o => o.group === g);
+        const list = OUTLETS_BY_GROUP[g] || [];
         seriesByGroupChat[g] = days.map(ds => {
           let s = 0;
           list.forEach(o => {
@@ -7881,7 +7931,7 @@ Salam,
       // Outlet "aktif" = punya minimal 1 pesan pada hari itu (sesuai filter Type Chat)
       const seriesByGroupOutlets = {};
       allOnGroups.forEach(g => {
-        const list = OUTLETS.filter(o => o.group === g);
+        const list = OUTLETS_BY_GROUP[g] || [];
         seriesByGroupOutlets[g] = days.map(ds => {
           let n = 0;
           list.forEach(o => {
@@ -8368,6 +8418,7 @@ Salam,
           }
         });
         OUTLETS = Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name, 'id'));
+        buildOutletIndexes();
 
         // Team data from API
         AGENTS = (data.picAgents || []);
@@ -8378,7 +8429,9 @@ Salam,
         TAC_BY_AGENT    = data.tacByAgentDate     || {};
         TICKET_BY_DATE  = data.ticketsByDate      || {};
         TAC_BY_DATE     = data.tacByDate          || {};
-        OUTLET_FILES    = data.files              || [];
+        // Simpan hanya field yang dipakai renderOutletTacList (title + tacByAgentDate).
+        // Hindari retensi ganda map trafficByDate/outboundByDate (sudah ada di OUTLETS).
+        OUTLET_FILES    = (data.files || []).map(f => ({ title: f.title, tacByAgentDate: f.tacByAgentDate || {} }));
         TICKET_LIST     = Array.isArray(data.ticketList) ? data.ticketList : [];
 
         updateStats(); render();
@@ -8445,8 +8498,8 @@ Salam,
       setNum('n-active', pool.filter(o => o.activeToday).length);
       setNum('n-needreply', pool.filter(o => isEffectiveNeedReply(o)).length);
 
-      const inSum = pool.reduce((s, o) => s + sumRange(o.trafficByDate, selectedDateStart, selectedDateEnd), 0);
-      const outSum = pool.reduce((s, o) => s + sumRange(o.outboundByDate, selectedDateStart, selectedDateEnd), 0);
+      const inSum = pool.reduce((s, o) => s + outletIn(o, selectedDateStart, selectedDateEnd), 0);
+      const outSum = pool.reduce((s, o) => s + outletOut(o, selectedDateStart, selectedDateEnd), 0);
       setNum('n-inbound', inSum);
       setNum('n-outbound', outSum);
 
@@ -8472,8 +8525,8 @@ Salam,
       // Delta vs previous period
       const days = seriesIn.length || 1;
       const prevStart = addDays(selectedDateStart, -days), prevEnd = addDays(selectedDateStart, -1);
-      setDelta('d-inbound', inSum, pool.reduce((s, o) => s + sumRange(o.trafficByDate, prevStart, prevEnd), 0));
-      setDelta('d-outbound', outSum, pool.reduce((s, o) => s + sumRange(o.outboundByDate, prevStart, prevEnd), 0));
+      setDelta('d-inbound', inSum, pool.reduce((s, o) => s + outletIn(o, prevStart, prevEnd), 0));
+      setDelta('d-outbound', outSum, pool.reduce((s, o) => s + outletOut(o, prevStart, prevEnd), 0));
     }
 
     function setDelta(id, cur, prev) {
@@ -8967,6 +9020,19 @@ Salam,
     //  ]
     //  Creator name = lookup senderNumber → AGENTS (PIC Majoo · Template)
     // ════════════════════════════════════════════════════════════
+    // Debounce pencarian Ticket ID: hindari render penuh (resolve + rebuild dropdown) tiap keystroke.
+    let _tlSearchTimer = null;
+    function tlSearchInput(v) {
+      tlQuery = v;
+      clearTimeout(_tlSearchTimer);
+      _tlSearchTimer = setTimeout(() => { tlPage = 1; renderTicketIdList(); }, 200);
+    }
+    // Debounce pencarian outlet (halaman utama).
+    let _outletSearchTimer = null;
+    function outletSearchInput() {
+      clearTimeout(_outletSearchTimer);
+      _outletSearchTimer = setTimeout(() => { curPage = 1; render(); }, 200);
+    }
     function renderTicketIdList() {
       const tbody  = document.getElementById('ticketIdTbody');
       const badge  = document.getElementById('ticketIdCount');
@@ -9744,8 +9810,8 @@ Salam,
       if (!OUTLETS.length) return;
 
       const allRows = poolByGroup().filter(o => {
-        const ib = sumRange(o.trafficByDate, selectedDateStart, selectedDateEnd);
-        const ob = sumRange(o.outboundByDate, selectedDateStart, selectedDateEnd);
+        const ib = outletIn(o, selectedDateStart, selectedDateEnd);
+        const ob = outletOut(o, selectedDateStart, selectedDateEnd);
         const match =
           curFilter === 'all' ? true :
             curFilter === 'active' ? o.activeToday :
@@ -9754,8 +9820,8 @@ Salam,
                   curFilter === 'outbound' ? ob > 0 : true;
         return match && (!q || o.name.toLowerCase().includes(q));
       }).sort((a, b) => {
-        if (curFilter === 'inbound') return sumRange(b.trafficByDate, selectedDateStart, selectedDateEnd) - sumRange(a.trafficByDate, selectedDateStart, selectedDateEnd);
-        if (curFilter === 'outbound') return sumRange(b.outboundByDate, selectedDateStart, selectedDateEnd) - sumRange(a.outboundByDate, selectedDateStart, selectedDateEnd);
+        if (curFilter === 'inbound') return outletIn(b, selectedDateStart, selectedDateEnd) - outletIn(a, selectedDateStart, selectedDateEnd);
+        if (curFilter === 'outbound') return outletOut(b, selectedDateStart, selectedDateEnd) - outletOut(a, selectedDateStart, selectedDateEnd);
         return 0;
       });
 
@@ -9775,8 +9841,8 @@ Salam,
       }
 
       tbody.innerHTML = rows.map((o, i) => {
-        const ib = sumRange(o.trafficByDate, selectedDateStart, selectedDateEnd);
-        const ob = sumRange(o.outboundByDate, selectedDateStart, selectedDateEnd);
+        const ib = outletIn(o, selectedDateStart, selectedDateEnd);
+        const ob = outletOut(o, selectedDateStart, selectedDateEnd);
         return `<tr>
         <td class="c-no">${String(pageStart + i + 1).padStart(2, '0')}</td>
         <td class="c-name"><a href="${o.url || '#'}" target="_blank"><span class="outlet-avatar">${initials(o.name)}</span><span>${esc(o.name)}</span></a></td>
@@ -10385,7 +10451,11 @@ Salam,
       if (low.includes('no sales'))     return 'no_sales';
       return null;
     }
+    // Memoized: dipanggil beberapa kali per render (tabel, chart, expiring, stats).
+    // Cache saat dipanggil dgn WORKORDER_DATA live; invalidate otomatis saat array di-reassign (reload).
+    let _wtDedupCache = null, _wtDedupSrc = null;
     function wtDedupInv(rows) {
+      if (rows === WORKORDER_DATA && _wtDedupSrc === WORKORDER_DATA && _wtDedupCache) return _wtDedupCache;
       const seen = new Set(); const out = [];
       for (const r of rows) {
         const k = (r.inv_code || '').trim();
@@ -10393,6 +10463,7 @@ Salam,
         if (seen.has(k)) continue;
         seen.add(k); out.push(r);
       }
+      if (rows === WORKORDER_DATA) { _wtDedupCache = out; _wtDedupSrc = WORKORDER_DATA; }
       return out;
     }
     function wtFilterByDate(rows) {
@@ -11765,7 +11836,7 @@ Salam,
 
       // ── Data + render ──
       function daysOf(key){ const a=[]; eachDay(st[key].start, st[key].end, ds=>a.push(ds)); return a; }
-      function sumGroupTraffic(g,s,e){ return OUTLETS.filter(o=>o.group===g).reduce((t,o)=> t + sumRange(o.trafficByDate,s,e) + sumRange(o.outboundByDate,s,e), 0); }
+      function sumGroupTraffic(g,s,e){ return (OUTLETS_BY_GROUP[g]||[]).reduce((t,o)=> t + outletIn(o,s,e) + outletOut(o,s,e), 0); }
       function heroHtml(cells){
         return cells.map(c => `
           <div class="dt-hero-stat" data-k="${c.k}">
@@ -11794,10 +11865,10 @@ Salam,
           const activeGroups = GROUPS.filter(g=>s.groups[g]);
           const useInb = !!s.chats.inbound, useOut = !!s.chats.outbound;
           const msgOn    = (o,ds)=> (useInb?(o.trafficByDate[ds]||0):0) + (useOut?(o.outboundByDate[ds]||0):0);
-          const msgRange = (o)=>    (useInb?sumRange(o.trafficByDate,s.start,s.end):0) + (useOut?sumRange(o.outboundByDate,s.start,s.end):0);
+          const msgRange = (o)=>    (useInb?outletIn(o,s.start,s.end):0) + (useOut?outletOut(o,s.start,s.end):0);
           const seriesByGroup = {};
           activeGroups.forEach(g => {
-            const list = OUTLETS.filter(o=>o.group===g);
+            const list = OUTLETS_BY_GROUP[g] || [];
             seriesByGroup[g] = days.map(ds => {
               if (cfg.kind==='chat'){ let v=0; list.forEach(o=> v += msgOn(o,ds)); return v; }
               let n=0; list.forEach(o=>{ if (msgOn(o,ds)>0) n++; }); return n;
@@ -11805,15 +11876,15 @@ Salam,
           });
           if (cfg.kind==='group'){
             const GL={enterprise:'ENTERPRISE',premium:'PREMIUM SERVICES',project:'PROJECT',zopoz:'ZOPOZ',telkom:'TELKOM'};
-            const perG={}; activeGroups.forEach(g=> perG[g]=OUTLETS.filter(o=>o.group===g).reduce((t,o)=>t+msgRange(o),0));
+            const perG={}; activeGroups.forEach(g=> perG[g]=(OUTLETS_BY_GROUP[g]||[]).reduce((t,o)=>t+msgRange(o),0));
             const tot=activeGroups.reduce((a,g)=>a+perG[g],0);
             const cells=[{k:'total',label:'TOTAL TRAFFIC',num:fmtNum(tot),sub:'Group aktif: '+activeGroups.length}];
-            activeGroups.forEach(g=> cells.push({k:g,label:GL[g],num:fmtNum(perG[g]),sub:OUTLETS.filter(o=>o.group===g).length+' outlet'}));
+            activeGroups.forEach(g=> cells.push({k:g,label:GL[g],num:fmtNum(perG[g]),sub:(OUTLETS_BY_GROUP[g]||[]).length+' outlet'}));
             document.getElementById('dtHeroRow-'+key).innerHTML = heroHtml(cells);
             document.getElementById('dtBadge-'+key).textContent = `● ${fmtNum(tot)} pesan`;
           } else {
             let inb=0, outb=0;
-            OUTLETS.filter(o=>s.groups[o.group]).forEach(o=>{ inb+=sumRange(o.trafficByDate,s.start,s.end); outb+=sumRange(o.outboundByDate,s.start,s.end); });
+            OUTLETS.filter(o=>s.groups[o.group]).forEach(o=>{ inb+=outletIn(o,s.start,s.end); outb+=outletOut(o,s.start,s.end); });
             const tot=(useInb?inb:0)+(useOut?outb:0);
             const dirSub=[useInb?'Inbound':null,useOut?'Outbound':null].filter(Boolean).join(' + ')||'—';
             const cells=[{k:'total',label:'TOTAL CHAT',num:fmtNum(tot),sub:dirSub}];
