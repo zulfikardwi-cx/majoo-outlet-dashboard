@@ -10364,17 +10364,27 @@ Salam,
       if (_wtLoaded) return;
       if (_wtLoadingPromise) return _wtLoadingPromise;
       _wtLoadingPromise = (async () => {
+        // Endpoint Apps Script intermiten (Google kadang balas 404 utk /exec).
+        // Tiap percobaan sukses ~60% → retry berbackoff supaya nyaris selalu berhasil.
+        const MAX = 4;
         try {
-          const res = await fetch(WORKORDER_DATA_URL);
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const json = await res.json();
-          if (Array.isArray(json)) WORKORDER_DATA = json;
-          else if (json && Array.isArray(json.records)) WORKORDER_DATA = json.records;
-          else WORKORDER_DATA = [];
-          _wtLoaded = true;
-        } catch (err) {
-          console.warn('Workorder live fetch failed:', err.message);
-          WORKORDER_DATA = []; _wtLoaded = true;
+          for (let attempt = 1; attempt <= MAX; attempt++) {
+            try {
+              const res = await fetch(WORKORDER_DATA_URL);
+              if (!res.ok) throw new Error('HTTP ' + res.status);
+              const json = await res.json();  // lempar bila dapat halaman HTML error
+              WORKORDER_DATA = Array.isArray(json) ? json
+                : (json && Array.isArray(json.records)) ? json.records : [];
+              _wtLoaded = true;
+              return;
+            } catch (err) {
+              console.warn(`Workorder fetch attempt ${attempt}/${MAX} gagal:`, err.message);
+              if (attempt < MAX) await new Promise(r => setTimeout(r, 800 * attempt));
+            }
+          }
+          // Semua percobaan gagal — biarkan _wtLoaded=false supaya bisa dicoba lagi saat halaman dibuka ulang
+          WORKORDER_DATA = [];
+          console.warn('Workorder: semua percobaan gagal (endpoint Apps Script flaky).');
         } finally {
           _wtLoadingPromise = null;
         }
