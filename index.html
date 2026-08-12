@@ -3818,6 +3818,25 @@
     .esk-success.show { display: block; }
     .esk-success b { font-family: var(--mono); }
 
+    /* Download Productivity (Team page) */
+    .tp-dl-row { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+    .tp-dl-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--font); font-size: 12.5px; font-weight: 600;
+      padding: 8px 14px; border-radius: 8px; cursor: pointer;
+      border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+      transition: all .15s;
+    }
+    .tp-dl-btn:hover { border-color: #2dbdb6; color: #1f9d8f; }
+    .tp-dl-custom { display: none; gap: 10px; }
+    .tp-dl-custom.show { display: flex; }
+    .tp-dl-custom .esk-field { flex: 1; }
+    .tp-dl-fields-note {
+      font-size: 11.5px; color: var(--muted);
+      background: var(--surface-2); border: 1px dashed var(--border);
+      border-radius: 6px; padding: 7px 10px; margin-bottom: 14px;
+    }
+
     /* Toast notification */
     .esk-toast {
       position: fixed; bottom: 24px; right: 24px;
@@ -5183,6 +5202,46 @@
       </div>
     </div>
 
+    <!-- ══════ DOWNLOAD PRODUCTIVITY — MODAL ══════ -->
+    <div class="esk-modal-bg" id="tpExportModalBg" onclick="if(event.target===this)closeTpExport()">
+      <div class="esk-modal">
+        <div class="esk-modal-head">
+          <h3>Download Productivity Agent</h3>
+          <p>Data dikirim ke Google Spreadsheet sebagai tab baru</p>
+        </div>
+        <div class="esk-modal-body">
+          <div class="esk-error" id="tpExpError"></div>
+          <div class="esk-success" id="tpExpSuccess"></div>
+          <div class="tp-dl-fields-note">Field yang diexport: <b>Tanggal</b> · <b>Nama Agent</b> · <b>Jumlah Messages</b> (per agent per hari)</div>
+          <div class="esk-field">
+            <label>Periode</label>
+            <select id="tpExpPeriod" onchange="tpExpPeriodChange()">
+              <option value="7">7 hari terakhir</option>
+              <option value="14">14 hari terakhir</option>
+              <option value="30" selected>30 hari terakhir</option>
+              <option value="thisMonth">Bulan ini</option>
+              <option value="lastMonth">Bulan lalu</option>
+              <option value="custom">Custom (pilih tanggal sendiri)</option>
+            </select>
+          </div>
+          <div class="tp-dl-custom" id="tpExpCustom">
+            <div class="esk-field">
+              <label>Dari</label>
+              <input type="date" id="tpExpStart">
+            </div>
+            <div class="esk-field">
+              <label>Sampai</label>
+              <input type="date" id="tpExpEnd">
+            </div>
+          </div>
+        </div>
+        <div class="esk-modal-foot">
+          <button class="esk-btn-cancel" onclick="closeTpExport()">Batal</button>
+          <button class="esk-btn-submit" id="tpExpSubmitBtn" onclick="submitTpExport()">Download ke Sheet</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ══════ TOAST NOTIF ══════ -->
     <div class="esk-toast" id="eskToast">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#6ec9a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -5608,6 +5667,17 @@
             <div class="hero-stat-desc">Rata-rata response rate</div>
           </div>
         </div>
+      </div>
+
+      <!-- Download export ke Google Sheet -->
+      <div class="tp-dl-row">
+        <button class="tp-dl-btn" onclick="openTpExport()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 2v8M4.5 6.5L8 10l3.5-3.5"/>
+            <path d="M2 12v1.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V12"/>
+          </svg>
+          Download Data
+        </button>
       </div>
 
       <!-- Team Date Picker Slot -->
@@ -11365,6 +11435,95 @@ Salam,
 
       window.closeEskalasiModal = function() {
         document.getElementById('eskModalBg').classList.remove('open');
+      };
+
+      // ── Download Productivity Agent (Team page) → export ke Google Sheet ──
+      // Baris export = per hari × per agent aktif yg punya aktivitas dlm periode:
+      // [Tanggal, Nama Agent, Jumlah Messages]. Dikirim ke Apps Script
+      // action=exportProductivity → jadi TAB BARU di spreadsheet export (dibuat
+      // otomatis sekali oleh Apps Script, ID disimpan Script Property).
+      window.openTpExport = function() {
+        document.getElementById('tpExpError').classList.remove('show');
+        const ok = document.getElementById('tpExpSuccess');
+        ok.classList.remove('show'); ok.innerHTML = '';
+        const btn = document.getElementById('tpExpSubmitBtn');
+        btn.disabled = false; btn.textContent = 'Download ke Sheet';
+        // Default custom range = rentang aktif halaman (fallback 30 hari terakhir).
+        document.getElementById('tpExpStart').value = selectedDateStart || addDays(todayStr(), -29);
+        document.getElementById('tpExpEnd').value   = selectedDateEnd || todayStr();
+        tpExpPeriodChange();
+        document.getElementById('tpExportModalBg').classList.add('open');
+      };
+
+      window.closeTpExport = function() {
+        document.getElementById('tpExportModalBg').classList.remove('open');
+      };
+
+      window.tpExpPeriodChange = function() {
+        const v = document.getElementById('tpExpPeriod').value;
+        document.getElementById('tpExpCustom').classList.toggle('show', v === 'custom');
+      };
+
+      function tpExpRange() {
+        const v = document.getElementById('tpExpPeriod').value;
+        const today = todayStr();
+        if (v === 'custom') {
+          return [document.getElementById('tpExpStart').value, document.getElementById('tpExpEnd').value];
+        }
+        if (v === 'thisMonth') return [today.slice(0, 8) + '01', today];
+        if (v === 'lastMonth') {
+          const d = new Date(today.slice(0, 8) + '01T00:00:00');
+          d.setDate(0); // mundur ke hari terakhir bulan lalu
+          const end = localDate(d);
+          return [end.slice(0, 8) + '01', end];
+        }
+        const n = parseInt(v, 10) || 30;
+        return [addDays(today, -(n - 1)), today];
+      }
+
+      window.submitTpExport = async function() {
+        const errEl = document.getElementById('tpExpError');
+        const okEl  = document.getElementById('tpExpSuccess');
+        errEl.classList.remove('show'); okEl.classList.remove('show');
+        const showErr = (m) => { errEl.textContent = m; errEl.classList.add('show'); };
+
+        const email = String(getSessionProfile().email || '').trim();
+        if (!email) { showErr('Sesi login tidak terdeteksi. Silakan login ulang.'); return; }
+
+        const range = tpExpRange();
+        const s = range[0], e = range[1];
+        if (!s || !e) { showErr('Tanggal periode belum lengkap.'); return; }
+        if (s > e)    { showErr('Tanggal "Dari" harus sebelum "Sampai".'); return; }
+        const dayCount = Math.round((new Date(e + 'T00:00:00') - new Date(s + 'T00:00:00')) / 86400000) + 1;
+        if (dayCount > 185) { showErr('Periode maksimal 6 bulan.'); return; }
+
+        const active = AGENTS.filter(a => a.aktif && sumRange(AGENT_MSGS[a.number] || {}, s, e) > 0);
+        if (!active.length) { showErr('Tidak ada aktivitas agent pada periode ini.'); return; }
+        const rows = [];
+        eachDay(s, e, (day) => {
+          active.forEach(a => rows.push([day, a.name, (AGENT_MSGS[a.number] || {})[day] || 0]));
+        });
+
+        const btn = document.getElementById('tpExpSubmitBtn');
+        btn.disabled = true; btn.textContent = 'Mengirim…';
+        try {
+          // POST tanpa Content-Type → simple request (tanpa preflight CORS), pola sama createRequest.
+          const res = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'exportProductivity', email: email, start: s, end: e, rows: rows }),
+          });
+          const data = await res.json();
+          if (!data.ok) { showErr(data.error || 'Gagal export ke spreadsheet.'); return; }
+          okEl.innerHTML = 'Export berhasil — tab <b>' + blastEscapeHtml(data.sheetName || '') + '</b> ('
+            + rows.length + ' baris). <a href="' + data.url + '" target="_blank" rel="noopener" '
+            + 'style="color:#1f9d8f;font-weight:700">Buka Spreadsheet →</a>';
+          okEl.classList.add('show');
+          showToast('Export productivity terkirim ke Google Sheet.');
+        } catch (e2) {
+          showErr('Gagal terhubung ke server: ' + ((e2 && e2.message) ? e2.message : e2));
+        } finally {
+          btn.disabled = false; btn.textContent = 'Download ke Sheet';
+        }
       };
 
       window.submitEskalasi = async function() {
