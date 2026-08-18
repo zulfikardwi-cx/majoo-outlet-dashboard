@@ -3828,9 +3828,11 @@
       transition: all .15s;
     }
     .tp-dl-btn:hover { border-color: #2dbdb6; color: #1f9d8f; }
-    .tp-dl-custom { display: none; gap: 10px; }
-    .tp-dl-custom.show { display: flex; }
-    .tp-dl-custom .esk-field { flex: 1; }
+    .tp-dl-range {
+      font-family: var(--font); font-size: 13px; color: var(--ink);
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 12px;
+    }
     .tp-dl-fields-note {
       font-size: 11.5px; color: var(--muted);
       background: var(--surface-2); border: 1px dashed var(--border);
@@ -5207,7 +5209,7 @@
       <div class="esk-modal">
         <div class="esk-modal-head">
           <h3>Download Productivity Agent</h3>
-          <p>Data dikirim ke Google Spreadsheet sebagai tab baru</p>
+          <p>Semua data (all time) di-update ke tab <b>Query Productivity</b></p>
         </div>
         <div class="esk-modal-body">
           <div class="esk-error" id="tpExpError"></div>
@@ -5215,29 +5217,12 @@
           <div class="tp-dl-fields-note">Field yang diexport: <b>Tanggal</b> · <b>Nama Agent</b> · <b>Jumlah Messages</b> (per agent per hari)</div>
           <div class="esk-field">
             <label>Periode</label>
-            <select id="tpExpPeriod" onchange="tpExpPeriodChange()">
-              <option value="7">7 hari terakhir</option>
-              <option value="14">14 hari terakhir</option>
-              <option value="30" selected>30 hari terakhir</option>
-              <option value="thisMonth">Bulan ini</option>
-              <option value="lastMonth">Bulan lalu</option>
-              <option value="custom">Custom (pilih tanggal sendiri)</option>
-            </select>
-          </div>
-          <div class="tp-dl-custom" id="tpExpCustom">
-            <div class="esk-field">
-              <label>Dari</label>
-              <input type="date" id="tpExpStart">
-            </div>
-            <div class="esk-field">
-              <label>Sampai</label>
-              <input type="date" id="tpExpEnd">
-            </div>
+            <div class="tp-dl-range" id="tpExpRangeInfo">—</div>
           </div>
         </div>
         <div class="esk-modal-foot">
           <button class="esk-btn-cancel" onclick="closeTpExport()">Batal</button>
-          <button class="esk-btn-submit" id="tpExpSubmitBtn" onclick="submitTpExport()">Download ke Sheet</button>
+          <button class="esk-btn-submit" id="tpExpSubmitBtn" onclick="submitTpExport()">Update ke Sheet</button>
         </div>
       </div>
     </div>
@@ -11438,48 +11423,38 @@ Salam,
       };
 
       // ── Download Productivity Agent (Team page) → export ke Google Sheet ──
-      // Baris export = per hari × per agent aktif yg punya aktivitas dlm periode:
+      // ALL TIME: dari tanggal data paling awal (agentMsgsByDate) s/d hari ini.
+      // Baris export = per hari × per agent aktif yg punya aktivitas:
       // [Tanggal, Nama Agent, Jumlah Messages]. Dikirim ke Apps Script
-      // action=exportProductivity → jadi TAB BARU di spreadsheet export (dibuat
-      // otomatis sekali oleh Apps Script, ID disimpan Script Property).
+      // action=exportProductivity → SELALU meng-update tab "Query Productivity"
+      // di spreadsheet export (dibuat otomatis sekali, ID di Script Property) —
+      // satu source tetap, isi di-replace penuh tiap download.
+      function tpExpAllRange() {
+        let min = '';
+        Object.keys(AGENT_MSGS || {}).forEach(function (num) {
+          Object.keys(AGENT_MSGS[num] || {}).forEach(function (d) {
+            if (!min || d < min) min = d;
+          });
+        });
+        return [min, todayStr()];
+      }
+
       window.openTpExport = function() {
         document.getElementById('tpExpError').classList.remove('show');
         const ok = document.getElementById('tpExpSuccess');
         ok.classList.remove('show'); ok.innerHTML = '';
         const btn = document.getElementById('tpExpSubmitBtn');
-        btn.disabled = false; btn.textContent = 'Download ke Sheet';
-        // Default custom range = rentang aktif halaman (fallback 30 hari terakhir).
-        document.getElementById('tpExpStart').value = selectedDateStart || addDays(todayStr(), -29);
-        document.getElementById('tpExpEnd').value   = selectedDateEnd || todayStr();
-        tpExpPeriodChange();
+        btn.disabled = false; btn.textContent = 'Update ke Sheet';
+        const r = tpExpAllRange();
+        document.getElementById('tpExpRangeInfo').innerHTML = r[0]
+          ? 'All time: <b>' + fmtLong(r[0]) + '</b> s/d <b>' + fmtLong(r[1]) + '</b>'
+          : 'Data belum termuat — tutup lalu buka lagi sebentar lagi.';
         document.getElementById('tpExportModalBg').classList.add('open');
       };
 
       window.closeTpExport = function() {
         document.getElementById('tpExportModalBg').classList.remove('open');
       };
-
-      window.tpExpPeriodChange = function() {
-        const v = document.getElementById('tpExpPeriod').value;
-        document.getElementById('tpExpCustom').classList.toggle('show', v === 'custom');
-      };
-
-      function tpExpRange() {
-        const v = document.getElementById('tpExpPeriod').value;
-        const today = todayStr();
-        if (v === 'custom') {
-          return [document.getElementById('tpExpStart').value, document.getElementById('tpExpEnd').value];
-        }
-        if (v === 'thisMonth') return [today.slice(0, 8) + '01', today];
-        if (v === 'lastMonth') {
-          const d = new Date(today.slice(0, 8) + '01T00:00:00');
-          d.setDate(0); // mundur ke hari terakhir bulan lalu
-          const end = localDate(d);
-          return [end.slice(0, 8) + '01', end];
-        }
-        const n = parseInt(v, 10) || 30;
-        return [addDays(today, -(n - 1)), today];
-      }
 
       window.submitTpExport = async function() {
         const errEl = document.getElementById('tpExpError');
@@ -11490,15 +11465,12 @@ Salam,
         const email = String(getSessionProfile().email || '').trim();
         if (!email) { showErr('Sesi login tidak terdeteksi. Silakan login ulang.'); return; }
 
-        const range = tpExpRange();
+        const range = tpExpAllRange();
         const s = range[0], e = range[1];
-        if (!s || !e) { showErr('Tanggal periode belum lengkap.'); return; }
-        if (s > e)    { showErr('Tanggal "Dari" harus sebelum "Sampai".'); return; }
-        const dayCount = Math.round((new Date(e + 'T00:00:00') - new Date(s + 'T00:00:00')) / 86400000) + 1;
-        if (dayCount > 185) { showErr('Periode maksimal 6 bulan.'); return; }
+        if (!s) { showErr('Data dashboard belum termuat. Tunggu sebentar lalu coba lagi.'); return; }
 
         const active = AGENTS.filter(a => a.aktif && sumRange(AGENT_MSGS[a.number] || {}, s, e) > 0);
-        if (!active.length) { showErr('Tidak ada aktivitas agent pada periode ini.'); return; }
+        if (!active.length) { showErr('Tidak ada aktivitas agent.'); return; }
         const rows = [];
         eachDay(s, e, (day) => {
           active.forEach(a => rows.push([day, a.name, (AGENT_MSGS[a.number] || {})[day] || 0]));
@@ -11514,15 +11486,15 @@ Salam,
           });
           const data = await res.json();
           if (!data.ok) { showErr(data.error || 'Gagal export ke spreadsheet.'); return; }
-          okEl.innerHTML = 'Export berhasil — tab <b>' + blastEscapeHtml(data.sheetName || '') + '</b> ('
+          okEl.innerHTML = 'Sheet <b>' + blastEscapeHtml(data.sheetName || 'Query Productivity') + '</b> diperbarui ('
             + rows.length + ' baris). <a href="' + data.url + '" target="_blank" rel="noopener" '
             + 'style="color:#1f9d8f;font-weight:700">Buka Spreadsheet →</a>';
           okEl.classList.add('show');
-          showToast('Export productivity terkirim ke Google Sheet.');
+          showToast('Query Productivity di Google Sheet diperbarui.');
         } catch (e2) {
           showErr('Gagal terhubung ke server: ' + ((e2 && e2.message) ? e2.message : e2));
         } finally {
-          btn.disabled = false; btn.textContent = 'Download ke Sheet';
+          btn.disabled = false; btn.textContent = 'Update ke Sheet';
         }
       };
 
