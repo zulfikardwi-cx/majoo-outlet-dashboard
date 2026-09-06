@@ -7094,10 +7094,13 @@ Salam,
     //  CONFIG
     // ════════════════════════════════════════════
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlyIsRkqcr0OuUr_Yu-wB9sugkirG9P2T7fMdKd9tkHy4bQBLOqJXmL7EeolXDRg0o/exec';
-    // ── Supabase (sumber data utama dashboard, gantikan GET Apps Script yang lambat) ──
-    const SUPABASE_URL      = 'https://mbsochjdrzmlvtfjngvd.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic29jaGpkcnptbHZ0ZmpuZ3ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMzY2ODQsImV4cCI6MjA5NTYxMjY4NH0.G12M4rI_Pr1NloZ17EbYrNSet5wEuTcMvIOO8ansxaw';
-    const DASHBOARD_RPC_URL = SUPABASE_URL + '/rest/v1/rpc/get_dashboard';
+    // ── Backend API (Neon Postgres via Vercel serverless — menggantikan Supabase RPC) ──
+    // Endpoint compat dengan Supabase RPC style: POST /api/<fn> dengan body {p_arg: ...}
+    const API_BASE          = 'https://wa-monitoring-api.vercel.app/api';
+    const DASHBOARD_RPC_URL = API_BASE + '/get_dashboard';
+    // Legacy — dipakai callsite lama (RPC(fn) helper). Tidak divalidasi oleh backend baru.
+    const SUPABASE_URL      = API_BASE;
+    const SUPABASE_ANON_KEY = '';
     const ALLOWED_DOMAIN  = 'majoo.id';
     const SESSION_KEY     = 'majoo_cx_auth';
     const SESSION_TTL_MS  = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -8443,15 +8446,11 @@ Salam,
       setChip('loading', 'Memuat data…');
 
       try {
-        // Load outlet data (Supabase RPC) and dismissed list in parallel
+        // Load outlet data (Neon via Vercel API) + dismissed list in parallel
         const [res] = await Promise.all([
           fetch(DASHBOARD_RPC_URL, {
             method: 'POST',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: '{}',
           }),
           loadDismissed(),
@@ -11351,7 +11350,7 @@ Salam,
     // ════════════════════════════════════════════════════════════════════
     (function() {
       const TAC_REQ_URL = APPS_SCRIPT_URL + '?action=listRequests';
-      const POLL_MS = 30000; // 30 detik
+      const POLL_MS = 60000; // 60 detik — dinaikkan dari 30s untuk hemat egress; UX badge tetap acceptable
       let pollTimer = null;
       let panelFilter = 'all';
       let isLoading = false;
@@ -11736,7 +11735,15 @@ Salam,
         // Initial fetch jika belum pernah
         if (!tacReqState.lastFetched) loadTacRequests(true);
         if (pollTimer) return;
-        pollTimer = setInterval(() => loadTacRequests(false), POLL_MS);
+        pollTimer = setInterval(() => {
+          // Egress guard: skip poll saat tab background — save bandwidth tanpa hilangkan realtime UX
+          if (document.hidden) return;
+          loadTacRequests(false);
+        }, POLL_MS);
+        // Instant refresh saat tab kembali visible
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden && pollTimer) loadTacRequests(false);
+        }, { once: false });
       }
       function stopRequestPolling() {
         if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
@@ -12217,11 +12224,10 @@ Salam,
      *  INBOX CHAT  (#chatPage) — Supabase get_inbox + Apps Script sendReply
      * ════════════════════════════════════════════ */
     (function(){
-      const RPC  = (fn) => SUPABASE_URL + '/rest/v1/rpc/' + fn;
+      // Neon backend via Vercel: /api/<fn> — signature kompatibel dgn Supabase RPC.
+      const RPC  = (fn) => API_BASE + '/' + fn;
       const HEAD = () => ({
         'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
       });
 
       const BUCKETS = [
@@ -13054,6 +13060,8 @@ Salam,
         checkServiceHealth();
         if (svcTimer) return;
         svcTimer = setInterval(() => {
+          // Egress guard: skip saat page bukan chat / tab tersembunyi
+          if (document.hidden) return;
           const cp = document.getElementById('chatPage');
           if (cp && cp.style.display !== 'none') checkServiceHealth();
         }, 45000);
@@ -13163,9 +13171,17 @@ Salam,
       }
       function startInboxPolling(){
         if (inboxTimer) return;
-        inboxTimer = setInterval(pollInbox, 20000);
-        // begitu user kembali ke tab dashboard → refresh seketika (tak perlu tunggu 12s)
-        document.addEventListener('visibilitychange', () => { if (!document.hidden) pollInbox(); });
+        inboxTimer = setInterval(() => {
+          // Egress guard: skip fetch kalau user tidak di halaman chat, atau tab tersembunyi.
+          // Timer tetap jalan (murah), tapi request ke Supabase di-skip.
+          if (typeof activeDash !== 'undefined' && activeDash !== 'chat') return;
+          if (document.hidden) return;
+          pollInbox();
+        }, 20000);
+        // Saat user kembali ke tab / dashboard → refresh seketika (tak perlu tunggu tick berikutnya)
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden && (typeof activeDash === 'undefined' || activeDash === 'chat')) pollInbox();
+        });
       }
 
       function bindListeners(){
