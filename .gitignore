@@ -1,0 +1,40 @@
+# ── Yang DI-SERVE oleh GitHub Pages hanya index.html (+ favicon.svg) ──
+# Sisanya internal / sensitif → jangan ikut ke repo (terutama kalau PUBLIC).
+
+# Catatan migrasi — berisi anon key, project ref, Drive/Sheet ID, email service account
+MIGRATION-NOTES.md
+DASHBOARD-ARCHITECTURE.md
+
+# Logic Apps Script internal
+Code.gs
+Code-final.gs
+
+# Backend SQL Supabase (RPC/skema — internal, dijalankan manual di SQL Editor)
+chat-inbox.sql
+*.sql
+
+# Service Node.js chat (jalan di device sendiri, bukan bagian situs)
+chat-wa-service/
+chat-wa-service.zip
+
+# File kerja / staging / mockup (bukan production)
+index-staging.html
+mockup-onboarding.html
+
+# Backup
+*.backup
+index.html.backup
+*.bak-*
+
+# Working files / exports
+drive-sheets-list.xlsx
+
+# Tooling lokal Claude / preview
+.claude/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
