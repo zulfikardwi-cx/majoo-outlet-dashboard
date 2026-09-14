@@ -8459,16 +8459,40 @@ Salam,
         const data = await res.json();
         if (data.error) throw new Error(data.error);
 
+        // Dedup outlet by nama, tapi MERGE trafficByDate/outboundByDate maps antar duplicate.
+        // Payload API kadang emit 2+ entry per outlet (source Sheet legacy + source scraper group_id).
+        // Kalau cuma pilih newer-modifiedTime, data yang dari entry lain hilang (root cause bug 2026-09-13).
+        // Solusi: merge map dari SEMUA entry, ambil metadata (url, modified) dari entry newest.
+        const _mergeMap = (a, b) => {
+          const out = Object.assign({}, a || {});
+          for (const k in (b || {})) out[k] = (out[k] || 0) + (b[k] || 0);
+          return out;
+        };
         const seen = new Map();
         (data.files || []).forEach(f => {
           const name = extractName(f.title), key = name.toLowerCase();
-          if (!seen.has(key) || new Date(f.modifiedTime) > new Date(seen.get(key).modified)) {
+          const prev = seen.get(key);
+          if (!prev) {
             seen.set(key, {
               name, group: classify(f.title), activeToday: isToday(f.modifiedTime),
               modified: f.modifiedTime, url: f.url,
-              needReply: f.needReply || false,
-              trafficByDate: f.trafficByDate || {}, outboundByDate: f.outboundByDate || {},
+              needReply: !!f.needReply,
+              trafficByDate: Object.assign({}, f.trafficByDate || {}),
+              outboundByDate: Object.assign({}, f.outboundByDate || {}),
             });
+          } else {
+            // Merge map (jumlahkan per-tanggal). Kalau tanggal sama muncul di 2 entry (harusnya tidak,
+            // karena entry lama = source Sheet, entry baru = source scraper), tetap dijumlahkan.
+            prev.trafficByDate  = _mergeMap(prev.trafficByDate,  f.trafficByDate);
+            prev.outboundByDate = _mergeMap(prev.outboundByDate, f.outboundByDate);
+            prev.needReply = prev.needReply || !!f.needReply;
+            // Metadata (modified, url, activeToday, group) ambil yang newest.
+            if (new Date(f.modifiedTime) > new Date(prev.modified)) {
+              prev.modified = f.modifiedTime;
+              prev.url = f.url || prev.url;
+              prev.activeToday = isToday(f.modifiedTime);
+              // group dari classify — biarkan yang lama (name-based, biasanya konsisten)
+            }
           }
         });
         OUTLETS = Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name, 'id'));
