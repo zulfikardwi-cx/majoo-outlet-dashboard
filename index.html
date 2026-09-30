@@ -12298,7 +12298,7 @@ Salam,
       // yang berubah sejak cursor (~1 kB) alih-alih seluruh 535 thread (~261 kB).
       // Tiap FULL_RESYNC_EVERY tick tetap tarik penuh sebagai jaring pengaman drift.
       let inboxSyncTs = null, inboxPollTick = 0;
-      const FULL_RESYNC_EVERY = 15;   // 15 × 20 dtk = full resync tiap 5 menit
+      const FULL_RESYNC_EVERY = 90;   // 90 × 20 dtk = full resync tiap 30 menit (30 Sep: dari 5 mnt — full 281 kB × semua agent = pemakan egress #1; delta sudah menangani perubahan, full tinggal jaring pengaman drift)
       let _searchTimer = null;                    // debounce search server-side
       let mp = { open:false, items:[], active:0, start:0, end:0 }; // state autocomplete mention
       const MAX_MEDIA = 16 * 1024 * 1024; // 16MB
