@@ -38,3 +38,6 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+
+# Edge Function (unduhan dari Supabase; berisi Sheet ID internal)
+supabase/

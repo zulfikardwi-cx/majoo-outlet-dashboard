@@ -7094,13 +7094,12 @@ Salam,
     //  CONFIG
     // ════════════════════════════════════════════
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlyIsRkqcr0OuUr_Yu-wB9sugkirG9P2T7fMdKd9tkHy4bQBLOqJXmL7EeolXDRg0o/exec';
-    // ── Backend API (Neon Postgres via Vercel serverless — menggantikan Supabase RPC) ──
-    // Endpoint compat dengan Supabase RPC style: POST /api/<fn> dengan body {p_arg: ...}
-    const API_BASE          = 'https://wa-monitoring-api.vercel.app/api';
+    // ── Backend API (Supabase RPC langsung) ──
+    // Setiap request harus kirim header apikey + Authorization Bearer <anon_key>.
+    const SUPABASE_URL      = 'https://qmsuvlgkxidywkihuabq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtc3V2bGdreGlkeXdraWh1YWJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNTYwMTAsImV4cCI6MjEwNTczMjAxMH0.3FKkfqdMVstRPrSkIaFRrR-cZtqo09QaSgPDtkGh2eQ';
+    const API_BASE          = SUPABASE_URL + '/rest/v1/rpc';
     const DASHBOARD_RPC_URL = API_BASE + '/get_dashboard';
-    // Legacy — dipakai callsite lama (RPC(fn) helper). Tidak divalidasi oleh backend baru.
-    const SUPABASE_URL      = API_BASE;
-    const SUPABASE_ANON_KEY = '';
     const ALLOWED_DOMAIN  = 'majoo.id';
     const SESSION_KEY     = 'majoo_cx_auth';
     const SESSION_TTL_MS  = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -8446,11 +8445,15 @@ Salam,
       setChip('loading', 'Memuat data…');
 
       try {
-        // Load outlet data (Neon via Vercel API) + dismissed list in parallel
+        // Load outlet data (Supabase RPC) + dismissed list in parallel
         const [res] = await Promise.all([
           fetch(DASHBOARD_RPC_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            },
             body: '{}',
           }),
           loadDismissed(),
@@ -8459,16 +8462,40 @@ Salam,
         const data = await res.json();
         if (data.error) throw new Error(data.error);
 
+        // Dedup outlet by nama, tapi MERGE trafficByDate/outboundByDate maps antar duplicate.
+        // Payload API kadang emit 2+ entry per outlet (source Sheet legacy + source scraper group_id).
+        // Kalau cuma pilih newer-modifiedTime, data yang dari entry lain hilang (root cause bug 2026-09-13).
+        // Solusi: merge map dari SEMUA entry, ambil metadata (url, modified) dari entry newest.
+        const _mergeMap = (a, b) => {
+          const out = Object.assign({}, a || {});
+          for (const k in (b || {})) out[k] = (out[k] || 0) + (b[k] || 0);
+          return out;
+        };
         const seen = new Map();
         (data.files || []).forEach(f => {
           const name = extractName(f.title), key = name.toLowerCase();
-          if (!seen.has(key) || new Date(f.modifiedTime) > new Date(seen.get(key).modified)) {
+          const prev = seen.get(key);
+          if (!prev) {
             seen.set(key, {
               name, group: classify(f.title), activeToday: isToday(f.modifiedTime),
               modified: f.modifiedTime, url: f.url,
-              needReply: f.needReply || false,
-              trafficByDate: f.trafficByDate || {}, outboundByDate: f.outboundByDate || {},
+              needReply: !!f.needReply,
+              trafficByDate: Object.assign({}, f.trafficByDate || {}),
+              outboundByDate: Object.assign({}, f.outboundByDate || {}),
             });
+          } else {
+            // Merge map (jumlahkan per-tanggal). Kalau tanggal sama muncul di 2 entry (harusnya tidak,
+            // karena entry lama = source Sheet, entry baru = source scraper), tetap dijumlahkan.
+            prev.trafficByDate  = _mergeMap(prev.trafficByDate,  f.trafficByDate);
+            prev.outboundByDate = _mergeMap(prev.outboundByDate, f.outboundByDate);
+            prev.needReply = prev.needReply || !!f.needReply;
+            // Metadata (modified, url, activeToday, group) ambil yang newest.
+            if (new Date(f.modifiedTime) > new Date(prev.modified)) {
+              prev.modified = f.modifiedTime;
+              prev.url = f.url || prev.url;
+              prev.activeToday = isToday(f.modifiedTime);
+              // group dari classify — biarkan yang lama (name-based, biasanya konsisten)
+            }
           }
         });
         OUTLETS = Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name, 'id'));
@@ -12224,10 +12251,12 @@ Salam,
      *  INBOX CHAT  (#chatPage) — Supabase get_inbox + Apps Script sendReply
      * ════════════════════════════════════════════ */
     (function(){
-      // Neon backend via Vercel: /api/<fn> — signature kompatibel dgn Supabase RPC.
+      // Supabase RPC langsung: POST <SUPABASE_URL>/rest/v1/rpc/<fn> dgn header apikey+Bearer.
       const RPC  = (fn) => API_BASE + '/' + fn;
       const HEAD = () => ({
         'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
       });
 
       const BUCKETS = [
@@ -12265,6 +12294,11 @@ Salam,
       }
       let loaded = false, loading = false, listenersBound = false;
       let inboxTimer = null, lastInboxSig = '';   // auto-refresh inbox (near-realtime)
+      // Delta polling: cursor jam server dari get_inbox. Poll normal hanya minta grup
+      // yang berubah sejak cursor (~1 kB) alih-alih seluruh 535 thread (~261 kB).
+      // Tiap FULL_RESYNC_EVERY tick tetap tarik penuh sebagai jaring pengaman drift.
+      let inboxSyncTs = null, inboxPollTick = 0;
+      const FULL_RESYNC_EVERY = 15;   // 15 × 20 dtk = full resync tiap 5 menit
       let _searchTimer = null;                    // debounce search server-side
       let mp = { open:false, items:[], active:0, start:0, end:0 }; // state autocomplete mention
       const MAX_MEDIA = 16 * 1024 * 1024; // 16MB
@@ -12382,6 +12416,7 @@ Salam,
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const data = await res.json();
           const nc = keepInternalOpen(Array.isArray(data) ? data : (Array.isArray(data.conversations) ? data.conversations : []));
+          if (data && data.server_ts) inboxSyncTs = data.server_ts;
           carryMessages(convs, nc);          // pertahankan thread yang sudah dibuka
           convs = nc;
           // mentions TIDAK di-reset: get_inbox kini hanya ringkasan; peta mention diisi get_thread.
@@ -13146,11 +13181,27 @@ Salam,
         if (!cp || cp.style.display === 'none') return;
         if (document.hidden || loading) return;
         try {
-          // poll selalu ambil daftar penuh (ringkasan, ~puluhan KB), bukan hasil search
-          const res = await fetch(RPC('get_inbox'), { method:'POST', headers:HEAD(), body:'{}' });
+          // Delta: minta hanya grup yang berubah sejak cursor. Full resync berkala
+          // (dan saat cursor belum ada) menutup kemungkinan drift.
+          const full = !inboxSyncTs || (++inboxPollTick % FULL_RESYNC_EVERY === 0);
+          const res = await fetch(RPC('get_inbox'), {
+            method:'POST', headers:HEAD(),
+            body: full ? '{}' : JSON.stringify({ p_since: inboxSyncTs }),
+          });
           if (!res.ok) return;
           const data = await res.json();
-          const nc = keepInternalOpen(Array.isArray(data) ? data : (Array.isArray(data.conversations) ? data.conversations : []));
+          const incoming = Array.isArray(data) ? data : (Array.isArray(data.conversations) ? data.conversations : []);
+          if (data && data.server_ts) inboxSyncTs = data.server_ts;
+          let next;
+          if (full) next = incoming;
+          else {
+            if (!incoming.length) return;   // tidak ada perubahan → jangan render ulang
+            const byId = new Map(convs.map(c => [c.group_id, c]));
+            incoming.forEach(c => byId.set(c.group_id, c));
+            next = Array.from(byId.values())
+              .sort((a, b) => new Date(b.last_ts) - new Date(a.last_ts));
+          }
+          const nc = keepInternalOpen(next);
           applyInbox(nc);
           if (st.search && st.search.trim()) renderList();  // jaga tampilan hasil search tetap sinkron
         } catch (e){ /* diam — coba lagi tick berikutnya */ }
